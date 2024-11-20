@@ -1,4 +1,9 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {};
+const nextConfig = {
+  experimental: {
+    middlewareMatching: true,
+  },
+};
 
+  
 export default nextConfig;
