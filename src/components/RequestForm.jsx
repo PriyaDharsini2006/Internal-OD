@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-
+import { signOut } from 'next-auth/react';
 const RequestForm = () => {
   const [students, setStudents] = useState([]);
   const [selectedStudents, setSelectedStudents] = useState([]);
@@ -22,7 +22,6 @@ const RequestForm = () => {
   const ITEMS_PER_PAGE = 10;
   const sectionsOptions = ['A', 'B', 'C', 'D'];
   const yearsOptions = [2027, 2026, 2025, 2024];
-  const [loading, setLoading] = useState(true);
 
 
   useEffect(() => {
@@ -41,64 +40,28 @@ const RequestForm = () => {
 
   const fetchStudents = async () => {
     try {
-      setLoading(true);
-      setError(''); // Clear previous errors
-      
       const params = new URLSearchParams({
         search: searchTerm,
         section: selectedSection,
         year: selectedYear
       });
-  
-      // Add error handling for each fetch request separately
-      let studentsData = [];
-      let countsData = [];
-  
-      try {
-        const studentsResponse = await fetch(`/api/students?${params}`);
-        if (!studentsResponse.ok) {
-          throw new Error(`Students API Error: ${studentsResponse.status}`);
-        }
-        studentsData = await studentsResponse.json();
-      } catch (studentError) {
-        console.error('Students fetch error:', studentError);
-        throw new Error('Failed to fetch students data');
-      }
-  
-      try {
-        const countsResponse = await fetch('/api/counts');
-        if (!countsResponse.ok) {
-          throw new Error(`Counts API Error: ${countsResponse.status}`);
-        }
-        countsData = await countsResponse.json();
-      } catch (countsError) {
-        console.error('Counts fetch error:', countsError);
-        throw new Error('Failed to fetch counts data');
-      }
-  
-      // Ensure countsData is an array
-      const countsArray = Array.isArray(countsData) ? countsData : [];
+
+      const response = await fetch(`/api/students?${params}`);
       
-      // Merge students data with their counts
-      const studentsWithCounts = studentsData.map(student => ({
-        ...student,
-        counts: countsArray.find(count => count.email === student.email) || {
-          stayback_cnt: 0,
-          meeting_cnt: 0
-        }
-      }));
-  
-      setStudents(studentsWithCounts);
+      if (!response.ok) {
+        throw new Error(response.status === 401 ? 'Unauthorized' : 'Failed to fetch students');
+      }
+
+      const data = await response.json();
+      setStudents(data);
     } catch (error) {
-      console.error('Fetch error:', error);
-      setError(error.message || 'Failed to fetch data');
-      if (error.message.includes('401') || error.message.includes('Unauthorized')) {
+      setError('Failed to fetch students: ' + error.message);
+      if (error.message === 'Unauthorized') {
         router.push('/api/auth/signin');
       }
-    } finally {
-      setLoading(false);
     }
   };
+
 
   useEffect(() => {
     if (status !== 'authenticated' || session?.user?.role !== 'TeamLead') return;
@@ -150,13 +113,12 @@ const RequestForm = () => {
 
     try {
       const requests = selectedStudents.map(userId => ({
-        user_id: userId,
+        user_id: userId,  // This should match the user_id field from your schema
         reason,
         description,
         from_time: new Date(`2024-01-01T${fromTime}`).toISOString(),
         to_time: new Date(`2024-01-01T${toTime}`).toISOString(),
-        request_type: requestType,
-        teamlead_id: session.user.id // Assuming you have the teamlead's ID in the session
+        request_type: requestType
       }));
 
       const response = await fetch('/api/requests', {
@@ -184,9 +146,6 @@ const RequestForm = () => {
       setDescription('');
       setFromTime('');
       setToTime('');
-      
-      // Refresh the students data to get updated counts
-      await fetchStudents();
     } catch (error) {
       setError('Failed to send request: ' + error.message);
     }
@@ -195,13 +154,13 @@ const RequestForm = () => {
   
   return (
     <div className="p-6 max-w-5xl mx-auto bg-white rounded-xl shadow-md space-y-4">
-      <h1 className="text-2xl md:text-3xl font-bold mb-4 text-gray-700">Send Requests</h1>
+      <h1 className="text-2xl md:text-3xl font-bold mb-4 text-black">Send Requests</h1>
       {error && <div className="text-red-500 mb-4">{error}</div>}
       {successMessage && <div className="text-green-500 mb-4">{successMessage}</div>}
 
       <div className="flex gap-4 mb-4">
         {["OD Request", "Stayback Request", "Meeting Request"].map((type) => (
-          <label key={type} className="flex items-center">
+          <label key={type} className="flex text-black items-center">
             <input
               type="radio"
               name="requestType"
@@ -221,12 +180,12 @@ const RequestForm = () => {
           placeholder="Search students..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="px-4 py-2 border rounded"
+          className="px-4 py-2 border border-black rounded"
         />
         <select
           value={selectedSection}
           onChange={(e) => setSelectedSection(e.target.value)}
-          className="px-4 py-2 border rounded"
+          className="px-4 py-2 border text-gray-400 border-black rounded"
         >
           <option value="all">All Sections</option>
           {sectionsOptions.map((section) => (
@@ -238,7 +197,7 @@ const RequestForm = () => {
         <select
           value={selectedYear}
           onChange={(e) => setSelectedYear(e.target.value)}
-          className="px-4 py-2 border rounded"
+          className="px-4 py-2 border text-gray-400 border-black rounded"
         >
           <option value="all">All Years</option>
           {yearsOptions.map((year) => (
@@ -253,44 +212,34 @@ const RequestForm = () => {
         <table className="min-w-full bg-white border">
           <thead className="sticky top-0 bg-gray-200">
             <tr>
-              <th className="px-4 py-2 border">Select</th>
-              <th className="px-4 py-2 border">Name</th>
-              <th className="px-4 py-2 border">Email</th>
-              <th className="px-4 py-2 border">Section</th>
-              <th className="px-4 py-2 border">Year</th>
-              <th className="px-4 py-2 border">Stayback Count</th>
-              <th className="px-4 py-2 border">Meeting Count</th>
+              <th className="px-4 py-2 text-black  border-black border">Select</th>
+              <th className="px-4 py-2  text-black border-black border">Name</th>
+              <th className="px-4 py-2  text-black border-black border">Email</th>
+              <th className="px-4 py-2 text-black border-black border">Section</th>
+              <th className="px-4 py-2 text-black border-black border">Year</th>
             </tr>
           </thead>
           <tbody>
-            {loading ? (
-              <tr>
-                <td colSpan="7" className="px-4 py-2 text-center">Loading...</td>
+            {currentStudents.map((student) => (
+              <tr key={student.user_id}>
+                <td className="px-4 py-2 border-black border text-center">
+                  <input
+                    type="checkbox"
+                    checked={selectedStudents.includes(student.user_id)}
+                    onChange={() => handleSelectStudent(student.user_id)}
+                  />
+                </td>
+                <td className="px-4 py-2  text-black border-black border">{student.name}</td>
+                <td className="px-4 py-2  text-black border-black border">{student.email}</td>
+                <td className="px-4 py-2  text-black border-black border">{student.sec}</td>
+                <td className="px-4 py-2  text-black border-black border">{student.year}</td>
               </tr>
-            ) : (
-              currentStudents.map((student) => (
-                <tr key={student.user_id}>
-                  <td className="px-4 py-2 border text-center">
-                    <input
-                      type="checkbox"
-                      checked={selectedStudents.includes(student.user_id)}
-                      onChange={() => handleSelectStudent(student.user_id)}
-                    />
-                  </td>
-                  <td className="px-4 py-2 border">{student.name}</td>
-                  <td className="px-4 py-2 border">{student.email}</td>
-                  <td className="px-4 py-2 border">{student.sec}</td>
-                  <td className="px-4 py-2 border">{student.year}</td>
-                  <td className="px-4 py-2 border">{student.counts.stayback_cnt}</td>
-                  <td className="px-4 py-2 border">{student.counts.meeting_cnt}</td>
-                </tr>
-              ))
-            )}
+            ))}
           </tbody>
         </table>
       </div>
 
-      <div className="flex justify-between items-center">
+      <div className="flex text-gray-400 justify-between border-black items-center">
         <div>
           Showing {startIndex + 1} to {endIndex} of {totalStudents.length} entries
         </div>
@@ -298,7 +247,7 @@ const RequestForm = () => {
           <button
             onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
             disabled={currentPage === 1}
-            className="px-3 py-1 border rounded"
+            className="px-3 py-1 border-black border rounded"
           >
             Previous
           </button>
@@ -306,7 +255,8 @@ const RequestForm = () => {
             <button
               key={i}
               onClick={() => setCurrentPage(i + 1)}
-              className={`px-3 py-1 border rounded ${currentPage === i + 1 ? 'bg-blue-500 text-white' : ''}`}
+              className={`px-3 py-1 border-black border rounded ${currentPage === i + 1 ? 'bg-blue-500 text-white' : ''
+                }`}
             >
               {i + 1}
             </button>
@@ -314,7 +264,7 @@ const RequestForm = () => {
           <button
             onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
             disabled={currentPage === totalPages}
-            className="px-3 py-1 border rounded"
+            className="px-3 py-1 border-black border rounded"
           >
             Next
           </button>
@@ -326,26 +276,26 @@ const RequestForm = () => {
           placeholder="Reason"
           value={reason}
           onChange={(e) => setReason(e.target.value)}
-          className="w-full px-4 py-2 border rounded"
+          className="w-full px-4 border-black py-2 border rounded"
         />
         <textarea
           placeholder="Description"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          className="w-full px-4 py-2 border rounded"
+          className="w-full border-black px-4 py-2 border rounded"
         />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <input
             type="time"
             value={fromTime}
             onChange={(e) => setFromTime(e.target.value)}
-            className="px-4 py-2 border rounded"
+            className="px-4 py-2 text-gray-400  border-black border rounded"
           />
           <input
             type="time"
             value={toTime}
             onChange={(e) => setToTime(e.target.value)}
-            className="px-4 py-2 border rounded"
+            className="px-4 py-2 text-gray-400 border-black border rounded"
           />
         </div>
       </div>
@@ -356,6 +306,7 @@ const RequestForm = () => {
       >
         Send Request
       </button>
+      <button onClick={() => signOut()}>Sign out</button>
     </div>
   );
 };
