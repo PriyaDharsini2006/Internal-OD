@@ -1,8 +1,4 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+// prisma/schema.prisma
 
 generator client {
   provider = "prisma-client-js"
@@ -21,4 +17,31 @@ model HOD {
 model TeamLead {
   id    Int    @id @default(autoincrement())
   email String @unique
+  requests ODRequest[] @relation("RequestedBy")
+}
+
+model User {
+  id       Int        @id @default(autoincrement())
+  user_id  String     @unique
+  name     String
+  email    String     @unique
+  sec      String
+  year     Int
+  requests ODRequest[] @relation("RequestFor")
+}
+
+model ODRequest {
+  id           String   @id @default(uuid())
+  date         DateTime @default(now())
+  user         User     @relation("RequestFor", fields: [user_id], references: [user_id])
+  user_id      String
+  reason       String
+  description  String
+  request_by   TeamLead @relation("RequestedBy", fields: [teamlead_id], references: [id])
+  teamlead_id  Int
+  status       Int      @default(0)  // 0: pending, 1: approved, -1: rejected
+  from_time    DateTime
+  to_time      DateTime
+  request_type String
+  attendance   Boolean  @default(false)
 }
