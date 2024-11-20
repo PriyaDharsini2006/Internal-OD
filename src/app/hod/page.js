@@ -1,23 +1,8 @@
-// "use client";
 
-// import { useSession, signIn, signOut } from "next-auth/react";
-// export default function HODPage() {
-//   const { data: session } = useSession();
-
-//   if (!session) {
-//     return <p>Loading...</p>;
-//   }
-//   return (
-//     <>
-//       <h1>Welcome, {session.user.name}. You are logged in as HOD.</h1>
-//       <p></p>
-//       <button onClick={() => signOut()}>Sign out</button>
-//     </>
-//   );
-// }
 'use client'
 import React, { useState, useEffect } from 'react';
 import { useSession, signIn, signOut } from "next-auth/react";
+import  ApproveRequest from '@/components/ApproveRequest';
 import { 
   Clock, 
   CheckCircle, 
@@ -120,6 +105,8 @@ const DashboardTable = () => {
   );
 
   return (
+    <>
+    <ApproveRequest/>
     <div className="container mx-auto px-4 py-8">
       <div className="shadow-sm border rounded-lg overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200">
@@ -216,6 +203,7 @@ const DashboardTable = () => {
       </div>
       <button onClick={() => signOut()}>Sign out</button>
     </div>
+    </>
   );
 };
 
