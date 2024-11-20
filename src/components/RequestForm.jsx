@@ -21,7 +21,7 @@ const RequestForm = () => {
   
   const ITEMS_PER_PAGE = 10;
   const sectionsOptions = ['A', 'B', 'C', 'D'];
-  const yearsOptions = [1, 2, 3, 4];
+  const yearsOptions = [2027, 2026, 2025, 2024];
 
 
   useEffect(() => {
