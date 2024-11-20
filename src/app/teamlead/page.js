@@ -1,7 +1,6 @@
 "use client";
 import { useSession, signIn, signOut } from "next-auth/react";
 import RequestForm from "@/components/RequestForm";
-
 export default function TeamLeadPage() {
   const { data: session } = useSession();
 
@@ -10,9 +9,8 @@ export default function TeamLeadPage() {
   }
 
   return (<>
-    <h1>Welcome, {session.user.name}. You are logged in as TeamLead.</h1>
-    <p></p>
+  <div className="bg-white">
     <RequestForm/>
     <button onClick={() => signOut()}>Sign out</button>
-  </>);
+    </div></>);
 }
