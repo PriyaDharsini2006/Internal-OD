@@ -1,5 +1,3 @@
-// prisma/schema.prisma
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -28,6 +26,7 @@ model User {
   sec      String
   year     Int
   requests ODRequest[] @relation("RequestFor")
+  counts   Count?     // Relation to Count model
 }
 
 model ODRequest {
@@ -44,4 +43,12 @@ model ODRequest {
   to_time      DateTime
   request_type String
   attendance   Boolean  @default(false)
+}
+
+model Count {
+  id           Int      @id @default(autoincrement())
+  user         User     @relation(fields: [email], references: [email])
+  email        String   @unique
+  stayback_cnt Int      @default(0)
+  meeting_cnt  Int      @default(0)
 }

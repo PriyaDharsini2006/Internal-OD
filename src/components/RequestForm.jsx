@@ -22,6 +22,7 @@ const RequestForm = () => {
   const ITEMS_PER_PAGE = 10;
   const sectionsOptions = ['A', 'B', 'C', 'D'];
   const yearsOptions = [2027, 2026, 2025, 2024];
+  const [loading, setLoading] = useState(true);
 
 
   useEffect(() => {
@@ -40,28 +41,64 @@ const RequestForm = () => {
 
   const fetchStudents = async () => {
     try {
+      setLoading(true);
+      setError(''); // Clear previous errors
+      
       const params = new URLSearchParams({
         search: searchTerm,
         section: selectedSection,
         year: selectedYear
       });
-
-      const response = await fetch(`/api/students?${params}`);
-      
-      if (!response.ok) {
-        throw new Error(response.status === 401 ? 'Unauthorized' : 'Failed to fetch students');
+  
+      // Add error handling for each fetch request separately
+      let studentsData = [];
+      let countsData = [];
+  
+      try {
+        const studentsResponse = await fetch(`/api/students?${params}`);
+        if (!studentsResponse.ok) {
+          throw new Error(`Students API Error: ${studentsResponse.status}`);
+        }
+        studentsData = await studentsResponse.json();
+      } catch (studentError) {
+        console.error('Students fetch error:', studentError);
+        throw new Error('Failed to fetch students data');
       }
-
-      const data = await response.json();
-      setStudents(data);
+  
+      try {
+        const countsResponse = await fetch('/api/counts');
+        if (!countsResponse.ok) {
+          throw new Error(`Counts API Error: ${countsResponse.status}`);
+        }
+        countsData = await countsResponse.json();
+      } catch (countsError) {
+        console.error('Counts fetch error:', countsError);
+        throw new Error('Failed to fetch counts data');
+      }
+  
+      // Ensure countsData is an array
+      const countsArray = Array.isArray(countsData) ? countsData : [];
+      
+      // Merge students data with their counts
+      const studentsWithCounts = studentsData.map(student => ({
+        ...student,
+        counts: countsArray.find(count => count.email === student.email) || {
+          stayback_cnt: 0,
+          meeting_cnt: 0
+        }
+      }));
+  
+      setStudents(studentsWithCounts);
     } catch (error) {
-      setError('Failed to fetch students: ' + error.message);
-      if (error.message === 'Unauthorized') {
+      console.error('Fetch error:', error);
+      setError(error.message || 'Failed to fetch data');
+      if (error.message.includes('401') || error.message.includes('Unauthorized')) {
         router.push('/api/auth/signin');
       }
+    } finally {
+      setLoading(false);
     }
   };
-
 
   useEffect(() => {
     if (status !== 'authenticated' || session?.user?.role !== 'TeamLead') return;
@@ -113,12 +150,13 @@ const RequestForm = () => {
 
     try {
       const requests = selectedStudents.map(userId => ({
-        user_id: userId,  // This should match the user_id field from your schema
+        user_id: userId,
         reason,
         description,
         from_time: new Date(`2024-01-01T${fromTime}`).toISOString(),
         to_time: new Date(`2024-01-01T${toTime}`).toISOString(),
-        request_type: requestType
+        request_type: requestType,
+        teamlead_id: session.user.id // Assuming you have the teamlead's ID in the session
       }));
 
       const response = await fetch('/api/requests', {
@@ -146,6 +184,9 @@ const RequestForm = () => {
       setDescription('');
       setFromTime('');
       setToTime('');
+      
+      // Refresh the students data to get updated counts
+      await fetchStudents();
     } catch (error) {
       setError('Failed to send request: ' + error.message);
     }
@@ -217,24 +258,34 @@ const RequestForm = () => {
               <th className="px-4 py-2 border">Email</th>
               <th className="px-4 py-2 border">Section</th>
               <th className="px-4 py-2 border">Year</th>
+              <th className="px-4 py-2 border">Stayback Count</th>
+              <th className="px-4 py-2 border">Meeting Count</th>
             </tr>
           </thead>
           <tbody>
-            {currentStudents.map((student) => (
-              <tr key={student.user_id}>
-                <td className="px-4 py-2 border text-center">
-                  <input
-                    type="checkbox"
-                    checked={selectedStudents.includes(student.user_id)}
-                    onChange={() => handleSelectStudent(student.user_id)}
-                  />
-                </td>
-                <td className="px-4 py-2 border">{student.name}</td>
-                <td className="px-4 py-2 border">{student.email}</td>
-                <td className="px-4 py-2 border">{student.sec}</td>
-                <td className="px-4 py-2 border">{student.year}</td>
+            {loading ? (
+              <tr>
+                <td colSpan="7" className="px-4 py-2 text-center">Loading...</td>
               </tr>
-            ))}
+            ) : (
+              currentStudents.map((student) => (
+                <tr key={student.user_id}>
+                  <td className="px-4 py-2 border text-center">
+                    <input
+                      type="checkbox"
+                      checked={selectedStudents.includes(student.user_id)}
+                      onChange={() => handleSelectStudent(student.user_id)}
+                    />
+                  </td>
+                  <td className="px-4 py-2 border">{student.name}</td>
+                  <td className="px-4 py-2 border">{student.email}</td>
+                  <td className="px-4 py-2 border">{student.sec}</td>
+                  <td className="px-4 py-2 border">{student.year}</td>
+                  <td className="px-4 py-2 border">{student.counts.stayback_cnt}</td>
+                  <td className="px-4 py-2 border">{student.counts.meeting_cnt}</td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>
@@ -255,8 +306,7 @@ const RequestForm = () => {
             <button
               key={i}
               onClick={() => setCurrentPage(i + 1)}
-              className={`px-3 py-1 border rounded ${currentPage === i + 1 ? 'bg-blue-500 text-white' : ''
-                }`}
+              className={`px-3 py-1 border rounded ${currentPage === i + 1 ? 'bg-blue-500 text-white' : ''}`}
             >
               {i + 1}
             </button>

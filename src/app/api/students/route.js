@@ -9,16 +9,24 @@ export async function GET(request) {
         const session = await getServerSession(authOptions);
         
         if (!session) {
-            return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+            return NextResponse.json(
+                { message: 'Unauthorized' },
+                { status: 401 }
+            );
         }
 
-        // Get search parameters
+        console.log('Fetching students with session:', {
+            userEmail: session.user.email,
+            userRole: session.user.role
+        });
+
         const searchParams = request.nextUrl.searchParams;
         const search = searchParams.get('search') || '';
         const section = searchParams.get('section');
         const year = searchParams.get('year');
 
-        // Build where clause
+        console.log('Search parameters:', { search, section, year });
+
         const where = {};
         
         if (search) {
@@ -40,7 +48,7 @@ export async function GET(request) {
             where,
             select: {
                 id: true,
-                user_id: true,  // Include user_id as it's needed for requests
+                user_id: true,
                 name: true,
                 email: true,
                 sec: true,
@@ -51,11 +59,21 @@ export async function GET(request) {
             }
         });
 
+        console.log(`Found ${students.length} students`);
         return NextResponse.json(students);
+        
     } catch (error) {
-        console.error('Error fetching students:', error);
+        console.error('Detailed error in /api/students:', {
+            message: error.message,
+            code: error.code,
+            stack: error.stack
+        });
+        
         return NextResponse.json(
-            { message: 'Failed to fetch students', error: error.message },
+            { 
+                message: 'Failed to fetch students',
+                details: error.message
+            },
             { status: 500 }
         );
     }
