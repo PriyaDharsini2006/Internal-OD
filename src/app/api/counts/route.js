@@ -1,47 +1,38 @@
+// src/app/api/counts/route.js
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
-import prisma from '@/lib/prisma';
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
 
 export async function GET() {
-    try {
-      const session = await getServerSession(authOptions);
-      if (!session) {
-        return NextResponse.json(
-          { message: 'Unauthorized' },
-          { status: 401 }
-        );
-      }
-  
-      // Add logging to debug prisma connection
-      console.log('Attempting to fetch counts...');
-      
-      const counts = await prisma.count.findMany({
-        select: {
-          email: true,
-          stayback_cnt: true,
-          meeting_cnt: true,
-        },
-      });
-      
-      console.log('Counts fetched:', counts);
-      
-      // Always return an array, even if empty
-      return NextResponse.json(counts || []);
-      
-    } catch (error) {
-      console.error('Detailed error in /api/counts:', {
-        message: error.message,
-        code: error.code,
-        stack: error.stack
-      });
-      
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session) {
       return NextResponse.json(
-        { 
-          message: 'Internal server error',
-          details: error.message
-        },
-        { status: 500 }
+        { message: 'Unauthorized' },
+        { status: 401 }
       );
     }
+
+    const counts = await prisma.count.findMany({
+      select: {
+        email: true,
+        stayback_cnt: true,
+        meeting_cnt: true,
+      },
+    });
+    
+    return NextResponse.json(counts || []);
+    
+  } catch (error) {
+    console.error('Error in /api/counts:', error);
+    return NextResponse.json(
+      { message: 'Internal server error', error: error.message },
+      { status: 500 }
+    );
+  } finally {
+    await prisma.$disconnect();
   }
+}
