@@ -1,8 +1,8 @@
 'use client'
 import React, { useState, useEffect } from 'react';
-import { XCircle, User, CalendarDays, Printer } from 'lucide-react';
+import { User, CalendarDays, Printer } from 'lucide-react';
 
-export const RejectedRequestsTable = () => {
+export const Approved = () => {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -15,12 +15,12 @@ export const RejectedRequestsTable = () => {
   });
 
   useEffect(() => {
-    fetchRejectedRequests();
+    fetchApprovedRequests();
   }, []);
 
-  const fetchRejectedRequests = async () => {
+  const fetchApprovedRequests = async () => {
     try {
-      const response = await fetch('/api/requests?status=-1');
+      const response = await fetch('/api/requests?status=1');
       if (!response.ok) throw new Error('Failed to fetch requests');
       const data = await response.json();
       setRequests(data.data);
@@ -31,6 +31,7 @@ export const RejectedRequestsTable = () => {
     }
   };
 
+  // Format time without date
   const formatTime = (dateTime) => {
     return new Date(dateTime).toLocaleTimeString([], { 
       hour: '2-digit', 
@@ -58,18 +59,17 @@ export const RejectedRequestsTable = () => {
     <div className="print-container">
       {/* Browser-only view */}
       <div className="browser-view">
-        {/* Print Button - Visible only in browser */}
-        <div className="p-4 print:hidden">
-          <button 
-            onClick={handlePrint} 
-            className="flex items-center bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors"
-          >
-            <Printer className="mr-2 w-5 h-5" /> Print Rejected Requests
-          </button>
-        </div>
-
-        {/* Table-only view for browser */}
         <div className="bg-white shadow-sm rounded-lg overflow-hidden">
+          <div className="p-4 flex justify-end print:hidden">
+            <button 
+              onClick={handlePrint} 
+              className="flex items-center bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
+            >
+              <Printer className="mr-2 w-5 h-5" />
+              Print Requests
+            </button>
+          </div>
+          
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
@@ -83,47 +83,42 @@ export const RejectedRequestsTable = () => {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Duration
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Status
-                  </th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {requests.length === 0 ? (
                   <tr>
-                    <td colSpan="4" className="px-6 py-4 text-center text-gray-500">
-                      No rejected requests found
+                    <td colSpan="3" className="px-6 py-4 text-center text-gray-500">
+                      No approved requests found
                     </td>
                   </tr>
                 ) : (
                   requests.map((request) => (
-                    <tr key={request.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap">
+                    <tr key={request.id}>
+                      <td className="px-6 py-4">
                         <div className="flex items-center">
-                          <div className="flex-shrink-0">
-                            <User className="h-8 w-8 text-gray-400" />
-                          </div>
-                          <div className="ml-4">
+                          <User className="w-5 h-5 text-gray-400 mr-3" />
+                          <div>
                             <div className="text-sm font-medium text-gray-900">
                               {request.user.name}
                             </div>
                             <div className="text-sm text-gray-500">
-                              {request.studentId}
+                              {request.user.sec} Year {request.user.year}
                             </div>
                           </div>
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <div className="text-sm text-gray-900">
-                          {request.requestType}
+                        <div className="text-sm text-gray-900 font-medium">
+                          {request.reason}
                         </div>
                         <div className="text-sm text-gray-500">
                           {request.description}
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      <td className="px-6 py-4">
                         <div className="flex items-center">
-                          <CalendarDays className="h-4 w-4 text-gray-400 mr-2" />
+                          <CalendarDays className="w-5 h-5 text-gray-400 mr-3" />
                           <div>
                             <div className="text-sm text-gray-900">
                               From: {formatTime(request.from_time)}
@@ -132,14 +127,6 @@ export const RejectedRequestsTable = () => {
                               To: {formatTime(request.to_time)}
                             </div>
                           </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center">
-                          <XCircle className="h-4 w-4 text-red-500 mr-2" />
-                          <span className="text-sm text-red-500 font-medium">
-                            Rejected
-                          </span>
                         </div>
                       </td>
                     </tr>
@@ -234,47 +221,42 @@ export const RejectedRequestsTable = () => {
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Duration
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Status
-                    </th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
                   {requests.length === 0 ? (
                     <tr>
-                      <td colSpan="4" className="px-6 py-4 text-center text-gray-500">
-                        No rejected requests found
+                      <td colSpan="3" className="px-6 py-4 text-center text-gray-500">
+                        No approved requests found
                       </td>
                     </tr>
                   ) : (
                     requests.map((request) => (
-                      <tr key={request.id} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 whitespace-nowrap">
+                      <tr key={request.id}>
+                        <td className="px-6 py-4">
                           <div className="flex items-center">
-                            <div className="flex-shrink-0">
-                              <User className="h-8 w-8 text-gray-400" />
-                            </div>
-                            <div className="ml-4">
+                            <User className="w-5 h-5 text-gray-400 mr-3" />
+                            <div>
                               <div className="text-sm font-medium text-gray-900">
                                 {request.user.name}
                               </div>
                               <div className="text-sm text-gray-500">
-                                {request.studentId}
+                                {request.user.sec} Year {request.user.year}
                               </div>
                             </div>
                           </div>
                         </td>
                         <td className="px-6 py-4">
-                          <div className="text-sm text-gray-900">
-                            {request.requestType}
+                          <div className="text-sm text-gray-900 font-medium">
+                            {request.reason}
                           </div>
                           <div className="text-sm text-gray-500">
                             {request.description}
                           </div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
+                        <td className="px-6 py-4">
                           <div className="flex items-center">
-                            <CalendarDays className="h-4 w-4 text-gray-400 mr-2" />
+                            <CalendarDays className="w-5 h-5 text-gray-400 mr-3" />
                             <div>
                               <div className="text-sm text-gray-900">
                                 From: {formatTime(request.from_time)}
@@ -283,14 +265,6 @@ export const RejectedRequestsTable = () => {
                                 To: {formatTime(request.to_time)}
                               </div>
                             </div>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="flex items-center">
-                            <XCircle className="h-4 w-4 text-red-500 mr-2" />
-                            <span className="text-sm text-red-500 font-medium">
-                              Rejected
-                            </span>
                           </div>
                         </td>
                       </tr>
@@ -338,4 +312,4 @@ export const RejectedRequestsTable = () => {
   );
 };
 
-export default RejectedRequestsTable; 
+export default Approved;

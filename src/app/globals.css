@@ -1,3 +1,19 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@media print {
+    .print-table {
+      width: 100%;
+      font-size: 12px;
+    }
+    
+    .print-table thead {
+      background-color: #f3f4f6;
+    }
+    
+    .print-table th, 
+    .print-table td {
+      border: 1px solid #e5e7eb;
+      padding: 8px;
+    }
+  }
