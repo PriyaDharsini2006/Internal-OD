@@ -173,7 +173,7 @@ export const RejectedRequestsTable = () => {
           <div className="address-from mb-6">
             <strong>From</strong>
             <div>
-              Team Hackerz'24,<br />
+              Team Hackerz24,<br />
               Department of Computer Science,<br />
               Chennai Institute of Technology,<br />
               Sarathy Nagar, Nandambakkam Post,<br />
@@ -192,7 +192,7 @@ export const RejectedRequestsTable = () => {
           </div>
 
           <div className="subject font-bold mb-6">
-            Subject: Requesting permission for OD regarding Hackerz'24 symposium.
+            Subject: Requesting permission for OD regarding Hackerz24 symposium.
           </div>
 
           <div className="content leading-relaxed mb-10">
