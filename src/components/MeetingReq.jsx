@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import MeetingLog from './MeetingLog';
 
 const MeetingRequest = () => {
   const { data: session, status } = useSession();
@@ -107,8 +108,9 @@ const MeetingRequest = () => {
   }, [status, router]);
 
   return (
-    <div className="p-6 max-w-2xl mx-auto bg-white rounded-xl shadow-md">
-      <h1 className="text-2xl font-bold mb-6 text-gray-700">Create Meeting Request</h1>
+    <>
+    <div className="p-4 sm:p-6 w-full max-w-4xl mx-auto bg-white rounded-xl shadow-md">
+      <h1 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-gray-700">Create Meeting Request</h1>
       
       {error && (
         <div className="bg-red-50 text-red-500 p-3 rounded-md mb-4">
@@ -125,7 +127,7 @@ const MeetingRequest = () => {
             value={formData.team}
             onChange={handleInputChange}
             required
-            className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-300"
+            className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-300"
           />
         </div>
 
@@ -137,22 +139,23 @@ const MeetingRequest = () => {
             value={formData.title}
             onChange={handleInputChange}
             required
-            className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-300"
+            className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-300"
+          />
+        </div>
+
+        <div>
+          <label className="block mb-2 text-sm font-medium">Date</label>
+          <input
+            type="date"
+            name="date"
+            value={formData.date}
+            onChange={handleInputChange}
+            required
+            className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-300"
           />
         </div>
 
         <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="block mb-2 text-sm font-medium">Date</label>
-            <input
-              type="date"
-              name="date"
-              value={formData.date}
-              onChange={handleInputChange}
-              required
-              className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-300"
-            />
-          </div>
           <div>
             <label className="block mb-2 text-sm font-medium">From Time</label>
             <input
@@ -161,26 +164,25 @@ const MeetingRequest = () => {
               value={formData.from_time}
               onChange={handleInputChange}
               required
-              className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-300"
+              className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-300"
+            />
+          </div>
+          <div>
+            <label className="block mb-2 text-sm font-medium">To Time</label>
+            <input
+              type="time"
+              name="to_time"
+              value={formData.to_time}
+              onChange={handleInputChange}
+              required
+              className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-300"
             />
           </div>
         </div>
 
         <div>
-          <label className="block mb-2 text-sm font-medium">To Time</label>
-          <input
-            type="time"
-            name="to_time"
-            value={formData.to_time}
-            onChange={handleInputChange}
-            required
-            className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-300"
-          />
-        </div>
-
-        <div>
           <label className="block mb-2 text-sm font-medium">Select Students</label>
-          <div className="grid grid-cols-3 gap-2 max-h-64 overflow-y-auto border rounded-md p-2">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-2 max-h-64 overflow-y-auto border rounded-md p-2">
             {students.map((student) => (
               <div 
                 key={student.email} 
@@ -195,9 +197,9 @@ const MeetingRequest = () => {
                   type="checkbox"
                   checked={formData.students.includes(student.email)}
                   onChange={() => handleStudentSelect(student.email)}
-                  className="mr-2"
+                  className="mr-2 flex-shrink-0"
                 />
-                {student.name}
+                <span className="truncate">{student.name}</span>
               </div>
             ))}
           </div>
@@ -207,7 +209,7 @@ const MeetingRequest = () => {
           <button
             type="submit"
             disabled={loading}
-            className={`w-full py-3 rounded-md text-white transition duration-200 ${
+            className={`w-full py-2 sm:py-3 rounded-md text-white transition duration-200 ${
               loading 
                 ? 'bg-gray-400 cursor-not-allowed' 
                 : 'bg-blue-500 hover:bg-blue-700'
@@ -218,6 +220,8 @@ const MeetingRequest = () => {
         </div>
       </form>
     </div>
+    <MeetingLog/>
+    </>
   );
 };
 
