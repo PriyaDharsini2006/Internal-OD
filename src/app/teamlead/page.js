@@ -6,7 +6,7 @@ import Approved from '@/components/requests/Approved';
 import ApprovedRequestsTable from "@/components/requests/ApprovedRequestsTable";
 import PendingRequestsTable from "@/components/requests/PendingRequestsTable";
 import RejectedRequestsTable from "@/components/requests/RejectedRequestsTable";
-import StaybackUsers from '@/components/requests/Stayback';
+import MeetingUpdateComponent from '@/components/MeetingReq';
 import MeetingUsers from '@/components/requests/Meeting';
 import { 
   Clock, 
@@ -45,7 +45,7 @@ const TeamLeadNavbar = ({ onNavItemClick, activeComponent }) => {
       component: 'rejected' 
     },
     {
-      name: 'Stayback Students', 
+      name: 'Meeting', 
       icon: XCircle, 
       component: 'Stayback'
     }
@@ -109,7 +109,7 @@ export default function TeamLeadPage() {
       case 'rejected':
         return <RejectedRequestsTable />;
         case 'Stayback':
-          return <StaybackUsers />;
+          return <MeetingUpdateComponent />;
         case 'Meet':
           return <MeetingUsers />;
       default:

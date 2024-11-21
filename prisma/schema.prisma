@@ -52,3 +52,13 @@ model Count {
   stayback_cnt Int      @default(0)
   meeting_cnt  Int      @default(0)
 }
+
+model Meeting {
+  id         String   @id @default(uuid())
+  team       String
+  title      String
+  from_time  DateTime
+  to_time    DateTime
+  date       DateTime
+  students   String[]
+}
