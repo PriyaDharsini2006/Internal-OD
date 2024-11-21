@@ -65,7 +65,15 @@ const ODRequestApproval = () => {
         throw new Error(errorData.error || 'Failed to process requests');
       }
   
-      // Rest of the existing code...
+      // Refresh the requests or update the UI as needed
+      // For example, you might want to refetch the requests
+      const updatedRequests = await fetch('/api/od-request?status=0');
+      const data = await updatedRequests.json();
+      setRequests(data);
+  
+      // Reset selections
+      setSelectedRequests([]);
+      setShowBatchTimingForm(false);
     } catch (err) {
       setError(err.message);
     } finally {

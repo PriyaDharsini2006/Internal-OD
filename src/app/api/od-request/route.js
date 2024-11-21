@@ -1,3 +1,4 @@
+//app/api/od-request/route.js
 import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 
@@ -22,7 +23,8 @@ export async function GET(request) {
           select: {
             name: true,
             sec: true,
-            year: true
+            year: true,
+            user_id: true
           }
         }
       },
@@ -34,15 +36,17 @@ export async function GET(request) {
     // Transform requests to include user details
     const transformedRequests = requests.map(request => ({
       od_id: request.id,
+      user_id: request.user_id,
       name: request.user.name,
       sec: request.user.sec,
       year: request.user.year,
       reason: request.reason,
-      description: request.description,  // Add this line
+      description: request.description,
       from_time: request.from_time,
       to_time: request.to_time,
       status: request.status,
-      request_type: request.request_type
+      request_type: request.request_type,
+      date: request.date
     }));
 
     return NextResponse.json(transformedRequests, { status: 200 });
