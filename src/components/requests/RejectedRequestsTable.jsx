@@ -305,35 +305,51 @@ export const RejectedRequestsTable = () => {
 
       {/* Print-specific styles */}
       <style jsx global>{`
-        @media print {
-          body {
-            margin: 0;
-            padding: 0;
-          }
-          .print-page {
-            page-break-after: always;
-            margin: 0;
-            padding: 2rem;
-          }
-          .print-page:last-child {
-            page-break-after: avoid;
-          }
-          .print:hidden {
-            display: none !important;
-          }
-          .browser-view {
-            display: none !important;
-          }
-          .print-view {
-            display: block !important;
-          }
-        }
-        @media screen {
-          .print-view {
-            display: none !important;
-          }
-        }
-      `}</style>
+  @media print {
+    /* Hide the navbar during print */
+    nav {
+      display: none !important;
+    }
+
+    /* Ensure the printed content starts from the top */
+    .print-container {
+      margin-top: 0 !important;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+    }
+
+    .print-page {
+      page-break-after: always;
+      margin: 0;
+      padding: 2rem;
+    }
+
+    .print-page:last-child {
+      page-break-after: avoid;
+    }
+
+    .print:hidden {
+      display: none !important;
+    }
+
+    .browser-view {
+      display: none !important;
+    }
+
+    .print-view {
+      display: block !important;
+    }
+  }
+
+  @media screen {
+    .print-view {
+      display: none !important;
+    }
+  }
+`}</style>
     </div>
   );
 };

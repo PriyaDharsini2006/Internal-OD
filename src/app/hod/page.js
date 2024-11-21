@@ -1,10 +1,12 @@
-
 'use client'
 import React, { useState, useEffect } from 'react';
 import { useSession, signIn, signOut } from "next-auth/react";
-import  ApproveRequest from '@/components/ApproveRequest';
+import ApproveRequest from '@/components/ApproveRequest';
+import Approved from '@/components/requests/Approved';
+import RejectedRequestsTable from '@/components/requests/RejectedRequestsTable';
+import PendingRequestsTable from '@/components/requests/PendingRequestsTable';
 import { 
-  Clock, 
+  Clock,
   CheckCircle, 
   XCircle, 
   CalendarDays, 
@@ -13,6 +15,7 @@ import {
   CheckSquare 
 } from 'lucide-react';
 
+// Existing RequestStatusBadge component remains the same
 const RequestStatusBadge = ({ status }) => {
   const badges = {
     0: { bg: 'bg-yellow-100', text: 'text-yellow-800', icon: Clock, label: 'Pending' },
@@ -31,6 +34,94 @@ const RequestStatusBadge = ({ status }) => {
   );
 };
 
+// Navigation Component
+const Navbar = ({ onNavItemClick, activeComponent }) => {
+  const navItems = [
+    { 
+      name: 'Dashboard', 
+      icon: CalendarDays, 
+      component: 'dashboard' 
+    },
+    { 
+      name: 'Pending Requests', 
+      icon: Clock, 
+      component: 'pending' 
+    },
+    { 
+      name: 'Approved Requests', 
+      icon: CheckCircle, 
+      component: 'approved' 
+    },
+    { 
+      name: 'Rejected Requests', 
+      icon: XCircle, 
+      component: 'rejected' 
+    }
+  ];
+
+  return (
+    <nav className="fixed top-0 left-0 w-full bg-white shadow-md z-10">
+      <div className="container mx-auto px-4 py-3 flex justify-between items-center">
+        <div className="flex space-x-4">
+          {navItems.map((item) => (
+            <button
+              key={item.component}
+              onClick={() => onNavItemClick(item.component)}
+              className={`flex items-center space-x-2 px-3 py-2 rounded-md ${
+                activeComponent === item.component 
+                  ? 'bg-blue-100 text-blue-800' 
+                  : 'hover:bg-gray-100 text-gray-700'
+              }`}
+            >
+              <item.icon className="w-5 h-5" />
+              <span>{item.name}</span>
+            </button>
+          ))}
+        </div>
+        <button 
+          onClick={() => signOut()} 
+          className="px-3 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
+        >
+          Sign Out
+        </button>
+      </div>
+    </nav>
+  );
+};
+
+// Main Dashboard Component with Navigation
+const Dashboard = () => {
+  const [activeComponent, setActiveComponent] = useState('dashboard');
+
+  const renderComponent = () => {
+    switch(activeComponent) {
+      case 'dashboard':
+        return <DashboardTable />;
+      case 'pending':
+        return <PendingRequestsTable />;
+      case 'approved':
+        return <Approved />;
+      case 'rejected':
+        return <RejectedRequestsTable />;
+      default:
+        return <DashboardTable />;
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <Navbar 
+        onNavItemClick={setActiveComponent} 
+        activeComponent={activeComponent} 
+      />
+      <div className="pt-20">
+        {renderComponent()}
+      </div>
+    </div>
+  );
+};
+
+// Existing DashboardTable component remains the same (from your original code)
 const DashboardTable = () => {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -107,104 +198,8 @@ const DashboardTable = () => {
   return (
     <>
     <ApproveRequest/>
-    <div className="container mx-auto px-4 py-8">
-      <div className="shadow-sm border rounded-lg overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                User
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Request Details
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Date & Time
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Status
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {requests.map((request) => (
-              <tr key={request.id}>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="flex items-center">
-                    <div className="ml-4">
-                      <div className="text-sm font-medium text-gray-900">
-                        {request.user.name}
-                      </div>
-                      <div className="text-sm text-gray-500">
-                        {request.user.email}
-                      </div>
-                    </div>
-                  </div>
-                </td>
-                <td className="px-6 py-4">
-                  <div className="text-sm text-gray-900 font-medium">
-                    {request.reason}
-                  </div>
-                  <div className="text-sm text-gray-500">
-                    {request.description}
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-900">
-                    From: {new Date(request.from_time).toLocaleString()}
-                  </div>
-                  <div className="text-sm text-gray-900">
-                    To: {new Date(request.to_time).toLocaleString()}
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <RequestStatusBadge status={request.status} />
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  {request.status === 0 && (
-                    <div className="flex space-x-2">
-                      <button
-                        onClick={() => handleStatusUpdate(request.id, -1)}
-                        className="px-3 py-1 text-sm text-white bg-red-600 rounded-md hover:bg-red-700"
-                      >
-                        Reject
-                      </button>
-                      <button
-                        onClick={() => handleStatusUpdate(request.id, 1)}
-                        className="px-3 py-1 text-sm text-white bg-green-600 rounded-md hover:bg-green-700"
-                      >
-                        Approve
-                      </button>
-                    </div>
-                  )}
-                  {request.status === 1 && (
-                    <button
-                      onClick={() => handleAttendanceUpdate(request.id, request.attendance)}
-                      className={`flex items-center px-3 py-1 rounded-md ${
-                        request.attendance
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-gray-100 text-gray-800'
-                      }`}
-                    >
-                      <CheckSquare className={`w-4 h-4 mr-2 ${
-                        request.attendance ? 'text-green-600' : 'text-gray-400'
-                      }`} />
-                      {request.attendance ? 'Attended' : 'Mark Attendance'}
-                    </button>
-                  )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-      <button onClick={() => signOut()}>Sign out</button>
-    </div>
     </>
   );
 };
 
-export default DashboardTable;
+export default Dashboard;
