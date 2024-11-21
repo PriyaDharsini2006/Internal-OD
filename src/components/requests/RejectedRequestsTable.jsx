@@ -59,12 +59,12 @@ export const RejectedRequestsTable = () => {
       {/* Browser-only view */}
       <div className="browser-view">
         {/* Print Button - Visible only in browser */}
-        <div className="p-4 print:hidden">
+        <div className="p-4 flex justify-end print:hidden">
           <button 
             onClick={handlePrint} 
             className="flex items-center bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors"
           >
-            <Printer className="mr-2 w-5 h-5" /> Print Rejected Requests
+            <Printer className="mr-2  w-5 h-5" /> Print
           </button>
         </div>
 

@@ -66,7 +66,7 @@ export const HackerzPrintView = () => {
               className="flex items-center bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
             >
               <Printer className="mr-2 w-5 h-5" />
-              Print Requests
+              Print
             </button>
           </div>
           

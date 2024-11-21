@@ -29,6 +29,7 @@ export const ApprovedRequestsTable = () => {
     }
   };
 
+
   const handleAttendanceUpdate = async (requestId, currentAttendance) => {
     try {
       const response = await fetch(`/api/requests/${requestId}`, {
@@ -52,6 +53,12 @@ export const ApprovedRequestsTable = () => {
       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
     </div>
   );
+  const formatTime = (dateTime) => {
+    return new Date(dateTime).toLocaleTimeString([], { 
+      hour: '2-digit', 
+      minute: '2-digit' 
+    });
+  };
 
   if (status === 'authenticated' && session?.user?.role !== 'TeamLead') {
     return (
@@ -122,12 +129,12 @@ export const ApprovedRequestsTable = () => {
                     <div className="flex items-center">
                       <CalendarDays className="w-5 h-5 text-gray-400 mr-3" />
                       <div>
-                        <div className="text-sm text-gray-900">
-                          From: {new Date(request.from_time).toLocaleString()}
-                        </div>
-                        <div className="text-sm text-gray-900">
-                          To: {new Date(request.to_time).toLocaleString()}
-                        </div>
+                      <div className="text-sm text-gray-900">
+                              From: {formatTime(request.from_time)}
+                            </div>
+                            <div className="text-sm text-gray-900">
+                              To: {formatTime(request.to_time)}
+                            </div>
                       </div>
                     </div>
                   </td>
