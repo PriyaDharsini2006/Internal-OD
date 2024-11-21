@@ -1,9 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  reactStrictMode: true,
   experimental: {
-    middlewareMatching: true,
-  },
-};
+    instrumentationHook: false
+  }
+}
 
-  
-export default nextConfig;
+module.exports = nextConfig
