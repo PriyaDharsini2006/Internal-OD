@@ -3,6 +3,8 @@ import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+export const dynamic = 'force-dynamic'
+export const fetchCache = 'force-no-store'
 
 const prisma = new PrismaClient();
 let isConnected = false;
