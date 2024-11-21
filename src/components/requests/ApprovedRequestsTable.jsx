@@ -143,3 +143,5 @@ export const ApprovedRequestsTable = () => {
     </div>
   );
 };
+
+export default ApprovedRequestsTable;
