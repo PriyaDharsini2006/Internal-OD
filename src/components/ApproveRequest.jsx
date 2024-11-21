@@ -1,7 +1,11 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 
 
 const ODRequestApproval = () => {
+  const { data: session, status } = useSession();
+  const router = useRouter();
   const [requests, setRequests] = useState([]);
   const [uniqueReasons, setUniqueReasons] = useState(['All']);
   const [uniqueYears, setUniqueYears] = useState(['All']);
@@ -11,6 +15,7 @@ const ODRequestApproval = () => {
   const [selectedSection, setSelectedSection] = useState('All');
   const [selectedRequests, setSelectedRequests] = useState([]);
   const [showBatchTimingForm, setShowBatchTimingForm] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [batchTimings, setBatchTimings] = useState({
     from_time: '',
     to_time: ''
@@ -105,6 +110,18 @@ const ODRequestApproval = () => {
     }
   };
 
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/api/auth/signin');
+    } else if (status === 'authenticated') {
+      if (session?.user?.role !== 'HOD') {
+        router.push('/unauthorized');
+      } else {
+        setIsLoading(false);
+      }
+    }
+  }, [status, session, router]);
+
   // Fetch requests on component mount
   useEffect(() => {
     const fetchRequests = async () => {
@@ -123,11 +140,14 @@ const ODRequestApproval = () => {
         setUniqueSections(sections);
       } catch (error) {
         console.error('Failed to fetch requests', error);
+        setError('Failed to load requests');
       }
     };
   
-    fetchRequests();
-  }, []);
+    if (!isLoading && status === 'authenticated' && session?.user?.role === 'HOD') {
+      fetchRequests();
+    }
+  }, [isLoading, status, session]);
 
   // Filtering and Searching logic
   const getFilteredRequests = useMemo(() => {

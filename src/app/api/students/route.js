@@ -15,11 +15,6 @@ export async function GET(request) {
             );
         }
 
-        console.log('Fetching students with session:', {
-            userEmail: session.user.email,
-            userRole: session.user.role
-        });
-
         const searchParams = request.nextUrl.searchParams;
         const search = searchParams.get('search') || '';
         const section = searchParams.get('section');

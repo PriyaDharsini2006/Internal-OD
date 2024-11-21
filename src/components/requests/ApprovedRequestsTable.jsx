@@ -1,15 +1,20 @@
 'use client'
 import React, { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
 import { CheckCircle, User, CalendarDays, CheckSquare } from 'lucide-react';
 
 export const ApprovedRequestsTable = () => {
+  const { data: session, status } = useSession();
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
   useEffect(() => {
-    fetchApprovedRequests();
-  }, []);
+    if (status === 'authenticated' && session?.user?.role === 'TeamLead') {
+      fetchApprovedRequests();
+    } else {
+      setLoading(false);
+    }
+  }, [status, session]);
 
   const fetchApprovedRequests = async () => {
     try {
@@ -42,12 +47,19 @@ export const ApprovedRequestsTable = () => {
       console.error('Error updating attendance:', err);
     }
   };
-
-  if (loading) return (
+  if (status === 'loading' || loading) return (
     <div className="flex justify-center items-center min-h-[400px]">
       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
     </div>
   );
+
+  if (status === 'authenticated' && session?.user?.role !== 'TeamLead') {
+    return (
+      <div className="text-red-600 text-center p-4">
+        Access Denied: Only Team Leads can view this table
+      </div>
+    );
+  }
 
   if (error) return (
     <div className="text-red-600 text-center p-4">

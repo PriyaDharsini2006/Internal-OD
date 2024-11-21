@@ -1,6 +1,7 @@
 'use client'
 import React, { useState, useEffect } from 'react';
 import { useSession, signIn, signOut } from "next-auth/react";
+import { useRouter } from 'next/navigation';
 import ApproveRequest from '@/components/ApproveRequest';
 import Approved from '@/components/requests/Approved';
 import RejectedRequestsTable from '@/components/requests/RejectedRequestsTable';
@@ -15,7 +16,6 @@ import {
   CheckSquare 
 } from 'lucide-react';
 
-// Existing RequestStatusBadge component remains the same
 const RequestStatusBadge = ({ status }) => {
   const badges = {
     0: { bg: 'bg-yellow-100', text: 'text-yellow-800', icon: Clock, label: 'Pending' },
@@ -89,14 +89,38 @@ const Navbar = ({ onNavItemClick, activeComponent }) => {
   );
 };
 
-// Main Dashboard Component with Navigation
+
+
 const Dashboard = () => {
+  const { data: session, status } = useSession();
+  const router = useRouter();
   const [activeComponent, setActiveComponent] = useState('dashboard');
+
+  // Add useEffect for authentication check
+  useEffect(() => {
+    // If not authenticated, redirect to sign in
+    if (status === 'unauthenticated') {
+      signIn();
+    }
+    // If authenticated but not HOD, redirect to unauthorized page
+    else if (status === 'authenticated' && session?.user?.role !== 'HOD') {
+      router.push('/unauthorized');
+    }
+  }, [status, session, router]);
+
+  // If not authenticated or not HOD, show loading or nothing
+  if (status === 'loading' || status === 'unauthenticated' || session?.user?.role !== 'HOD') {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+      </div>
+    );
+  }
 
   const renderComponent = () => {
     switch(activeComponent) {
       case 'dashboard':
-        return <DashboardTable />;
+        return <ApproveRequest />;
       case 'pending':
         return <PendingRequestsTable />;
       case 'approved':
@@ -104,7 +128,7 @@ const Dashboard = () => {
       case 'rejected':
         return <RejectedRequestsTable />;
       default:
-        return <DashboardTable />;
+        return <ApproveRequest />;
     }
   };
 
@@ -118,87 +142,6 @@ const Dashboard = () => {
         {renderComponent()}
       </div>
     </div>
-  );
-};
-
-// Existing DashboardTable component remains the same (from your original code)
-const DashboardTable = () => {
-  const [requests, setRequests] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    fetchRequests();
-  }, []);
-
-  const fetchRequests = async () => {
-    try {
-      const response = await fetch('/api/requests');
-      if (!response.ok) throw new Error('Failed to fetch requests');
-      const data = await response.json();
-      setRequests(data.data);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleStatusUpdate = async (requestId, newStatus) => {
-    try {
-      const response = await fetch('/api/requests', {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          id: requestId,
-          status: newStatus,
-        }),
-      });
-
-      if (!response.ok) throw new Error('Failed to update status');
-      fetchRequests(); // Refresh the table
-    } catch (err) {
-      console.error('Error updating status:', err);
-    }
-  };
-
-  const handleAttendanceUpdate = async (requestId, currentAttendance) => {
-    try {
-      const response = await fetch(`/api/requests/${requestId}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          attendance: !currentAttendance,
-        }),
-      });
-
-      if (!response.ok) throw new Error('Failed to update attendance');
-      fetchRequests(); // Refresh the table
-    } catch (err) {
-      console.error('Error updating attendance:', err);
-    }
-  };
-
-  if (loading) return (
-    <div className="flex justify-center items-center min-h-screen">
-      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
-    </div>
-  );
-
-  if (error) return (
-    <div className="text-red-600 text-center p-4">
-      Error: {error}
-    </div>
-  );
-
-  return (
-    <>
-    <ApproveRequest/>
-    </>
   );
 };
 

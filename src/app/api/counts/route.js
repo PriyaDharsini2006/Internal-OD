@@ -23,7 +23,6 @@ export async function GET() {
         meeting_cnt: true,
       },
     });
-    console.log('Counts fetched:', counts);
     
     return NextResponse.json(counts || []);
     
