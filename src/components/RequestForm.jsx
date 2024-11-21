@@ -426,7 +426,6 @@ const RequestForm = () => {
           </button>
         </div>
       </div>
-      <button onClick={() => signOut()}>Sign out</button>
     </div>
   );
 };

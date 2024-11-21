@@ -1,9 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
+
 
 const ODRequestApproval = () => {
   const [requests, setRequests] = useState([]);
   const [uniqueReasons, setUniqueReasons] = useState(['All']);
-  const [selectedReason, setSelectedReason] = useState(null);
+  const [uniqueYears, setUniqueYears] = useState(['All']);
+  const [uniqueSections, setUniqueSections] = useState(['All']);
+  const [selectedReason, setSelectedReason] = useState('All');
+  const [selectedYear, setSelectedYear] = useState('All');
+  const [selectedSection, setSelectedSection] = useState('All');
   const [selectedRequests, setSelectedRequests] = useState([]);
   const [showBatchTimingForm, setShowBatchTimingForm] = useState(false);
   const [batchTimings, setBatchTimings] = useState({
@@ -12,6 +17,9 @@ const ODRequestApproval = () => {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const recordsPerPage = 15;
 
   // Utility function to format time
   const formatTime = (time) => {
@@ -24,10 +32,23 @@ const ODRequestApproval = () => {
   // Function to handle reason selection
   const handleReasonSelect = (reason) => {
     setSelectedReason(reason);
+    setCurrentPage(1);
+  };
+
+  // Function to handle year selection
+  const handleYearSelect = (year) => {
+    setSelectedYear(year);
+    setCurrentPage(1);
+  };
+
+  // Function to handle section selection
+  const handleSectionSelect = (section) => {
+    setSelectedSection(section);
+    setCurrentPage(1);
   };
 
   // Function to toggle request selection
-  const toggleSelection = (odId) => {
+  const toggleSelection = (odId) => { 
     setSelectedRequests(prev => 
       prev.includes(odId) 
         ? prev.filter(id => id !== odId) 
@@ -35,10 +56,14 @@ const ODRequestApproval = () => {
     );
   };
 
-  // Function to get filtered requests based on selected reason
-  const getFilteredRequests = () => {
-    if (selectedReason === 'All') return requests;
-    return requests.filter(r => r.reason === selectedReason);
+  // Select all/deselect all functionality
+  const toggleSelectAll = () => {
+    const filteredRequests = getFilteredRequests();
+    setSelectedRequests(
+      selectedRequests.length === filteredRequests.length
+        ? []
+        : filteredRequests.map(r => r.od_id)
+    );
   };
 
   // Bulk action handler (approve, reject, modify)
@@ -66,7 +91,6 @@ const ODRequestApproval = () => {
       }
   
       // Refresh the requests or update the UI as needed
-      // For example, you might want to refetch the requests
       const updatedRequests = await fetch('/api/od-request?status=0');
       const data = await updatedRequests.json();
       setRequests(data);
@@ -89,16 +113,65 @@ const ODRequestApproval = () => {
         const data = await response.json();
         setRequests(data);
         
-        // Extract unique reasons dynamically
-        const reasons = ['All', ...new Set(data.map(request => request.reason))];
+        // Extract unique reasons, years, and sections dynamically
+        const reasons = ['All', ...new Set(data.map(request => request.reason).filter(Boolean))];
+        const years = ['All', ...new Set(data.map(request => request.year).filter(Boolean))];
+        const sections = ['All', ...new Set(data.map(request => request.sec).filter(Boolean))];
+        
         setUniqueReasons(reasons);
+        setUniqueYears(years);
+        setUniqueSections(sections);
       } catch (error) {
         console.error('Failed to fetch requests', error);
       }
     };
-
+  
     fetchRequests();
   }, []);
+
+  // Filtering and Searching logic
+  const getFilteredRequests = useMemo(() => {
+    return () => {
+      let filteredRequests = requests;
+
+      // Filter by reason
+      if (selectedReason !== 'All') {
+        filteredRequests = filteredRequests.filter(r => r.reason === selectedReason);
+      }
+
+     // Filter by year
+if (selectedYear !== 'All') {
+  filteredRequests = filteredRequests.filter(r => 
+    String(r.year).trim() === String(selectedYear).trim()
+  );
+}
+
+// Filter by section
+if (selectedSection !== 'All') {
+  filteredRequests = filteredRequests.filter(r => r.sec === selectedSection);
+}
+
+      // Search by name
+      if (searchQuery) {
+        const lowercaseQuery = searchQuery.toLowerCase();
+        filteredRequests = filteredRequests.filter(r => 
+          r.name.toLowerCase().includes(lowercaseQuery)
+        );
+      }
+
+      return filteredRequests;
+    };
+  }, [requests, selectedReason, selectedYear, selectedSection, searchQuery]);
+
+  // Pagination logic
+  const paginatedRequests = useMemo(() => {
+    const filteredRequests = getFilteredRequests();
+    const startIndex = (currentPage - 1) * recordsPerPage;
+    return filteredRequests.slice(startIndex, startIndex + recordsPerPage);
+  }, [getFilteredRequests, currentPage, recordsPerPage]);
+
+  // Pagination controls
+  const totalPages = Math.ceil(getFilteredRequests().length / recordsPerPage);
 
   return (
     <div className="p-6 max-w-5xl mx-auto bg-white rounded-xl shadow-md space-y-4">
@@ -112,6 +185,23 @@ const ODRequestApproval = () => {
         </div>
       )}
 
+      {/* Search and Filter Section */}
+      <div className="mb-6 flex flex-col md:flex-row gap-4">
+        <div className="flex-grow">
+          <input 
+            type="text" 
+            placeholder="Search students..."
+            value={searchQuery}
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+              setCurrentPage(1);
+            }}
+            className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-300"
+          />
+        </div>
+      </div>
+
+      {/* Reason Filters */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-6">
         {uniqueReasons.map((reason) => (
           <button
@@ -133,12 +223,45 @@ const ODRequestApproval = () => {
         ))}
       </div>
 
+      {/* Year and Section Filters */}
+      <div className="flex gap-4 mb-6">
+        <div className="flex-1">
+        <select 
+  value={selectedYear}
+  onChange={(e) => handleYearSelect(e.target.value)}
+  className="w-full px-4 py-2 border rounded-md"
+>
+  {uniqueYears.map(year => (
+    <option key={year} value={year}>{year}</option>
+  ))}
+</select>
+        </div>
+        <div className="flex-1">
+        <select 
+  value={selectedSection}
+  onChange={(e) => handleSectionSelect(e.target.value)}
+  className="w-full px-4 py-2 border rounded-md"
+>
+  {uniqueSections.map(section => (
+    <option key={section} value={section}>{section}</option>
+  ))}
+</select>
+        </div>
+      </div>
+
       {selectedReason && (
         <div className="mb-4 max-h-[50vh] overflow-y-auto">
           <table className="min-w-full bg-white border border-gray-300">
             <thead className="sticky top-0 bg-gray-200">
               <tr>
-                <th className="px-4 py-2 border">Select</th>
+                <th className="px-4 py-2 border">
+                  <input
+                    type="checkbox"
+                    checked={selectedRequests.length === getFilteredRequests().length}
+                    onChange={toggleSelectAll}
+                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded cursor-pointer"
+                  />
+                </th>
                 <th className="px-4 py-2 border">Name</th>
                 <th className="px-4 py-2 border">Section</th>
                 <th className="px-4 py-2 border">Year</th>
@@ -151,7 +274,7 @@ const ODRequestApproval = () => {
               </tr>
             </thead>
             <tbody>
-              {getFilteredRequests().map((request) => (
+              {paginatedRequests.map((request) => (
                 <tr 
                   key={request.od_id}
                   className={selectedRequests.includes(request.od_id) ? "bg-blue-50" : ""}
@@ -177,10 +300,32 @@ const ODRequestApproval = () => {
               ))}
             </tbody>
           </table>
+
+          {/* Pagination Controls */}
+          <div className="flex justify-between items-center mt-4">
+            <div>
+              Showing {(currentPage - 1) * recordsPerPage + 1} - {Math.min(currentPage * recordsPerPage, getFilteredRequests().length)} of {getFilteredRequests().length} results
+            </div>
+            <div className="flex gap-2">
+              <button 
+                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+                className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+              >
+                Previous
+              </button>
+              <button 
+                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                disabled={currentPage === totalPages}
+                className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+              >
+                Next
+              </button>
+            </div>
+          </div>
         </div>
       )}
 
-      {/* Rest of the component remains the same */}
       {selectedRequests.length > 0 && (
         <div className="flex justify-between items-center">
           <button
