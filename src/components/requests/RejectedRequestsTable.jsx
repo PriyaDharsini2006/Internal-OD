@@ -202,7 +202,7 @@ export const RejectedRequestsTable = () => {
 
           <div className="closing mb-7">
             Regards,<br />
-            Team Hackerz'24
+            Team Hackerz24
           </div>
 
           <div className="signature-section flex items-center">
