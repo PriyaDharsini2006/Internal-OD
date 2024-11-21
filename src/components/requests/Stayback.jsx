@@ -1,15 +1,26 @@
 'use client'
 import React, { useState, useEffect } from 'react';
-import { User, Activity } from 'lucide-react';
+import { User, Activity, Search } from 'lucide-react';
 
 const StaybackUsers = () => {
   const [staybackUsers, setStaybackUsers] = useState([]);
+  const [filteredUsers, setFilteredUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     fetchStaybackUsers();
   }, []);
+
+  useEffect(() => {
+    // Filter users based on search term
+    const filtered = staybackUsers.filter((user) => 
+      user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.email.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredUsers(filtered);
+  }, [searchTerm, staybackUsers]);
 
   const fetchStaybackUsers = async () => {
     try {
@@ -17,11 +28,16 @@ const StaybackUsers = () => {
       if (!response.ok) throw new Error('Failed to fetch stayback users');
       const data = await response.json();
       setStaybackUsers(data);
+      setFilteredUsers(data);
       setLoading(false);
     } catch (err) {
       setError(err.message);
       setLoading(false);
     }
+  };
+
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
   };
 
   if (loading) return (
@@ -38,11 +54,25 @@ const StaybackUsers = () => {
 
   return (
     <div className="bg-white shadow-sm rounded-lg overflow-hidden">
-      <div className="p-4 bg-gray-50 border-b flex items-center">
-        <Activity className="w-5 h-5 mr-2 text-blue-600" />
-        <h2 className="text-lg font-semibold text-gray-800">
-          Stayback Users Count
-        </h2>
+      <div className="p-4 bg-gray-50 border-b flex items-center justify-between">
+        <div className="flex items-center">
+          <Activity className="w-5 h-5 mr-2 text-blue-600" />
+          <h2 className="text-lg font-semibold text-gray-800">
+            Stayback Users Count
+          </h2>
+        </div>
+        <div className="relative w-full max-w-xs">
+          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <Search className="h-5 w-5 text-gray-400" />
+          </div>
+          <input
+            type="text"
+            placeholder="Search by name or email"
+            value={searchTerm}
+            onChange={handleSearchChange}
+            className="pl-10 pr-3 py-2 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
       </div>
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200">
@@ -60,14 +90,14 @@ const StaybackUsers = () => {
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {staybackUsers.length === 0 ? (
+            {filteredUsers.length === 0 ? (
               <tr>
                 <td colSpan="3" className="px-6 py-4 text-center text-gray-500">
                   No stayback users found
                 </td>
               </tr>
             ) : (
-              staybackUsers.map((user) => (
+              filteredUsers.map((user) => (
                 <tr key={user.email}>
                   <td className="px-6 py-4">
                     <div className="flex items-center">
