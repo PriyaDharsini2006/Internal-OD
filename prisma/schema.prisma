@@ -63,10 +63,17 @@ model Meeting {
   students  String[]
 }
 
+model StaybackDate {
+  id        String     @id @default(uuid())
+  date      DateTime   @unique
+  staybacks Stayback[]
+}
+
 model Stayback {
-  id       String   @id
-  team     String
-  title    String
-  date     DateTime
-  students String[]
+  id            String       @id @default(uuid())
+  team          String
+  title         String
+  dateGroup     StaybackDate @relation(fields: [dateGroupId], references: [id])
+  dateGroupId   String
+  students      String[]
 }

@@ -14,14 +14,34 @@ export async function POST(req) {
     }
 
     const { team, title, date, students } = await req.json();
+    
+    // First, find or create the StaybackDate for the given date
+    const dateStart = new Date(date);
+    dateStart.setHours(0, 0, 0, 0);
+    
+    const dateEnd = new Date(date);
+    dateEnd.setHours(23, 59, 59, 999);
 
-    // Create stayback
+    const staybackDate = await prisma.staybackDate.upsert({
+      where: {
+        date: dateStart
+      },
+      update: {},
+      create: {
+        date: dateStart
+      }
+    });
+
+    // Create stayback with the dateGroup relation
     const stayback = await prisma.stayback.create({
       data: {
         team,
         title,
-        date,
+        dateGroupId: staybackDate.id,
         students
+      },
+      include: {
+        dateGroup: true
       }
     });
 
@@ -57,11 +77,32 @@ export async function GET(req) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const staybacks = await prisma.stayback.findMany();
-    return NextResponse.json(staybacks);
+    const staybacks = await prisma.stayback.findMany({
+      include: {
+        dateGroup: true
+      },
+      orderBy: {
+        dateGroup: {
+          date: 'desc'
+        }
+      }
+    });
+
+    // Group staybacks by date
+    const groupedStaybacks = staybacks.reduce((acc, stayback) => {
+      const date = stayback.dateGroup.date.toISOString().split('T')[0];
+      if (!acc[date]) {
+        acc[date] = [];
+      }
+      acc[date].push(stayback);
+      return acc;
+    }, {});
+
+    return NextResponse.json(groupedStaybacks);
   } catch (error) {
+    console.error('Stayback fetch error:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch staybacks' }, 
+      { error: 'Failed to fetch staybacks', details: error.message }, 
       { status: 500 }
     );
   } finally {
