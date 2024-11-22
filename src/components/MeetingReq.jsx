@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { Search } from 'lucide-react';
+import { Search,X, Plus } from 'lucide-react';
 import MeetingLog from './MeetingLog';
 
 const MeetingRequest = () => {
   const { data: session, status } = useSession();
   const router = useRouter();
   
+   
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({
     team: '',
     title: '',
@@ -139,166 +141,217 @@ const MeetingRequest = () => {
     );
   });
 
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    // Reset form and error state when closing
+    setFormData({
+      team: '',
+      title: '',
+      from_time: '',
+      to_time: '',
+      date: '',
+      students: []
+    });
+    setError(null);
+    setLocalSearch('');
+  };
+
   return (
-    <>
-    <div className="p-4 sm:p-6 w-full max-w-4xl mx-auto bg-white rounded-xl shadow-md">
-      <h1 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-gray-700">Create Meeting</h1>
-      
-      {error && (
-        <div className="bg-red-50 text-red-500 p-3 rounded-md mb-4">
-          {error}
+    <div className="relative">
+      {/* Create Meeting Button */}
+      <div className="flex justify-end mb-4 mt-[30px]">
+        <button
+          onClick={() => setIsModalOpen(true)}
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center"
+        >
+          <Plus className="mr-2" size={20} />
+          Create Meeting
+        </button>
+      </div>
+  
+      {/* Modal Overlay */}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-40 flex justify-center items-center">
+          <div className="bg-white rounded-xl shadow-md w-full max-w-4xl max-h-[90vh] overflow-y-auto relative p-6">
+            {/* Close Button */}
+            <button
+              onClick={handleCloseModal}
+              className="absolute top-4 right-4 text-gray-600 hover:text-gray-900"
+            >
+              <X size={24} />
+            </button>
+  
+            <h1 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-gray-700">
+              Create Meeting
+            </h1>
+  
+            {error && (
+              <div className="bg-red-50 text-red-500 p-3 rounded-md mb-4">
+                {error}
+              </div>
+            )}
+  
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {/* Other form fields remain the same */}
+              <div>
+                <label className="block mb-2 text-sm font-medium">Team</label>
+                <input
+                  type="text"
+                  name="team"
+                  value={formData.team}
+                  onChange={handleInputChange}
+                  required
+                  className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-300"
+                />
+              </div>
+  
+              <div>
+                <label className="block mb-2 text-sm font-medium">Title</label>
+                <input
+                  type="text"
+                  name="title"
+                  value={formData.title}
+                  onChange={handleInputChange}
+                  required
+                  className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-300"
+                />
+              </div>
+  
+              <div>
+                <label className="block mb-2 text-sm font-medium">Date</label>
+                <input
+                  type="date"
+                  name="date"
+                  value={formData.date}
+                  onChange={handleInputChange}
+                  required
+                  className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-300"
+                />
+              </div>
+  
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block mb-2 text-sm font-medium">From Time</label>
+                  <input
+                    type="time"
+                    name="from_time"
+                    value={formData.from_time}
+                    onChange={handleInputChange}
+                    required
+                    className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-300"
+                  />
+                </div>
+                <div>
+                  <label className="block mb-2 text-sm font-medium">To Time</label>
+                  <input
+                    type="time"
+                    name="to_time"
+                    value={formData.to_time}
+                    onChange={handleInputChange}
+                    required
+                    className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-300"
+                  />
+                </div>
+              </div>
+  
+              <div>
+                <label className="block mb-2 text-sm font-medium">Select Students</label>
+  
+                {/* Search bar */}
+                <div className="mb-4 relative">
+                  <Search
+                    className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                    size={20}
+                  />
+                  <input
+                    type="text"
+                    placeholder="Search students..."
+                    value={localSearch}
+                    onChange={(e) => setLocalSearch(e.target.value)}
+                    className="w-full pl-10 pr-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-300"
+                  />
+                </div>
+  
+                {/* Student selection table */}
+                <div className="max-h-96 overflow-y-auto border rounded-md">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50 sticky top-0">
+                      <tr>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Select
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Name
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Section
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Year
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {filteredStudents.map((student) => (
+                        <tr
+                          key={student.email}
+                          className={`hover:bg-gray-50 cursor-pointer ${
+                            formData.students.includes(student.email) ? 'bg-blue-50' : ''
+                          }`}
+                          onClick={() => handleStudentSelect(student.email)}
+                        >
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <input
+                              type="checkbox"
+                              checked={formData.students.includes(student.email)}
+                              onChange={() => handleStudentSelect(student.email)}
+                              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                            />
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="text-sm font-medium text-gray-900">
+                              {student.name}
+                            </div>
+                            <div className="text-sm text-gray-500">{student.email}</div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {student.sec}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {student.year}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+  
+              <div>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className={`w-full py-2 sm:py-3 rounded-md text-white transition duration-200 ${
+                    loading
+                      ? 'bg-gray-400 cursor-not-allowed'
+                      : 'bg-blue-500 hover:bg-blue-700'
+                  }`}
+                >
+                  {loading ? 'Submitting...' : 'Create Meeting'}
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
-
-      <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Other form fields remain the same */}
-        <div>
-          <label className="block mb-2 text-sm font-medium">Team</label>
-          <input
-            type="text"
-            name="team"
-            value={formData.team}
-            onChange={handleInputChange}
-            required
-            className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-300"
-          />
-        </div>
-
-        <div>
-          <label className="block mb-2 text-sm font-medium">Title</label>
-          <input
-            type="text"
-            name="title"
-            value={formData.title}
-            onChange={handleInputChange}
-            required
-            className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-300"
-          />
-        </div>
-
-        <div>
-          <label className="block mb-2 text-sm font-medium">Date</label>
-          <input
-            type="date"
-            name="date"
-            value={formData.date}
-            onChange={handleInputChange}
-            required
-            className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-300"
-          />
-        </div>
-
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="block mb-2 text-sm font-medium">From Time</label>
-            <input
-              type="time"
-              name="from_time"
-              value={formData.from_time}
-              onChange={handleInputChange}
-              required
-              className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-300"
-            />
-          </div>
-          <div>
-            <label className="block mb-2 text-sm font-medium">To Time</label>
-            <input
-              type="time"
-              name="to_time"
-              value={formData.to_time}
-              onChange={handleInputChange}
-              required
-              className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-300"
-            />
-          </div>
-        </div>
-
-        <div>
-          <label className="block mb-2 text-sm font-medium">Select Students</label>
-          
-          {/* Search bar */}
-          <div className="mb-4 relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-            <input
-              type="text"
-              placeholder="Search students..."
-              value={localSearch}
-              onChange={(e) => setLocalSearch(e.target.value)}
-              className="w-full pl-10 pr-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-300"
-            />
-          </div>
-
-          {/* Student selection table */}
-          <div className="max-h-96 overflow-y-auto border rounded-md">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50 sticky top-0">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Select
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Name
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Section
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Year
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {filteredStudents.map((student) => (
-                  <tr 
-                    key={student.email}
-                    className={`hover:bg-gray-50 cursor-pointer ${
-                      formData.students.includes(student.email) ? 'bg-blue-50' : ''
-                    }`}
-                    onClick={() => handleStudentSelect(student.email)}
-                  >
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <input
-                        type="checkbox"
-                        checked={formData.students.includes(student.email)}
-                        onChange={() => handleStudentSelect(student.email)}
-                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                      />
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">{student.name}</div>
-                      <div className="text-sm text-gray-500">{student.email}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {student.sec}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {student.year}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <div>
-          <button
-            type="submit"
-            disabled={loading}
-            className={`w-full py-2 sm:py-3 rounded-md text-white transition duration-200 ${
-              loading 
-                ? 'bg-gray-400 cursor-not-allowed' 
-                : 'bg-blue-500 hover:bg-blue-700'
-            }`}
-          >
-            {loading ? 'Submitting...' : 'Create Meeting'}
-          </button>
-        </div>
-      </form>
+  
+      <MeetingLog
+        meetings={meetings}
+        setMeetings={setMeetings}
+        fetchMeetings={fetchMeetings}
+      />
     </div>
-    <MeetingLog meetings={meetings} setMeetings={setMeetings} fetchMeetings={fetchMeetings} />
-    </>
   );
-};
+};  
 
 export default MeetingRequest;
