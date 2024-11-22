@@ -7,7 +7,7 @@ import ApprovedRequestsTable from "@/components/requests/ApprovedRequestsTable";
 import PendingRequestsTable from "@/components/requests/PendingRequestsTable";
 import RejectedRequestsTable from "@/components/requests/RejectedRequestsTable";
 import MeetingUpdateComponent from '@/components/MeetingReq';
-import MeetingUsers from '@/components/requests/Meeting';
+import StaybackRequest from '@/components/StaybackReq';
 import {
   Clock,
   CheckCircle,
@@ -168,7 +168,7 @@ export default function TeamLeadPage() {
         case 'Meeting':
           return <MeetingUpdateComponent />;
         case 'Stayback':
-          return <MeetingUsers />;
+          return <StaybackRequest />;
       default:
         return <RequestForm />;
     }

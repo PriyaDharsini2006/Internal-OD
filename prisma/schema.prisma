@@ -13,52 +13,60 @@ model HOD {
 }
 
 model TeamLead {
-  id    Int    @id @default(autoincrement())
-  email String @unique
+  id       Int         @id @default(autoincrement())
+  email    String      @unique
   requests ODRequest[] @relation("RequestedBy")
 }
 
 model User {
-  id       Int        @id @default(autoincrement())
-  user_id  String     @unique
+  id       Int         @id @default(autoincrement())
+  user_id  String      @unique
   name     String
-  email    String     @unique
+  email    String      @unique
   sec      String
   year     Int
+  counts   Count?
   requests ODRequest[] @relation("RequestFor")
-  counts   Count?     // Relation to Count model
 }
 
 model ODRequest {
   id           String   @id @default(uuid())
   date         DateTime @default(now())
-  user         User     @relation("RequestFor", fields: [user_id], references: [user_id])
   user_id      String
   reason       String
   description  String
-  request_by   TeamLead @relation("RequestedBy", fields: [teamlead_id], references: [id])
   teamlead_id  Int
-  status       Int      @default(0)  // 0: pending, 1: approved, -1: rejected
+  status       Int      @default(0)
   from_time    DateTime
   to_time      DateTime
   request_type String
   attendance   Boolean  @default(false)
+  request_by   TeamLead @relation("RequestedBy", fields: [teamlead_id], references: [id])
+  user         User     @relation("RequestFor", fields: [user_id], references: [user_id])
 }
 
 model Count {
-  id           Int      @id @default(autoincrement())
-  user         User     @relation(fields: [email], references: [email])
-  email        String   @unique
-  stayback_cnt Int      @default(0)
-  meeting_cnt  Int      @default(0)
+  id           Int    @id @default(autoincrement())
+  email        String @unique
+  stayback_cnt Int    @default(0)
+  meeting_cnt  Int    @default(0)
+  user         User   @relation(fields: [email], references: [email])
 }
 
 model Meeting {
-  id         String   @id @default(uuid())
-  team       String
-  title      String
-  from_time  DateTime
-  to_time    DateTime
-  date       DateTime
-  students   String[]
+  id        String   @id @default(uuid())
+  team      String
+  title     String
+  from_time DateTime
+  to_time   DateTime
+  date      DateTime
+  students  String[]
+}
+
+model Stayback {
+  id       String   @id
+  team     String
+  title    String
+  date     DateTime
+  students String[]
 }
