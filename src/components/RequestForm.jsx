@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 const RequestForm = () => {
   const [students, setStudents] = useState([]);
   const [selectedStudents, setSelectedStudents] = useState([]);
-  const [requestType, setRequestType] = useState('OD Request');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedSection, setSelectedSection] = useState('all');
   const [selectedYear, setSelectedYear] = useState('all');
@@ -24,7 +23,6 @@ const RequestForm = () => {
   const yearsOptions = [2027, 2026, 2025, 2024];
   const [loading, setLoading] = useState(true);
 
-
   useEffect(() => {
     if (status === 'unauthenticated') {
       router.push('/api/auth/signin');
@@ -42,7 +40,7 @@ const RequestForm = () => {
   const fetchStudents = async () => {
     try {
       setLoading(true);
-      setError(''); // Clear previous errors
+      setError('');
       
       const params = new URLSearchParams({
         search: searchTerm,
@@ -50,7 +48,6 @@ const RequestForm = () => {
         year: selectedYear
       });
   
-      // Add error handling for each fetch request separately
       let studentsData = [];
       let countsData = [];
   
@@ -73,19 +70,15 @@ const RequestForm = () => {
         countsData = await countsResponse.json();
       } catch (countsError) {
         console.error('Counts fetch error:', countsError);
-        // Don't throw error here, just use empty counts
         countsData = [];
       }
   
-      // Ensure countsData is an array
       const countsArray = Array.isArray(countsData) ? countsData : [];
       
-      // Create a map for faster lookups
       const countsMap = new Map(
         countsArray.map(count => [count.email, count])
       );
       
-      // Merge students data with their counts, using default values if not found
       const studentsWithCounts = studentsData.map(student => {
         const studentCounts = countsMap.get(student.email);
         return {
@@ -93,7 +86,7 @@ const RequestForm = () => {
           counts: studentCounts || {
             stayback_cnt: 0,
             meeting_cnt: 0,
-            email: student.email // Include email for consistency
+            email: student.email
           }
         };
       });
@@ -165,8 +158,8 @@ const RequestForm = () => {
         description,
         from_time: new Date(`2024-01-01T${fromTime}`).toISOString(),
         to_time: new Date(`2024-01-01T${toTime}`).toISOString(),
-        request_type: requestType,
-        teamlead_id: session.user.id // Assuming you have the teamlead's ID in the session
+        request_type: 'OD Request',
+        teamlead_id: session.user.id
       }));
 
       const response = await fetch('/api/requests', {
@@ -188,28 +181,25 @@ const RequestForm = () => {
       }
 
       setSuccessMessage('Requests sent successfully');
-      // Reset form
       setSelectedStudents([]);
       setReason('');
       setDescription('');
       setFromTime('');
       setToTime('');
       
-      // Refresh the students data to get updated counts
       await fetchStudents();
     } catch (error) {
       setError('Failed to send request: ' + error.message);
     }
   };
 
-  
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-5xl mx-auto bg-white rounded-2xl shadow-xl">
         {/* Header Section */}
         <div className="border-b border-gray-200 bg-gray-50 rounded-t-2xl px-6 py-5">
           <h1 className="text-2xl md:text-3xl font-bold text-black">
-            Send Requests
+            Send OD Request
           </h1>
         </div>
 
@@ -225,30 +215,6 @@ const RequestForm = () => {
               <p className="text-green-700">{successMessage}</p>
             </div>
           )}
-
-          {/* Request Type Selection */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {["OD Request", "Stayback Request", "Meeting Request"].map((type) => (
-              <label
-                key={type}
-                className={`flex items-center p-4 border rounded-lg cursor-pointer transition-colors ${
-                  requestType === type
-                    ? 'bg-blue-50 border-blue-500'
-                    : 'hover:bg-gray-50'
-                }`}
-              >
-                <input
-                  type="radio"
-                  name="requestType"
-                  value={type}
-                  checked={requestType === type}
-                  onChange={() => setRequestType(type)}
-                  className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
-                />
-                <span className="ml-3 font-medium text-black-700">{type}</span>
-              </label>
-            ))}
-          </div>
 
           {/* Search and Filter Section */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -387,7 +353,7 @@ const RequestForm = () => {
               />
             </div>
             <div>
-              <textarea
+            <textarea
                 placeholder="Description"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
