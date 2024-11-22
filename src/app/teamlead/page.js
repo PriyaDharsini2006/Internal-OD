@@ -51,12 +51,12 @@ const TeamLeadNavbar = ({ onNavItemClick, activeComponent }) => {
     {
       name: 'Meeting', 
       icon: XCircle, 
-      component: 'Stayback'
+      component: 'Meeting'
     },
     {
-      name: 'Meeting Students',
+      name: 'Stayback',
       icon: XCircle,
-      component: 'Meet'
+      component: 'Stayback'
     }
   ];
 
@@ -165,9 +165,9 @@ export default function TeamLeadPage() {
         return <Approved />;
       case 'rejected':
         return <RejectedRequestsTable />;
-        case 'Stayback':
+        case 'Meeting':
           return <MeetingUpdateComponent />;
-        case 'Meet':
+        case 'Stayback':
           return <MeetingUsers />;
       default:
         return <RequestForm />;

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import { Search } from 'lucide-react';
 import MeetingLog from './MeetingLog';
 
 const MeetingRequest = () => {
@@ -19,25 +20,49 @@ const MeetingRequest = () => {
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [meetings, setMeetings] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedSection, setSelectedSection] = useState('all');
+  const [selectedYear, setSelectedYear] = useState('all');
+  const [localSearch, setLocalSearch] = useState('');
 
-  // Fetch students when component mounts
+  const fetchMeetings = async () => {
+    try {
+      const response = await fetch('/api/meetings');
+      const data = await response.json();
+      setMeetings(data.map(meeting => ({
+        ...meeting,
+        from_time: new Date(meeting.from_time),
+        to_time: new Date(meeting.to_time),
+        date: new Date(meeting.date)
+      })));
+    } catch (error) {
+      console.error('Failed to fetch meetings', error);
+    }
+  };
+
   useEffect(() => {
     const fetchStudents = async () => {
       try {
-        const response = await fetch('/api/students');
+        const params = new URLSearchParams();
+        if (searchTerm) params.append('search', searchTerm);
+        if (selectedSection !== 'all') params.append('section', selectedSection);
+        if (selectedYear !== 'all') params.append('year', selectedYear);
+  
+        const response = await fetch(`/api/students?${params.toString()}`);
         const data = await response.json();
         setStudents(data);
       } catch (err) {
         setError('Failed to fetch students');
       }
     };
-
+  
     if (status === 'authenticated') {
       fetchStudents();
+      fetchMeetings();
     }
-  }, [status]);
+  }, [status, searchTerm, selectedSection, selectedYear]);
 
-  // Handle input changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -46,7 +71,6 @@ const MeetingRequest = () => {
     }));
   };
 
-  // Handle student selection
   const handleStudentSelect = (email) => {
     setFormData(prev => ({
       ...prev,
@@ -56,12 +80,11 @@ const MeetingRequest = () => {
     }));
   };
 
-  // Submit meeting request
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
-
+    
     try {
       const response = await fetch('/api/meetings', {
         method: 'POST',
@@ -81,7 +104,6 @@ const MeetingRequest = () => {
         throw new Error(errorData.error || 'Failed to submit meeting request');
       }
 
-      // Reset form after successful submission
       setFormData({
         team: '',
         title: '',
@@ -91,7 +113,7 @@ const MeetingRequest = () => {
         students: []
       });
 
-      // Optional: Show success message or redirect
+      await fetchMeetings();
       alert('Meeting request submitted successfully');
     } catch (err) {
       setError(err.message);
@@ -100,17 +122,27 @@ const MeetingRequest = () => {
     }
   };
 
-  // Redirect if not authenticated
   useEffect(() => {
     if (status === 'unauthenticated') {
       router.push('/api/auth/signin');
     }
   }, [status, router]);
 
+  // Filter students based on local search
+  const filteredStudents = students.filter(student => {
+    const searchLower = localSearch.toLowerCase();
+    return (
+      student.name.toLowerCase().includes(searchLower) ||
+      student.email.toLowerCase().includes(searchLower) ||
+      student.sec.toLowerCase().includes(searchLower) ||
+      student.year.toString().includes(searchLower)
+    );
+  });
+
   return (
     <>
     <div className="p-4 sm:p-6 w-full max-w-4xl mx-auto bg-white rounded-xl shadow-md">
-      <h1 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-gray-700">Create Meeting Request</h1>
+      <h1 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-gray-700">Create Meeting</h1>
       
       {error && (
         <div className="bg-red-50 text-red-500 p-3 rounded-md mb-4">
@@ -119,6 +151,7 @@ const MeetingRequest = () => {
       )}
 
       <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Other form fields remain the same */}
         <div>
           <label className="block mb-2 text-sm font-medium">Team</label>
           <input
@@ -182,26 +215,69 @@ const MeetingRequest = () => {
 
         <div>
           <label className="block mb-2 text-sm font-medium">Select Students</label>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-2 max-h-64 overflow-y-auto border rounded-md p-2">
-            {students.map((student) => (
-              <div 
-                key={student.email} 
-                className={`flex items-center p-2 rounded-md cursor-pointer ${
-                  formData.students.includes(student.email) 
-                    ? 'bg-blue-100 ring-2 ring-blue-300' 
-                    : 'hover:bg-gray-100'
-                }`}
-                onClick={() => handleStudentSelect(student.email)}
-              >
-                <input
-                  type="checkbox"
-                  checked={formData.students.includes(student.email)}
-                  onChange={() => handleStudentSelect(student.email)}
-                  className="mr-2 flex-shrink-0"
-                />
-                <span className="truncate">{student.name}</span>
-              </div>
-            ))}
+          
+          {/* Search bar */}
+          <div className="mb-4 relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+            <input
+              type="text"
+              placeholder="Search students..."
+              value={localSearch}
+              onChange={(e) => setLocalSearch(e.target.value)}
+              className="w-full pl-10 pr-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-300"
+            />
+          </div>
+
+          {/* Student selection table */}
+          <div className="max-h-96 overflow-y-auto border rounded-md">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50 sticky top-0">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Select
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Name
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Section
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Year
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {filteredStudents.map((student) => (
+                  <tr 
+                    key={student.email}
+                    className={`hover:bg-gray-50 cursor-pointer ${
+                      formData.students.includes(student.email) ? 'bg-blue-50' : ''
+                    }`}
+                    onClick={() => handleStudentSelect(student.email)}
+                  >
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <input
+                        type="checkbox"
+                        checked={formData.students.includes(student.email)}
+                        onChange={() => handleStudentSelect(student.email)}
+                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                      />
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm font-medium text-gray-900">{student.name}</div>
+                      <div className="text-sm text-gray-500">{student.email}</div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {student.sec}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {student.year}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
 
@@ -215,12 +291,12 @@ const MeetingRequest = () => {
                 : 'bg-blue-500 hover:bg-blue-700'
             }`}
           >
-            {loading ? 'Submitting...' : 'Create Meeting Request'}
+            {loading ? 'Submitting...' : 'Create Meeting'}
           </button>
         </div>
       </form>
     </div>
-    <MeetingLog/>
+    <MeetingLog meetings={meetings} setMeetings={setMeetings} fetchMeetings={fetchMeetings} />
     </>
   );
 };
