@@ -16,13 +16,71 @@ const RequestForm = () => {
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const { data: session, status } = useSession();
+  const [timeError, setTimeError] = useState('');
   const router = useRouter();
   
   const ITEMS_PER_PAGE = 10;
   const sectionsOptions = ['A', 'B', 'C', 'D'];
   const yearsOptions = [2027, 2026, 2025, 2024];
   const [loading, setLoading] = useState(true);
-  const teamOptions = [
+
+
+  const convertTo12Hour = (time24) => {
+    if (!time24) return '';
+    const [hours, minutes] = time24.split(':');
+    const hour = parseInt(hours);
+    const ampm = hour >= 12 ? 'PM' : 'AM';
+    const hour12 = hour % 12 || 12;
+    return `${hour12}:${minutes} ${ampm}`;
+  };
+  const convertTo24Hour = (time12) => {
+    if (!time12) return '';
+    const [time, modifier] = time12.split(' ');
+    let [hours, minutes] = time.split(':');
+    hours = parseInt(hours);
+    
+    if (modifier === 'PM' && hours < 12) hours += 12;
+    if (modifier === 'AM' && hours === 12) hours = 0;
+    
+    return `${hours.toString().padStart(2, '0')}:${minutes}`;
+  };
+  const validateTime = (startTime, endTime) => {
+    if (!startTime || !endTime) return null;
+    
+    const workingHoursStart = 8; // 8 AM
+    const workingHoursEnd = 17; // 5 PM
+    
+    const [startHour] = startTime.split(':').map(Number);
+    const [endHour] = endTime.split(':').map(Number);
+    
+    if (startHour < workingHoursStart || startHour > workingHoursEnd ||
+        endHour < workingHoursStart || endHour > workingHoursEnd) {
+      return 'Please select times between 8:00 AM and 5:00 PM';
+    }
+    
+    if (startHour >= endHour) {
+      return 'End time must be after start time';
+    }
+    
+    return null;
+  };
+
+  // Modified time change handlers
+  const handleFromTimeChange = (e) => {
+    const time24 = e.target.value;
+    setFromTime(time24);
+    const timeValidation = validateTime(time24, toTime);
+    setTimeError(timeValidation || '');
+  };
+
+  const handleToTimeChange = (e) => {
+    const time24 = e.target.value;
+    setToTime(time24);
+    const timeValidation = validateTime(fromTime, time24);
+    setTimeError(timeValidation || '');
+  };
+
+    const teamOptions = [
     'Event Coordinator',
     'Committee Coordinator',
     'Content',
@@ -154,6 +212,8 @@ const RequestForm = () => {
     );
   };
 
+
+
   const validateForm = () => {
     if (selectedStudents.length === 0) return 'Please select at least one student';
     if (!reason) return 'Please enter a reason';
@@ -161,6 +221,8 @@ const RequestForm = () => {
     if (!fromTime) return 'Please select start time';
     if (!toTime) return 'Please select end time';
     if (fromTime >= toTime) return 'End time must be after start time';
+    const timeValidation = validateTime(fromTime, toTime);
+    if (timeValidation) return timeValidation;
     return null;
   };
 
@@ -397,6 +459,45 @@ const RequestForm = () => {
               />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div>
+      <label className="block text-sm font-medium text-gray-700 mb-1">
+        Start Time
+      </label>
+      <input
+        type="time"
+        value={fromTime}
+        onChange={handleFromTimeChange}
+        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+      />
+      {fromTime && (
+        <span className="text-sm text-gray-500 mt-1 block">
+          {convertTo12Hour(fromTime)}
+        </span>
+      )}
+    </div>
+    <div>
+      <label className="block text-sm font-medium text-gray-700 mb-1">
+        End Time
+      </label>
+      <input
+        type="time"
+        value={toTime}
+        onChange={handleToTimeChange}
+        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+      />
+      {toTime && (
+        <span className="text-sm text-gray-500 mt-1 block">
+          {convertTo12Hour(toTime)}
+        </span>
+      )}
+    </div>
+  </div>
+  {timeError && (
+    <div className="mt-2 text-sm text-red-600">
+      {timeError}
+    </div>
+  )}
+            {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <input
                   type="time"
@@ -413,7 +514,7 @@ const RequestForm = () => {
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 />
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
 
