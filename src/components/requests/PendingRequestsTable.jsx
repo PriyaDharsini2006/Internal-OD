@@ -2,11 +2,15 @@
 'use client'
 import React, { useState, useEffect } from 'react';
 import { User, CalendarDays, Printer } from 'lucide-react';
-
+import {
+  Copyright
+} from 'lucide-react'
 export const HackerzPrintView = () => {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+
 
   // Get current date
   const currentDate = new Date().toLocaleDateString('en-GB', {
@@ -335,6 +339,7 @@ export const HackerzPrintView = () => {
           }
         }
       `}</style>
+      
     </div>
   );
 };

@@ -160,7 +160,8 @@ import {
   XCircle, 
   CalendarDays, 
   Menu,
-  X
+  X,
+  Copyright
 } from 'lucide-react';
 
 const RequestStatusBadge = ({ status }) => {
@@ -337,6 +338,16 @@ const Dashboard = () => {
       <div className="pt-16 md:pt-20 px-4 md:px-6 lg:px-8">
         {renderComponent()}
       </div>
+      <footer className="bg-white shadow-md mt-auto">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center justify-center space-x-2 text-gray-600">
+            <Copyright className="w-4 h-4" />
+            <p className="text-sm">
+              {new Date().getFullYear()} Copyrights@Hackerz.
+            </p>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 };

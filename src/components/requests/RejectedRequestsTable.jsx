@@ -1,6 +1,6 @@
 'use client'
 import React, { useState, useEffect } from 'react';
-import { XCircle, User, CalendarDays, Printer, Menu, X, RefreshCw } from 'lucide-react';
+import { XCircle, User, CalendarDays, Printer, Menu, X,Copyright, RefreshCw } from 'lucide-react';
 
 export const RejectedRequestsTable = () => {
   const [requests, setRequests] = useState([]);
@@ -331,6 +331,7 @@ export const RejectedRequestsTable = () => {
           }
         }
       `}</style>
+      
     </div>
   );
 };
