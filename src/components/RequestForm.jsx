@@ -22,6 +22,26 @@ const RequestForm = () => {
   const sectionsOptions = ['A', 'B', 'C', 'D'];
   const yearsOptions = [2027, 2026, 2025, 2024];
   const [loading, setLoading] = useState(true);
+  const teamOptions = [
+    'Event Coordinator',
+    'Committee Coordinator',
+    'Content',
+    'Development',
+    'Design',
+    'Documentation',
+    'Helpdesk and Registration',
+    'Hosting',
+    'Logistics & Requirements',
+    'Marketing',
+    'Non-technical Events',
+    'Social Media',
+    'Technical',
+    'Workshops',
+    'Sponsorship',
+    'Media',
+    'Decoration'
+  ];
+
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -353,15 +373,20 @@ const RequestForm = () => {
 
           {/* Form Fields */}
           <div className="space-y-4">
-            <div>
-              <textarea
-                placeholder="Reason"
-                value={reason}
-                onChange={(e) => setReason(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
-                rows="3"
-              />
-            </div>
+          <div>
+      <select
+        value={reason}
+        onChange={(e) => setReason(e.target.value)}
+        className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+      >
+        <option value="">Select Team</option>
+        {teamOptions.map((team) => (
+          <option key={team} value={team}>
+            {team}
+          </option>
+        ))}
+      </select>
+    </div>
             <div>
             <textarea
                 placeholder="Description"
