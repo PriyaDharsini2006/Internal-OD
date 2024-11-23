@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { Search, Calendar } from 'lucide-react';
+import { Search, X, Plus, Calendar } from 'lucide-react';
 import StaybackLog from './StaybackLog';
 
 const StaybackRequest = () => {
   const { data: session, status } = useSession();
   const router = useRouter();
   
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({
     team: '',
     title: '',
@@ -160,10 +161,46 @@ const StaybackRequest = () => {
     );
   });
 
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    // Reset form and error state when closing
+    setFormData({
+      team: '',
+      title: '',
+      date: '',
+      students: []
+    });
+    setError(null);
+    setLocalSearch('');
+  };
+
+
   return (
-    <div className="space-y-6 p-4 sm:p-6">
-      <div className="w-full max-w-4xl mx-auto bg-white rounded-xl shadow-md">
-        <div className='flex flex-row'>
+    <div className="space-y-6 p-4 sm:p-6 relative">
+      {/* Create Stayback Button */}
+      <div className="flex justify-end mb-4">
+        <button 
+          onClick={() => setIsModalOpen(true)}
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center"
+        >
+          <Plus className="mr-2" size={20} />
+          Create Stayback
+        </button>
+      </div>
+
+      {/* Modal Overlay */}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-40 flex justify-center items-center">
+          <div className="bg-white rounded-xl shadow-md w-full max-w-4xl max-h-[90vh] overflow-y-auto relative p-6">
+            {/* Close Button */}
+            <button 
+              onClick={handleCloseModal}
+              className="absolute top-4 right-4 text-gray-600 hover:text-gray-900"
+            >
+              <X size={24} />
+            </button>
+
+            <div className='flex flex-row'>
       <div className="flex-shrink-0 flex flex-row">
               <img 
                 className="w-36 h-36 rounded object-contain" 
@@ -171,15 +208,15 @@ const StaybackRequest = () => {
                 alt="Company Logo" 
               />
             </div>
-        <h1 className="text-xl sm:text-2xl px-36 py-10 font-bold mb-4 sm:mb-6 text-gray-700 p-4">Create Stayback</h1>
-        </div>
-        {error && (
-          <div className="bg-red-50 text-red-500 p-3 rounded-md mb-4 mx-4">
-            {error}
-          </div>
-        )}
+        <h1 className="text-xl sm:text-2xl px-36 py-10 font-bold mb-4 sm:mb-6 text-gray-700">Create Stayback</h1>
+            </div>
+            {error && (
+              <div className="bg-red-50 text-red-500 p-3 rounded-md mb-4">
+                {error}
+              </div>
+            )}
 
-        <form onSubmit={handleSubmit} className="space-y-4 p-4">
+<form onSubmit={handleSubmit} className="space-y-4 p-4">
           <div>
             <label className="block mb-2 text-sm font-medium">Team</label>
             <input
@@ -296,7 +333,9 @@ const StaybackRequest = () => {
             </button>
           </div>
         </form>
-      </div>
+          </div>
+        </div>
+      )}
 
       <div className="w-full max-w-4xl mx-auto">
         <StaybackLog 

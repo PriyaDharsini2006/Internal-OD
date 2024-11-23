@@ -1,20 +1,15 @@
-// src/app/api/requests/[id]/route.js
+//api/requests/[id]/unreject/route.js
+export const dynamic = 'force-dynamic';
+export const fetchCache = 'force-no-store';
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
-let isConnected = false;
 
-// Get specific request by ID
-export async function GET(request, { params }) {
+export async function PATCH(req, { params }) {
   try {
-    if (!isConnected) {
-      await prisma.$connect();
-      isConnected = true;
-    }
-
     const session = await getServerSession(authOptions);
     if (!session) {
       return NextResponse.json(
@@ -23,85 +18,40 @@ export async function GET(request, { params }) {
       );
     }
 
+    // Log the params to verify the ID
+    console.log('Params:', params);
     const { id } = params;
 
-    const odRequest = await prisma.oDRequest.findUnique({
-      where: { id },
-      include: {
-        user: {
-          select: {
-            name: true,
-            email: true,
-            sec: true,
-            year: true
-          }
-        },
-        request_by: {
-          select: {
-            email: true
-          }
-        }
-      }
-    });
-
-    if (!odRequest) {
+    // Validate ID
+    if (!id) {
+      console.error('No ID provided');
       return NextResponse.json(
-        { message: 'Request not found' },
-        { status: 404 }
+        { message: 'Request ID is required' },
+        { status: 400 }
       );
     }
 
-    return NextResponse.json({ data: odRequest });
-  } catch (error) {
-    console.error('Request fetch error:', error);
-    return NextResponse.json(
-      { message: 'Failed to fetch request', error: error.message },
-      { status: 500 }
-    );
-  }
-}
-
-// Update attendance for specific request
-export async function PATCH(request, { params }) {
-  try {
-    if (!isConnected) {
-      await prisma.$connect();
-      isConnected = true;
-    }
-
-    const session = await getServerSession(authOptions);
-    if (!session) {
-      return NextResponse.json(
-        { message: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
-
-    const { id } = params;
-    const { attendance } = await request.json();
-
+    // Attempt to update
     const updatedRequest = await prisma.oDRequest.update({
-      where: { id },
-      data: { attendance },
-      include: {
-        user: {
-          select: {
-            name: true,
-            email: true
-          }
-        }
+      where: { id: id }, // Explicitly use id parameter
+      data: { 
+        status: 0 // Change back to pending status
       }
     });
 
-    return NextResponse.json({
-      message: 'Attendance updated successfully',
-      data: updatedRequest
-    });
+    return NextResponse.json(updatedRequest, { status: 200 });
   } catch (error) {
-    console.error('Attendance update error:', error);
+    console.error('Detailed unreject error:', error);
     return NextResponse.json(
-      { message: 'Failed to update attendance', error: error.message },
+      { 
+        message: 'Internal server error', 
+        errorName: error.name,
+        errorMessage: error.message,
+        errorStack: error.stack 
+      },
       { status: 500 }
     );
+  } finally {
+    await prisma.$disconnect();
   }
 }
