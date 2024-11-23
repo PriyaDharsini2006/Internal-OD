@@ -1,12 +1,36 @@
 import React, { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { Search, X, Plus, Calendar } from 'lucide-react';
+import { Search, X, Plus, ChevronDown } from 'lucide-react';
 import StaybackLog from './StaybackLog';
+
+
 
 const StaybackRequest = () => {
   const { data: session, status } = useSession();
   const router = useRouter();
+
+  
+const teamOptions = [
+  'Event Coordinator',
+  'Committee Coordinator',
+  'Content',
+  'Development',
+  'Design',
+  'Documentation',
+  'Helpdesk and Registration',
+  'Hosting',
+  'Logistics & Requirements',
+  'Marketing',
+  'Non-technical Events',
+  'Social Media',
+  'Technical',
+  'Workshops',
+  'Sponsorship',
+  'Media',
+  'Decoration'
+];
+
   
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({
@@ -217,17 +241,29 @@ const StaybackRequest = () => {
             )}
 
 <form onSubmit={handleSubmit} className="space-y-4 p-4">
-          <div>
-            <label className="block mb-2 text-sm font-medium">Team</label>
-            <input
-              type="text"
-              name="team"
-              value={formData.team}
-              onChange={handleInputChange}
-              required
-              className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-300"
-            />
-          </div>
+<div>
+                <label className="block mb-2 text-sm font-medium">Team</label>
+                <div className="relative">
+                  <select
+                    name="team"
+                    value={formData.team}
+                    onChange={handleInputChange}
+                    required
+                    className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-300 appearance-none bg-white"
+                  >
+                    <option value="">Select a team</option>
+                    {teamOptions.map((team) => (
+                      <option key={team} value={team}>
+                        {team}
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown 
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" 
+                    size={20} 
+                  />
+                </div>
+              </div>
 
           <div>
             <label className="block mb-2 text-sm font-medium">Title</label>

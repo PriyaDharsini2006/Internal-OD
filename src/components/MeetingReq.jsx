@@ -47,6 +47,7 @@ const MeetingRequest = () => {
   const [selectedSection, setSelectedSection] = useState('all');
   const [selectedYear, setSelectedYear] = useState('all');
   const [localSearch, setLocalSearch] = useState('');
+  
 
   const fetchMeetings = async () => {
     try {
@@ -101,6 +102,8 @@ const MeetingRequest = () => {
         : [...prev.students, email]
     }));
   };
+
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -228,17 +231,29 @@ const MeetingRequest = () => {
               )}
 
               <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                  <label className="block mb-2 text-sm font-medium">Team</label>
-                  <input
-                    type="text"
+              <div>
+                <label className="block mb-2 text-sm font-medium">Team</label>
+                <div className="relative">
+                  <select
                     name="team"
                     value={formData.team}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-300"
+                    className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-300 appearance-none bg-white"
+                  >
+                    <option value="">Select a team</option>
+                    {teamOptions.map((team) => (
+                      <option key={team} value={team}>
+                        {team}
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown 
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" 
+                    size={20} 
                   />
                 </div>
+              </div>
 
                 <div>
                   <label className="block mb-2 text-sm font-medium">Title</label>
