@@ -142,8 +142,16 @@ const MeetingRequest = () => {
   return (
     <>
     <div className="p-4 sm:p-6 w-full max-w-4xl mx-auto bg-white rounded-xl shadow-md">
-      <h1 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-gray-700">Create Meeting</h1>
-      
+   <div className='flex flex-row'>
+    <div className="flex-shrink-0">
+              <img 
+                className="w-36 h-36 rounded object-contain" 
+                src="/logo.png" 
+                alt="Company Logo" 
+              />
+            </div>
+      <h1 className="text-2xl sm:text-2xl py-12 px-36 font-bold mb-4 sm:mb-6 text-gray-700">Create Meeting</h1>
+      </div>
       {error && (
         <div className="bg-red-50 text-red-500 p-3 rounded-md mb-4">
           {error}

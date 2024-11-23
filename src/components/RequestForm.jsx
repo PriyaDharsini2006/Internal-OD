@@ -198,10 +198,20 @@ const RequestForm = () => {
       <div className="max-w-5xl mx-auto bg-white rounded-2xl shadow-xl">
         {/* Header Section */}
         <div className="border-b border-gray-200 bg-gray-50 rounded-t-2xl px-6 py-5">
-          <h1 className="text-2xl md:text-3xl font-bold text-black">
+          <div className='flex flex-row'>
+        <div className="flex-shrink-0 flex flex-row">
+              <img 
+                className="w-36 h-36 rounded object-contain" 
+                src="/logo.png" 
+                alt="Company Logo" 
+              />
+            </div>
+          <h1 className="text-2xl px-36 py-10 md:text-3xl font-bold text-black">
             Send OD Request
           </h1>
+          </div>
         </div>
+        
 
         <div className="p-6 space-y-6">
           {/* Alert Messages */}

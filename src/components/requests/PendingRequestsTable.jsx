@@ -391,14 +391,24 @@ export const HackerzPrintView = () => {
       {/* Browser-only view */}
       <div className="browser-view">
         <div className="bg-white shadow-sm rounded-lg overflow-hidden w-full">
-          <div className="p-4 flex justify-end print:hidden">
+          <div className='flex flex-row space-x-96'>
+        <div className="flex-shrink-0 ">
+              <img 
+                className="w-36 h-36 rounded object-contain" 
+                src="/logo.png" 
+                alt="Company Logo" 
+              />
+            </div>
+          <div className="px-96 py-10 justify-end print:hidden">
+          
             <button 
               onClick={handlePrint} 
-              className="flex items-center bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
+              className="flex items-center justify-end bg-blue-500 text-white px-6 py-4 rounded hover:bg-blue-600 transition"
             >
               <Printer className="mr-2 w-5 h-5" />
               Print
             </button>
+          </div>
           </div>
           
           <div className="overflow-x-auto">

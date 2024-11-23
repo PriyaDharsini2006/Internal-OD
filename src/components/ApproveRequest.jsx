@@ -195,9 +195,22 @@ if (selectedSection !== 'All') {
 
   return (
     <div className="p-6 max-w-5xl mx-auto bg-white rounded-xl shadow-md space-y-4">
-      <h1 className="text-2xl md:text-3xl font-bold mb-4 text-gray-700">
+      <div className='flex flex-row space-x-32'>
+        <div className="flex-shrink-0 ">
+              <img 
+                className="w-36 h-36 rounded object-contain" 
+                src="/logo.png" 
+                alt="Company Logo" 
+              />
+            </div>
+          <div className="py-10 print:hidden">
+          <h1 className="text-2xl md:text-3xl font-bold mb-4 text-gray-700">
         Approve or Reject On Duty Requests
       </h1>
+            
+          </div>
+          </div>
+      
       
       {error && (
         <div className="text-red-500 mb-4 p-2 bg-red-50 rounded-md">

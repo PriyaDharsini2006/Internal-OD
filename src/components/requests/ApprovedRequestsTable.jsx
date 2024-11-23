@@ -76,6 +76,19 @@ export const ApprovedRequestsTable = () => {
 
   return (
     <div className="bg-white shadow-sm rounded-lg overflow-hidden">
+      <div className='flex flex-row space-x-96'>
+        <div className="flex-shrink-0 ">
+              <img 
+                className="w-36 h-36 rounded object-contain" 
+                src="/logo.png" 
+                alt="Company Logo" 
+              />
+            </div>
+          <div className="px-28 text-3xl py-10 justify-end print:hidden">
+          ATTENDANCE
+          
+          </div>
+          </div>
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">

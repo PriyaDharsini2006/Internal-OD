@@ -1,3 +1,132 @@
+// // 'use client';
+// // import { useState, useEffect } from "react";
+// // import { useSession, signIn, signOut } from "next-auth/react";
+// // import { motion, AnimatePresence } from "framer-motion";
+// // import { useRouter } from "next/navigation";
+// // import HomeTable from "@/components/Home";
+// // import { 
+// //   LogIn, 
+// //   LogOut,
+// //   User,
+// //   AlertCircle 
+// // } from 'lucide-react';
+
+// // export default function ProtectedPage() {
+// //   const { data: session, status } = useSession();
+// //   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+// //   const router = useRouter();
+
+// //   useEffect(() => {
+// //     if (session) {
+// //       // Redirect based on user role
+// //       if (session.user.role === "HOD") {
+// //         router.push("/hod");
+// //       } else if (session.user.role === "TeamLead") {
+// //         router.push("/teamlead");
+// //       }
+// //     }
+// //   }, [session, router]);
+
+// //   const handleSignInClick = () => {
+// //     setIsLoginModalOpen(true);
+// //     signIn("google");
+// //   };
+
+// //   return (
+// //     <div className="relative min-h-screen bg-gradient-to-br from-blue-50 to-blue-100">
+// //       {/* Navigation with Login Button */}
+// //       <nav className="absolute top-0 right-0 p-4 z-10">
+// //         {!session ? (
+// //           <button 
+// //             onClick={handleSignInClick}
+// //             className="flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors duration-300 group"
+// //           >
+// //             <LogIn 
+// //               className="w-5 h-5 group-hover:rotate-12 transition-transform" 
+// //               strokeWidth={2} 
+// //             />
+// //             Login
+// //           </button>
+// //         ) : (
+// //           <div className="flex items-center space-x-4">
+// //             {session.user.image ? (
+// //               <img 
+// //                 src={session.user.image} 
+// //                 alt="Profile" 
+// //                 className="w-10 h-10 rounded-full border-2 border-blue-100 object-cover"
+// //               />
+// //             ) : (
+// //               <User 
+// //                 className="text-blue-500 w-10 h-10" 
+// //                 strokeWidth={1.5} 
+// //               />
+// //             )}
+// //             <button 
+// //               onClick={() => signOut()}
+// //               className="flex items-center gap-2 bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors duration-300 group"
+// //             >
+// //               <LogOut 
+// //                 className="w-5 h-5 group-hover:-rotate-12 transition-transform" 
+// //                 strokeWidth={2} 
+// //               />
+// //               Logout
+// //             </button>
+// //           </div>
+// //         )}
+// //       </nav>
+
+// //       {/* Main Content - Approved Requests Table */}
+// //       <div className="container mx-auto px-4 py-16">
+// //         <HomeTable />
+// //       </div>
+
+// //       {/* Login Modal */}
+// //       <AnimatePresence>
+// //         {isLoginModalOpen && (
+// //           <motion.div 
+// //             initial={{ opacity: 0 }}
+// //             animate={{ opacity: 1 }}
+// //             exit={{ opacity: 0 }}
+// //             className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 p-4"
+// //             onClick={() => setIsLoginModalOpen(false)}
+// //           >
+// //             <motion.div 
+// //               initial={{ opacity: 0, scale: 0.9 }}
+// //               animate={{ opacity: 1, scale: 1 }}
+// //               transition={{ duration: 0.3 }}
+// //               className="w-full max-w-md bg-white rounded-2xl shadow-2xl p-8 space-y-6"
+// //               onClick={(e) => e.stopPropagation()}
+// //             >
+// //               <div className="flex flex-col items-center space-y-4">
+// //                 <AlertCircle 
+// //                   className="text-yellow-500 w-16 h-16" 
+// //                   strokeWidth={1.5} 
+// //                 />
+// //                 <h2 className="text-2xl font-bold text-gray-800 text-center">
+// //                   Sign In
+// //                 </h2>
+// //                 <p className="text-gray-600 text-center">
+// //                   Please sign in to access additional features
+// //                 </p>
+// //               </div>
+              
+// //               <button 
+// //                 onClick={() => signIn("google")}
+// //                 className="w-full flex items-center justify-center gap-2 bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 transition-colors duration-300 group"
+// //               >
+// //                 <LogIn 
+// //                   className="w-5 h-5 group-hover:rotate-12 transition-transform" 
+// //                   strokeWidth={2} 
+// //                 />
+// //                 Sign in with Google
+// //               </button>
+// //             </motion.div>
+// //           </motion.div>
+// //         )}
+// //       </AnimatePresence>
+// //     </div>
+// //   );
+// // }
 // 'use client';
 // import { useState, useEffect } from "react";
 // import { useSession, signIn, signOut } from "next-auth/react";
@@ -8,12 +137,15 @@
 //   LogIn, 
 //   LogOut,
 //   User,
-//   AlertCircle 
+//   AlertCircle,
+//   Menu,
+//   X 
 // } from 'lucide-react';
 
 // export default function ProtectedPage() {
 //   const { data: session, status } = useSession();
 //   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+//   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 //   const router = useRouter();
 
 //   useEffect(() => {
@@ -32,51 +164,139 @@
 //     signIn("google");
 //   };
 
+//   const toggleMobileMenu = () => {
+//     setIsMobileMenuOpen(!isMobileMenuOpen);
+//   };
+
 //   return (
 //     <div className="relative min-h-screen bg-gradient-to-br from-blue-50 to-blue-100">
 //       {/* Navigation with Login Button */}
-//       <nav className="absolute top-0 right-0 p-4 z-10">
-//         {!session ? (
-//           <button 
-//             onClick={handleSignInClick}
-//             className="flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors duration-300 group"
-//           >
-//             <LogIn 
-//               className="w-5 h-5 group-hover:rotate-12 transition-transform" 
-//               strokeWidth={2} 
-//             />
-//             Login
-//           </button>
-//         ) : (
-//           <div className="flex items-center space-x-4">
-//             {session.user.image ? (
-//               <img 
-//                 src={session.user.image} 
-//                 alt="Profile" 
-//                 className="w-10 h-10 rounded-full border-2 border-blue-100 object-cover"
-//               />
-//             ) : (
-//               <User 
-//                 className="text-blue-500 w-10 h-10" 
-//                 strokeWidth={1.5} 
-//               />
-//             )}
+//       <div className="flex items-center">
+//       {/* <img 
+//         src="/logo.png" 
+//         alt="Company Logo" 
+//         className="h-24 w-auto object-contain"
+//         priority="true"
+//       /> */}
+//     </div>
+      
+//       <nav className="absolute top-0 w-full z-10">
+//         <div><p className="text-lg font-medium text-gray-800">
+//         {today.toLocaleDateString('en-US', options)}
+//       </p></div>
+//       <img className='w-32 h-28 rounded' src='/logo.png' alt="Company Logo" />
+//     <div className="md:hidden">
 //             <button 
-//               onClick={() => signOut()}
-//               className="flex items-center gap-2 bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors duration-300 group"
+//               onClick={toggleMobileMenu}
+//               className="text-blue-600 hover:text-blue-800"
 //             >
-//               <LogOut 
-//                 className="w-5 h-5 group-hover:-rotate-12 transition-transform" 
-//                 strokeWidth={2} 
-//               />
-//               Logout
+//               {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
 //             </button>
 //           </div>
-//         )}
+         
+//         <div className="container mx-auto flex justify-between items-center">
+//           {/* Mobile Menu Toggle */}
+          
+
+//           {/* Desktop Navigation */}
+//           <div className="hidden md:block ml-auto">
+//             {!session ? (
+//               <button 
+//                 onClick={handleSignInClick}
+//                 className="flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors duration-300 group"
+//               >
+//                 <LogIn 
+//                   className="w-5 h-5 group-hover:rotate-12 transition-transform" 
+//                   strokeWidth={2} 
+//                 />
+//                 Login
+//               </button>
+//             ) : (
+//               <div className="flex items-center space-x-4">
+//                 {session.user.image ? (
+//                   <img 
+//                     src={session.user.image} 
+//                     alt="Profile" 
+//                     className="w-10 h-10 rounded-full border-2 border-blue-100 object-cover"
+//                   />
+//                 ) : (
+//                   <User 
+//                     className="text-blue-500 w-10 h-10" 
+//                     strokeWidth={1.5} 
+//                   />
+//                 )}
+//                 <button 
+//                   onClick={() => signOut()}
+//                   className="flex items-center gap-2 bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors duration-300 group"
+//                 >
+//                   <LogOut 
+//                     className="w-5 h-5 group-hover:-rotate-12 transition-transform" 
+//                     strokeWidth={2} 
+//                   />
+//                   Logout
+//                 </button>
+//               </div>
+//             )}
+//           </div>
+//         </div>
+
+//         {/* Mobile Menu */}
+//         <AnimatePresence>
+//           {isMobileMenuOpen && (
+//             <motion.div 
+//               initial={{ opacity: 0, y: -20 }}
+//               animate={{ opacity: 1, y: 0 }}
+//               exit={{ opacity: 0, y: -20 }}
+//               className="md:hidden absolute top-full left-0 w-full bg-white shadow-lg"
+//             >
+//               <div className="container mx-auto p-4">
+//                 {!session ? (
+//                   <button 
+//                     onClick={handleSignInClick}
+//                     className="w-full flex items-center justify-center gap-2 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors duration-300 group"
+//                   >
+//                     <LogIn 
+//                       className="w-5 h-5 group-hover:rotate-12 transition-transform" 
+//                       strokeWidth={2} 
+//                     />
+//                     Login
+//                   </button>
+//                 ) : (
+//                   <div className="space-y-4">
+//                     <div className="flex items-center justify-center space-x-4 mb-4">
+//                       {session.user.image ? (
+//                         <img 
+//                           src={session.user.image} 
+//                           alt="Profile" 
+//                           className="w-12 h-12 rounded-full border-2 border-blue-100 object-cover"
+//                         />
+//                       ) : (
+//                         <User 
+//                           className="text-blue-500 w-12 h-12" 
+//                           strokeWidth={1.5} 
+//                         />
+//                       )}
+//                     </div>
+//                     <button 
+//                       onClick={() => signOut()}
+//                       className="w-full flex items-center justify-center gap-2 bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors duration-300 group"
+//                     >
+//                       <LogOut 
+//                         className="w-5 h-5 group-hover:-rotate-12 transition-transform" 
+//                         strokeWidth={2} 
+//                       />
+//                       Logout
+//                     </button>
+//                   </div>
+//                 )}
+//               </div>
+//             </motion.div>
+//           )}
+//         </AnimatePresence>
 //       </nav>
 
 //       {/* Main Content - Approved Requests Table */}
-//       <div className="container mx-auto px-4 py-16">
+//       <div className="container mx-auto px-4 py-16 mt-16 md:mt-20">
 //         <HomeTable />
 //       </div>
 
@@ -94,18 +314,18 @@
 //               initial={{ opacity: 0, scale: 0.9 }}
 //               animate={{ opacity: 1, scale: 1 }}
 //               transition={{ duration: 0.3 }}
-//               className="w-full max-w-md bg-white rounded-2xl shadow-2xl p-8 space-y-6"
+//               className="w-full max-w-md bg-white rounded-2xl shadow-2xl p-6 md:p-8 space-y-6"
 //               onClick={(e) => e.stopPropagation()}
 //             >
 //               <div className="flex flex-col items-center space-y-4">
 //                 <AlertCircle 
-//                   className="text-yellow-500 w-16 h-16" 
+//                   className="text-yellow-500 w-12 md:w-16 h-12 md:h-16" 
 //                   strokeWidth={1.5} 
 //                 />
-//                 <h2 className="text-2xl font-bold text-gray-800 text-center">
+//                 <h2 className="text-xl md:text-2xl font-bold text-gray-800 text-center">
 //                   Sign In
 //                 </h2>
-//                 <p className="text-gray-600 text-center">
+//                 <p className="text-sm md:text-base text-gray-600 text-center">
 //                   Please sign in to access additional features
 //                 </p>
 //               </div>
@@ -150,7 +370,6 @@ export default function ProtectedPage() {
 
   useEffect(() => {
     if (session) {
-      // Redirect based on user role
       if (session.user.role === "HOD") {
         router.push("/hod");
       } else if (session.user.role === "TeamLead") {
@@ -168,60 +387,98 @@ export default function ProtectedPage() {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
 
+  // Format today's date
+  const today = new Date();
+  const options = { 
+    weekday: 'long', 
+    year: 'numeric', 
+    month: 'long', 
+    day: 'numeric' 
+  };
+  const formattedDate = today.toLocaleDateString('en-US', options);
+
   return (
     <div className="relative min-h-screen bg-gradient-to-br from-blue-50 to-blue-100">
-      {/* Navigation with Login Button */}
-      <nav className="absolute top-0 w-full p-4 z-10">
-        <div className="container mx-auto flex justify-between items-center">
-          {/* Mobile Menu Toggle */}
-          <div className="md:hidden">
-            <button 
-              onClick={toggleMobileMenu}
-              className="text-blue-600 hover:text-blue-800"
-            >
-              {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-            </button>
-          </div>
+      {/* Navigation Bar */}
+      <nav className="fixed top-0 w-full bg-white shadow-sm z-10">
+        <div className="container mx-auto px-4">
+          <div className="flex justify-between items-center h-28">
+            {/* Logo */}
+            <div className="flex-shrink-0">
+              <img 
+                className="w-32 h-28 rounded object-contain" 
+                src="/logo.png" 
+                alt="Company Logo" 
+              />
+            </div>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:block ml-auto">
-            {!session ? (
-              <button 
-                onClick={handleSignInClick}
-                className="flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors duration-300 group"
-              >
-                <LogIn 
-                  className="w-5 h-5 group-hover:rotate-12 transition-transform" 
-                  strokeWidth={2} 
-                />
-                Login
-              </button>
-            ) : (
-              <div className="flex items-center space-x-4">
-                {session.user.image ? (
-                  <img 
-                    src={session.user.image} 
-                    alt="Profile" 
-                    className="w-10 h-10 rounded-full border-2 border-blue-100 object-cover"
-                  />
-                ) : (
-                  <User 
-                    className="text-blue-500 w-10 h-10" 
-                    strokeWidth={1.5} 
-                  />
-                )}
+            {/* Date - Hidden on mobile */}
+            <div className="hidden md:block text-center">
+              <p className="text-lg font-medium text-gray-700">
+                {formattedDate}
+              </p>
+            </div>
+
+            {/* Desktop Navigation */}
+            <div className="hidden md:block">
+              {!session ? (
                 <button 
-                  onClick={() => signOut()}
-                  className="flex items-center gap-2 bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors duration-300 group"
+                  onClick={handleSignInClick}
+                  className="flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors duration-300 group"
                 >
-                  <LogOut 
-                    className="w-5 h-5 group-hover:-rotate-12 transition-transform" 
+                  <LogIn 
+                    className="w-5 h-5 group-hover:rotate-12 transition-transform" 
                     strokeWidth={2} 
                   />
-                  Logout
+                  Login
                 </button>
-              </div>
-            )}
+              ) : (
+                <div className="flex items-center space-x-4">
+                  {session.user.image ? (
+                    <img 
+                      src={session.user.image} 
+                      alt="Profile" 
+                      className="w-10 h-10 rounded-full border-2 border-blue-100 object-cover"
+                    />
+                  ) : (
+                    <User 
+                      className="text-blue-500 w-10 h-10" 
+                      strokeWidth={1.5} 
+                    />
+                  )}
+                  <button 
+                    onClick={() => signOut()}
+                    className="flex items-center gap-2 bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors duration-300 group"
+                  >
+                    <LogOut 
+                      className="w-5 h-5 group-hover:-rotate-12 transition-transform" 
+                      strokeWidth={2} 
+                    />
+                    Logout
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Mobile Menu Button */}
+            <div className="md:hidden">
+              <button 
+                onClick={toggleMobileMenu}
+                className="text-blue-600 hover:text-blue-800 p-2"
+              >
+                {isMobileMenuOpen ? 
+                  <X className="w-6 h-6" /> : 
+                  <Menu className="w-6 h-6" />
+                }
+              </button>
+            </div>
+          </div>
+
+          {/* Date - Visible on mobile */}
+          <div className="md:hidden text-center py-2 border-t">
+            <p className="text-sm font-medium text-gray-700">
+              {formattedDate}
+            </p>
           </div>
         </div>
 
@@ -232,7 +489,7 @@ export default function ProtectedPage() {
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              className="md:hidden absolute top-full left-0 w-full bg-white shadow-lg"
+              className="md:hidden bg-white shadow-lg border-t"
             >
               <div className="container mx-auto p-4">
                 {!session ? (
@@ -248,7 +505,7 @@ export default function ProtectedPage() {
                   </button>
                 ) : (
                   <div className="space-y-4">
-                    <div className="flex items-center justify-center space-x-4 mb-4">
+                    <div className="flex items-center justify-center">
                       {session.user.image ? (
                         <img 
                           src={session.user.image} 
@@ -280,8 +537,8 @@ export default function ProtectedPage() {
         </AnimatePresence>
       </nav>
 
-      {/* Main Content - Approved Requests Table */}
-      <div className="container mx-auto px-4 py-16 mt-16 md:mt-20">
+      {/* Main Content */}
+      <div className="container mx-auto px-4 pt-32 pb-16">
         <HomeTable />
       </div>
 

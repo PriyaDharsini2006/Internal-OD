@@ -260,6 +260,7 @@ const Navbar = ({ onNavItemClick, activeComponent }) => {
           >
             Sign Out
           </button>
+        
         </div>
 
         {/* Mobile Menu Overlay */}
