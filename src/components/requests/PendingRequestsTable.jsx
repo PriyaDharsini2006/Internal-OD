@@ -206,14 +206,13 @@ export const HackerzPrintView = () => {
             Regards,<br />
             Team Hackerz24
           </div>
-
           <div className="signature-section flex items-center">
+            <div className="text-sm sm:text-base">
             <img 
-              className="signature-img w-24 sm:w-40 h-auto mr-4" 
+              className="signature-img w-24 sm:w-40 h-auto" 
               src="sign.png" 
               alt="Signature" 
             />
-            <div className="text-sm sm:text-base">
               <p className="m-0">Head of Department</p>
               <p className="m-0">Computer Science and Engineering</p>
             </div>
@@ -299,6 +298,8 @@ export const HackerzPrintView = () => {
           nav {
             display: none !important;
           }
+            footer{
+            display:none !important;}
 
           /* Ensure the printed content starts from the top */
           .print-container {

@@ -24,6 +24,15 @@ export default function RootLayout({ children }) {
       <body>
         <SessionProvider>{children}</SessionProvider>
       </body>
+      <footer className="bg-white shadow-md mt-auto">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center justify-center space-x-2 text-gray-600">
+            <p className="text-sm">
+              {new Date().getFullYear()} Copyrights@Hackerz.
+            </p>
+          </div>
+        </div>
+      </footer>
     </html>
   );
 }

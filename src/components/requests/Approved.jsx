@@ -581,12 +581,13 @@ export const Approved = () => {
           </div>
 
           <div className="signature-section flex items-center">
+            
+            <div className="text-xs sm:text-base">
             <img 
               className="signature-img w-24 sm:w-40 h-auto mr-2 sm:mr-4" 
               src="sign.png" 
               alt="Signature" 
             />
-            <div className="text-xs sm:text-base">
               <p className="m-0">Head of Department</p>
               <p className="m-0">Computer Science and Engineering</p>
             </div>
@@ -672,6 +673,8 @@ export const Approved = () => {
           nav, .mobile-actions {
             display: none !important;
           }
+            footer{
+            display:none !important}
 
           /* Ensure the printed content starts from the top */
           .print-container {
