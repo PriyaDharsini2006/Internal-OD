@@ -1,6 +1,6 @@
 'use client'
 import React, { useState, useEffect } from 'react';
-import { XCircle, User, CalendarDays, Printer, Menu, X, RefreshCw } from 'lucide-react';
+import { XCircle, User, CalendarDays, Printer, Menu, X,Copyright, RefreshCw } from 'lucide-react';
 
 export const RejectedRequestsTable = () => {
   const [requests, setRequests] = useState([]);
@@ -94,8 +94,8 @@ export const RejectedRequestsTable = () => {
       <div className="browser-view">
         {/* Print Button - Visible only in browser */}
         <div className="p-4 flex justify-end print:hidden">
-        <div className='flex flex-row space-x-96'>
-        <div className="flex-shrink-0 ">
+        <div className='flex flex-row '>
+        <div className="flex-shrink-0  ">
               <img 
                 className="w-36 h-36 rounded object-contain" 
                 src="/logo.png" 
@@ -284,6 +284,8 @@ export const RejectedRequestsTable = () => {
           nav {
             display: none !important;
           }
+footer{
+            display:none !important;}
 
           .print-container {
             margin-top: 0 !important;
@@ -331,6 +333,7 @@ export const RejectedRequestsTable = () => {
           }
         }
       `}</style>
+      
     </div>
   );
 };
