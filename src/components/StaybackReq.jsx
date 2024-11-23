@@ -200,8 +200,16 @@ const StaybackRequest = () => {
               <X size={24} />
             </button>
 
-            <h1 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-gray-700">Create Stayback</h1>
-            
+            <div className='flex flex-row'>
+      <div className="flex-shrink-0 flex flex-row">
+              <img 
+                className="w-36 h-36 rounded object-contain" 
+                src="/logo.png" 
+                alt="Company Logo" 
+              />
+            </div>
+        <h1 className="text-xl sm:text-2xl px-36 py-10 font-bold mb-4 sm:mb-6 text-gray-700">Create Stayback</h1>
+            </div>
             {error && (
               <div className="bg-red-50 text-red-500 p-3 rounded-md mb-4">
                 {error}
