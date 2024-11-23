@@ -16,6 +16,8 @@ import {
   PlusCircle,
   Menu,
   X,
+  ArrowUp,
+  Home,
   Copyright
 } from 'lucide-react';
 
@@ -51,14 +53,15 @@ const TeamLeadNavbar = ({ onNavItemClick, activeComponent }) => {
     },
     {
       name: 'Meeting', 
-      icon: XCircle, 
+      icon: ArrowUp, 
       component: 'Meeting'
     },
     {
       name: 'Stayback',
-      icon: XCircle,
+      icon: Home,
       component: 'Stayback'
     }
+
   ];
 
   const toggleMobileMenu = () => {
