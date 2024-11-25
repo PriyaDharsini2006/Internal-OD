@@ -128,8 +128,8 @@ export const Approved = () => {
           </div>
           
           <div className="overflow-x-auto">
-            <table className="w-full divide-y divide-gray-200">
-              <thead className="bg-white/5">
+          <table className="min-w-full divide-y divide-gray-700">
+          <thead className="bg-gray-900">
                 <tr>
                   <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300 uppercase tracking-wider">
                     Student Details
@@ -249,18 +249,17 @@ export const Approved = () => {
             Team Hackerz24
           </div>
 
-          <div className="signature-section flex items-center">
-            
-            <div className="text-xs sm:text-base">
-            <img 
-              className="signature-img w-24 sm:w-40 h-auto mr-2 sm:mr-4" 
-              src="sign.png" 
-              alt="Signature" 
-            />
-              <p className="m-0">Head of Department</p>
-              <p className="m-0">Computer Science and Engineering</p>
+          <div className="signature-section mt-8 flex flex-col  items-end justify-end">
+              <img 
+                className="w-20 md:w-32 h-12 " 
+                src="sign.png" 
+                alt="Signature" 
+              />
+              <div className="text-sm md:text-base">
+                <p className="m-0 ml-10">Head of Department</p>
+                <p className="m-0">Computer Science and Engineering</p>
+              </div>
             </div>
-          </div>
         </div>
 
         {/* Second Page - Requests Table */}

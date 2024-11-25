@@ -84,7 +84,7 @@ export const ApprovedRequestsTable = () => {
                 alt="Company Logo" 
               />
             </div>
-          <div className="px-28 text-3xl py-10 justify-end print:hidden text-[#00f5d0]">
+          <div className=" text-3xl py-10  print:hidden text-[#00f5d0]">
           ATTENDANCE
           
           </div>
@@ -93,16 +93,16 @@ export const ApprovedRequestsTable = () => {
         <table className="min-w-full divide-y divide-gray-700">
           <thead className="bg-gray-900">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-[#00f5d0] uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
                 Student Details
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-[#00f5d0] uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
                 Request Details
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-[#00f5d0] uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
                 Duration
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-[#00f5d0] uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
                 Attendance
               </th>
             </tr>
@@ -119,7 +119,7 @@ export const ApprovedRequestsTable = () => {
                 <tr key={request.id}>
                   <td className="px-6 py-4">
                     <div className="flex items-center">
-                      <User className="w-5 h-5 text-[#00f5d0] mr-3" />
+                      <User className="w-5 h-5 text-gray-400 mr-3" />
                       <div>
                         <div className="text-sm font-medium text-white">
                           {request.user.name}
@@ -140,7 +140,7 @@ export const ApprovedRequestsTable = () => {
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex items-center">
-                      <CalendarDays className="w-5 h-5 text-[#00f5d0] mr-3" />
+                      <CalendarDays className="w-5 h-5 text-gray-400 mr-3" />
                       <div>
                       <div className="text-sm text-white">
                               From: {formatTime(request.from_time)}
