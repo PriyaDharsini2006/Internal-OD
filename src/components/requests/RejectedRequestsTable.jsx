@@ -91,7 +91,7 @@ const RejectedRequestsTable = () => {
             />
             <button 
               onClick={toggleMobileMenu}
-              className="bg-[#00fd50] text-black p-2 rounded-lg transition-colors"
+              className="bg-[#00f5d0] text-black p-2 rounded-lg transition-colors"
             >
               {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
