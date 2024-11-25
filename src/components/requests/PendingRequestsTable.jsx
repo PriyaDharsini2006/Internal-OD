@@ -71,13 +71,7 @@ export const HackerzPrintView = () => {
             </div>
             <div className="py-10 justify-start print:hidden">
           
-          <button 
-            onClick={handlePrint} 
-            className="flex items-center  bg-[#00f5d0] text-black px-6 py-4 rounded hover:bg-white/5 hover:text-white transition"
-          >
-            <Printer className="mr-2 w-5 h-5" />
-            Print
-          </button>
+          
         </div>
           </div>
           
@@ -150,125 +144,9 @@ export const HackerzPrintView = () => {
         </div>
       </div>
 
-      {/* Print View */}
-      <div className="print-view hidden print:block">
-        {/* First Page */}
-        <div className="first-page print-page">
-          <div className="header flex justify-between items-center mb-6 md:mb-8">
-            <img 
-              src="citlogo.png" 
-              alt="Chennai Institute of Technology Logo" 
-              className="w-16 md:w-24 h-auto"
-            />
-            <img 
-              src="logo.png" 
-              alt="Hackerz Logo" 
-              className="w-16 md:w-24 h-auto"
-            />
-          </div>
+     
 
-          <div className="space-y-6">
-            <div className="address-from">
-              <strong>From</strong>
-              <div className="text-sm md:text-base mt-2">
-                Team Hackerz24,<br />
-                Department of Computer Science,<br />
-                Chennai Institute of Technology,<br />
-                Sarathy Nagar, Nandambakkam Post,<br />
-                Kundrathur, Chennai-600069.
-              </div>
-            </div>
-
-            <div className="address-to">
-              <strong>To</strong>
-              <div className="text-sm md:text-base mt-2">
-                The Head of Department,<br />
-                Chennai Institute of Technology,<br />
-                Sarathy Nagar, Nandambakkam Post,<br />
-                Kundrathur, Chennai-600069.
-              </div>
-            </div>
-
-            <div className="subject font-bold text-sm md:text-base">
-              Subject: Requesting permission for OD regarding Hackerz24 symposium.
-            </div>
-
-            <div className="content text-sm md:text-base space-y-4">
-              <p>Respected Mam,</p>
-              <p>We hereby request you to grant permission for the following list of students to pursue our work for Hackerz. We request you to kindly grant permission for the mentioned students on {currentDate}.</p>
-            </div>
-
-            <div className="mt-8 md:mt-12">
-              <div className="text-sm md:text-base">
-                Regards,<br />
-                Team Hackerz24
-              </div>
-            </div>
-
-            <div className="signature-section mt-8 flex flex-col  items-end justify-end">
-              <img 
-                className="w-20 md:w-32 h-12 " 
-                src="sign.png" 
-                alt="Signature" 
-              />
-              <div className="text-sm md:text-base">
-                <p className="m-0 ml-10">Head of Department</p>
-                <p className="m-0">Computer Science and Engineering</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Second Page - Requests Table */}
-        <div className="second-page print-page">
-          {/* Table contents remain the same as browser view */}
-        </div>
-      </div>
-
-      <style jsx global>{`
-        @media print {
-          nav, footer {
-            display: none !important;
-          }
-
-          .print-container {
-            margin: 0 !important;
-          }
-
-          body {
-            margin: 0;
-            padding: 0;
-          }
-
-          .print-page {
-            page-break-after: always;
-            margin: 0;
-            padding: 1rem md:2rem;
-          }
-
-          .print-page:last-child {
-            page-break-after: avoid;
-          }
-
-          .print:hidden {
-            display: none !important;
-          }
-
-          .browser-view {
-            display: none !important;
-          }
-
-          .print-view {
-            display: block !important;
-          }
-        }
-
-        @media screen {
-          .print-view {
-            display: none !important;
-          }
-        }
-      `}</style>
+      
     </div>
   );
 };

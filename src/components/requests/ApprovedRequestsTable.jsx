@@ -84,10 +84,7 @@ export const ApprovedRequestsTable = () => {
                 alt="Company Logo" 
               />
             </div>
-          <div className=" text-3xl py-10  print:hidden text-[#00f5d0]">
-          ATTENDANCE
           
-          </div>
           </div>
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-700">
