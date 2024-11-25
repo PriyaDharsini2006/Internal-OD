@@ -314,7 +314,7 @@ if (selectedSection !== 'All') {
               {paginatedRequests.map((request) => (
                 <tr 
                   key={request.od_id}
-                  className={selectedRequests.includes(request.od_id) ? "bg-blue-50" : ""}
+                  className={selectedRequests.includes(request.od_id) ? "hover:bg-white/5" : ""}
                 >
                   <td className="px-4 py-3 text-sm text-gray-300">
                     <input
