@@ -321,8 +321,8 @@ const RequestForm = () => {
             <select
               value={selectedSection}
               onChange={(e) => setSelectedSection(e.target.value)}
-              className="px-4 py-2.5 bg-white/5 backdrop-blur-xl rounded-lg text-gray-300 border border-white/10 focus:ring-2 focus:ring-[#00f5d0] focus:border-[#00f5d0]"
-            >
+                className="px-4 py-2.5 bg-white/5 backdrop-blur-xl rounded-lg text-gray-300 border border-white/10 focus:ring-2 focus:ring-[#00f5d0] focus:border-[#00f5d0]"
+              >
               <option value="all">All Sections</option>
               {sectionsOptions.map((section) => (
                 <option key={section} value={section}>
