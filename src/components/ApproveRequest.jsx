@@ -3,7 +3,7 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 
 
-const ODRequestApproval = () => {
+const ODRequestApproval = () => { 
   const { data: session, status } = useSession();
   const router = useRouter();
   const [requests, setRequests] = useState([]);
@@ -194,18 +194,20 @@ if (selectedSection !== 'All') {
   const totalPages = Math.ceil(getFilteredRequests().length / recordsPerPage);
 
   return (
-    <div className="p-6 max-w-5xl mx-auto bg-white rounded-xl shadow-md space-y-4">
-      <div className='flex flex-row space-x-32'>
+    <div className="min-h-screen bg-black py-8 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-5xl mx-auto bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10">
+       
+        <div className="flex flex-row">
         <div className="flex-shrink-0 ">
               <img 
                 className="w-36 h-36 rounded object-contain" 
-                src="/logo.png" 
+                src="/logo1.png" 
                 alt="Company Logo" 
               />
             </div>
           <div className="py-10 print:hidden">
-          <h1 className="text-2xl md:text-3xl font-bold mb-4 text-gray-700">
-        Approve or Reject On Duty Requests
+          <h1 className="text-2xl px-36 py-6 md:text-3xl font-grotesk font-bold text-[#00f5d0]">
+          Approve or Reject On Duty Requests
       </h1>
             
           </div>
@@ -229,8 +231,8 @@ if (selectedSection !== 'All') {
               setSearchQuery(e.target.value);
               setCurrentPage(1);
             }}
-            className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-300"
-          />
+            className="w-full px-4 py-2.5 bg-white/5 backdrop-blur-xl rounded-lg text-gray-300 placeholder-gray-500 border border-white/10 focus:ring-2 focus:ring-[#00f5d0] focus:border-[#00f5d0]"
+            />
         </div>
       </div>
 
@@ -242,9 +244,11 @@ if (selectedSection !== 'All') {
             onClick={() => handleReasonSelect(reason)}
             className={`p-4 rounded-lg shadow-md text-center transition-all ${
               selectedReason === reason
-                ? 'bg-blue-500 text-white ring-2 ring-blue-300'
-                : 'bg-white hover:bg-blue-50'
+                ? 'bg-[#00f5d0] text-black ring-2 ring-blue-300'
+                : ' bg-white/5 hover:bg-white/5 text-gray-300'
             }`}
+            
+               
           >
             <div className="font-medium">{reason}</div>
             <div className="text-sm mt-1">
@@ -262,8 +266,8 @@ if (selectedSection !== 'All') {
         <select 
   value={selectedYear}
   onChange={(e) => handleYearSelect(e.target.value)}
-  className="w-full px-4 py-2 border rounded-md"
->
+  className="px-36 py-2.5 bg-white/5 backdrop-blur-xl rounded-lg text-gray-300 border border-white/10 focus:ring-2 focus:ring-[#00f5d0] focus:border-[#00f5d0]"
+  >
   {uniqueYears.map(year => (
     <option key={year} value={year}>{year}</option>
   ))}
@@ -273,8 +277,8 @@ if (selectedSection !== 'All') {
         <select 
   value={selectedSection}
   onChange={(e) => handleSectionSelect(e.target.value)}
-  className="w-full px-4 py-2 border rounded-md"
->
+  className="px-36   py-2.5 bg-white/5 backdrop-blur-xl rounded-lg text-gray-300 border border-white/10 focus:ring-2 focus:ring-[#00f5d0] focus:border-[#00f5d0]"
+          >
   {uniqueSections.map(section => (
     <option key={section} value={section}>{section}</option>
   ))}
@@ -284,10 +288,10 @@ if (selectedSection !== 'All') {
 
       {selectedReason && (
         <div className="mb-4 max-h-[50vh] overflow-y-auto">
-          <table className="min-w-full bg-white border border-gray-300">
-            <thead className="sticky top-0 bg-gray-200">
+          <table className="min-w-full ">
+            <thead className=" bg-white/5">
               <tr>
-                <th className="px-4 py-2 border">
+                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">
                   <input
                     type="checkbox"
                     checked={selectedRequests.length === getFilteredRequests().length}
@@ -295,15 +299,15 @@ if (selectedSection !== 'All') {
                     className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded cursor-pointer"
                   />
                 </th>
-                <th className="px-4 py-2 border">Name</th>
-                <th className="px-4 py-2 border">Section</th>
-                <th className="px-4 py-2 border">Year</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Name</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Section</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Year</th>
                 {selectedReason === "All" && (
-                  <th className="px-4 py-2 border">Reason</th>
+                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Reason</th>
                 )}
-                <th className="px-4 py-2 border">From Time</th>
-                <th className="px-4 py-2 border">To Time</th>
-                <th className="px-4 py-2 border">Description</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">From Time</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">To Time</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Description</th>
               </tr>
             </thead>
             <tbody>
@@ -312,7 +316,7 @@ if (selectedSection !== 'All') {
                   key={request.od_id}
                   className={selectedRequests.includes(request.od_id) ? "bg-blue-50" : ""}
                 >
-                  <td className="px-4 py-2 border text-center">
+                  <td className="px-4 py-3 text-sm text-gray-300">
                     <input
                       type="checkbox"
                       checked={selectedRequests.includes(request.od_id)}
@@ -320,15 +324,15 @@ if (selectedSection !== 'All') {
                       className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded cursor-pointer"
                     />
                   </td>
-                  <td className="px-4 py-2 border">{request.name}</td>
-                  <td className="px-4 py-2 border">{request.sec}</td>
-                  <td className="px-4 py-2 border">{request.year}</td>
+                  <td className="px-4 py-3 text-sm text-gray-300">{request.name}</td>
+                  <td className="px-4 py-3 text-sm text-gray-300">{request.sec}</td>
+                  <td className="px-4 py-3 text-sm text-gray-300">{request.year}</td>
                   {selectedReason === "All" && (
-                    <td className="px-4 py-2 border">{request.reason}</td>
+                    <td className="px-4 py-3 text-sm text-gray-300">{request.reason}</td>
                   )}
-                  <td className="px-4 py-2 border">{formatTime(request.from_time)}</td>
-                  <td className="px-4 py-2 border">{formatTime(request.to_time)}</td>
-                  <td className="px-4 py-2 border">{request.description}</td>
+                  <td className="px-4 py-3 text-sm text-gray-300">{formatTime(request.from_time)}</td>
+                  <td className="px-4 py-3 text-sm text-gray-300">{formatTime(request.to_time)}</td>
+                  <td className="px-4 py-3 text-sm text-gray-300">{request.description}</td>
                 </tr>
               ))}
             </tbody>
@@ -343,14 +347,14 @@ if (selectedSection !== 'All') {
               <button 
                 onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1}
-                className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+                className="px-4 py-2 text-black bg-[#00f5d0] hover:bg-[#00f5d0] hover:text-black rounded disabled:opacity-50"
               >
                 Previous
               </button>
               <button 
                 onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                 disabled={currentPage === totalPages}
-                className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+                className="px-4 py-2 text-black bg-[#00f5d0] hover:bg-[#00f5d0] hover:text-black rounded disabled:opacity-50"
               >
                 Next
               </button>
@@ -434,6 +438,7 @@ if (selectedSection !== 'All') {
           </form>
         </div>
       )}
+    </div>
     </div>
   );
 };
