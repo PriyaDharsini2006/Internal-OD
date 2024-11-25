@@ -200,180 +200,185 @@ const teamOptions = [
 
 
   return (
-    <div className="space-y-6 p-4 sm:p-6 relative">
+    <div className="p-4 sm:p-6 w-full max-w-4xl mx-auto bg-black rounded-xl shadow-md">
       {/* Create Stayback Button */}
-      <div className="flex justify-end mb-4">
-        <button 
-          onClick={() => setIsModalOpen(true)}
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center"
-        >
-          <Plus className="mr-2" size={20} />
-          Create Stayback
-        </button>
-      </div>
+      <div className="flex items-center justify-between">
+  {/* Company Logo */}
+  <img 
+    className="w-[150px] h-[150px] rounded object-contain" 
+    src="/logo1.png" 
+    alt="Company Logo" 
+  />
+  
+  {/* Create Stayback Button */}
+  <button 
+    onClick={() => setIsModalOpen(true)}
+    className="bg-[#00f5d0] w-[170px] h-[50px] hover:opacity-90 text-black font-semibold py-1.5 px-3 rounded flex items-center text-m"
+  >
+    <Plus className="mr-2" size={16} />
+    Create Stayback
+  </button>
+</div>
 
+  
       {/* Modal Overlay */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-40 flex justify-center items-center">
-          <div className="bg-white rounded-xl shadow-md w-full max-w-4xl max-h-[90vh] overflow-y-auto relative p-6">
+        <div className="fixed inset-0 bg-black bg-opacity-80 z-40 flex justify-center items-center">
+          <div className="bg-black border border-[#00f5d0] rounded-xl shadow-md w-full max-w-4xl max-h-[90vh] overflow-y-auto relative p-6">
             {/* Close Button */}
             <button 
               onClick={handleCloseModal}
-              className="absolute top-4 right-4 text-gray-600 hover:text-gray-900"
+              className="absolute top-4 right-4 text-[#00f5d0] hover:opacity-90"
             >
               <X size={24} />
             </button>
-
+  
             <div className='flex flex-row'>
-      <div className="flex-shrink-0 flex flex-row">
-              <img 
-                className="w-36 h-36 rounded object-contain" 
-                src="/logo.png" 
-                alt="Company Logo" 
-              />
+              
+              <h1 className="text-2xl sm:text-2xl py-12 px-36 font-bold mb-4 ml-10 sm:mb-6 text-gray-400">
+                Create Stayback
+              </h1>
             </div>
-        <h1 className="text-xl sm:text-2xl px-36 py-10 font-bold mb-4 sm:mb-6 text-gray-700">Create Stayback</h1>
-            </div>
+  
             {error && (
               <div className="bg-red-50 text-red-500 p-3 rounded-md mb-4">
                 {error}
               </div>
             )}
-
-<form onSubmit={handleSubmit} className="space-y-4 p-4">
-<div>
-                <label className="block mb-2 text-sm font-medium">Team</label>
+  
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label className="block mb-2 text-sm font-medium text-[#00f5d0]">Team</label>
                 <div className="relative">
                   <select
                     name="team"
                     value={formData.team}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-300 appearance-none bg-white"
+                    className="w-full px-3 py-2 border border-white rounded-md bg-black text-white focus:ring-2 focus:ring-[#00f5d0] appearance-none"
                   >
                     <option value="">Select a team</option>
                     {teamOptions.map((team) => (
-                      <option key={team} value={team}>
+                      <option key={team} value={team} className="bg-black text-white">
                         {team}
                       </option>
                     ))}
                   </select>
                   <ChevronDown 
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" 
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[#00f5d0] pointer-events-none" 
                     size={20} 
                   />
                 </div>
               </div>
-
-          <div>
-            <label className="block mb-2 text-sm font-medium">Title</label>
-            <input
-              type="text"
-              name="title"
-              value={formData.title}
-              onChange={handleInputChange}
-              required
-              className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-300"
-            />
-          </div>
-
-          <div>
-            <label className="block mb-2 text-sm font-medium">Date</label>
-            <input
-              type="date"
-              name="date"
-              value={formData.date}
-              onChange={handleInputChange}
-              required
-              className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-300"
-            />
-          </div>
-
-          <div>
-            <label className="block mb-2 text-sm font-medium">Select Students</label>
-            
-            <div className="mb-4 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-              <input
-                type="text"
-                placeholder="Search students..."
-                value={localSearch}
-                onChange={(e) => setLocalSearch(e.target.value)}
-                className="w-full pl-10 pr-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-300"
-              />
-            </div>
-
-            <div className="max-h-96 overflow-y-auto border rounded-md">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50 sticky top-0">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Select
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Name
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Section
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Year
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {filteredStudents.map((student) => (
-                    <tr 
-                      key={student.email}
-                      className={`hover:bg-gray-50 cursor-pointer ${
-                        formData.students.includes(student.email) ? 'bg-blue-50' : ''
-                      }`}
-                      onClick={() => handleStudentSelect(student.email)}
-                    >
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <input
-                          type="checkbox"
-                          checked={formData.students.includes(student.email)}
-                          onChange={() => handleStudentSelect(student.email)}
-                          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                        />
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900">{student.name}</div>
-                        <div className="text-sm text-gray-500">{student.email}</div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {student.sec}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {student.year}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <div>
-            <button
-              type="submit"
-              disabled={loading}
-              className={`w-full py-2 sm:py-3 rounded-md text-white transition duration-200 ${
-                loading 
-                  ? 'bg-gray-400 cursor-not-allowed' 
-                  : 'bg-blue-500 hover:bg-blue-700'
-              }`}
-            >
-              {loading ? 'Submitting...' : 'Create Stayback'}
-            </button>
-          </div>
-        </form>
+  
+              <div>
+                <label className="block mb-2 text-sm font-medium text-[#00f5d0]">Title</label>
+                <input
+                  type="text"
+                  name="title"
+                  value={formData.title}
+                  onChange={handleInputChange}
+                  required
+                  className="w-full px-3 py-2 border border-white rounded-md bg-black text-white focus:ring-2 focus:ring-[#00f5d0]"
+                />
+              </div>
+  
+              <div>
+                <label className="block mb-2 text-sm font-medium text-[#00f5d0]">Date</label>
+                <input
+                  type="date"
+                  name="date"
+                  value={formData.date}
+                  onChange={handleInputChange}
+                  required
+                  className="w-full px-3 py-2 border border-[#00f5d0] rounded-md bg-white text-black focus:ring-2 focus:ring-[#00f5d0]"
+                />
+              </div>
+  
+              <div>
+                <label className="block mb-2 text-sm font-medium text-[#00f5d0]">Select Students</label>
+                
+                <div className="mb-4 relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#00f5d0]" size={20} />
+                  <input
+                    type="text"
+                    placeholder="Search students..."
+                    value={localSearch}
+                    onChange={(e) => setLocalSearch(e.target.value)}
+                    className="w-full pl-10 pr-3 py-2 border border-white rounded-md bg-black text-white focus:ring-2 focus:ring-[#00f5d0]"
+                  />
+                </div>
+  
+                <div className="max-h-96 overflow-y-auto border border-white rounded-md">
+                  <table className="min-w-full divide-y divide-[#00f5d0]">
+                    <thead className="bg-black sticky top-0">
+                      <tr>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-[#00f5d0] uppercase tracking-wider">
+                          Select
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-[#00f5d0] uppercase tracking-wider">
+                          Name
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-[#00f5d0] uppercase tracking-wider">
+                          Section
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-[#00f5d0] uppercase tracking-wider">
+                          Year
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-black divide-y divide-[#00f5d0]">
+                      {filteredStudents.map((student) => (
+                        <tr 
+                          key={student.email}
+                          className={`hover:bg-[#00f5d010] cursor-pointer ${
+                            formData.students.includes(student.email) ? 'bg-[#00f5d020]' : ''
+                          }`}
+                          onClick={() => handleStudentSelect(student.email)}
+                        >
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <input
+                              type="checkbox"
+                              checked={formData.students.includes(student.email)}
+                              onChange={() => handleStudentSelect(student.email)}
+                              className="h-4 w-4 text-[#00f5d0] focus:ring-[#00f5d0] border-[#00f5d0] rounded"
+                            />
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="text-sm font-medium text-white">{student.name}</div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
+                            {student.sec}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
+                            {student.year}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+  
+              <div>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className={`w-full py-2 sm:py-3 rounded-md text-black font-bold transition duration-200 ${
+                    loading 
+                      ? 'bg-gray-400 cursor-not-allowed' 
+                      : 'bg-[#00f5d0] hover:opacity-90'
+                  }`}
+                >
+                  {loading ? 'Submitting...' : 'Create Stayback'}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}
-
-      <div className="w-full max-w-4xl mx-auto">
+  
+      <div className="mt-6">
         <StaybackLog 
           staybacks={staybacks} 
           setStaybacks={setStaybacks} 
@@ -383,5 +388,5 @@ const teamOptions = [
     </div>
   );
 };
-
-export default StaybackRequest;
+  
+  export default StaybackRequest;
