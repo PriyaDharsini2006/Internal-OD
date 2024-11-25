@@ -442,7 +442,7 @@ const RequestForm = () => {
               >
                 <option value="">Select Team</option>
                 {teamOptions.map((team) => (
-                  <option key={team} value={team}>
+                  <option className='text-black' key={team} value={team}>
                     {team}
                   </option>
                 ))}
