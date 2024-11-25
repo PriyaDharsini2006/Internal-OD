@@ -11,7 +11,9 @@ const RequestForm = () => {
   const [reason, setReason] = useState('');
   const [description, setDescription] = useState('');
   const [fromTime, setFromTime] = useState('');
+  const [fromTimeModifier, setFromTimeModifier] = useState('AM');
   const [toTime, setToTime] = useState('');
+  const [toTimeModifier, setToTimeModifier] = useState('AM');
   const [currentPage, setCurrentPage] = useState(1);
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
@@ -25,17 +27,8 @@ const RequestForm = () => {
   const [loading, setLoading] = useState(true);
 
 
-  const convertTo12Hour = (time24) => {
-    if (!time24) return '';
-    const [hours, minutes] = time24.split(':');
-    const hour = parseInt(hours);
-    const ampm = hour >= 12 ? 'PM' : 'AM';
-    const hour12 = hour % 12 || 12;
-    return `${hour12}:${minutes} ${ampm}`;
-  };
-  const convertTo24Hour = (time12) => {
-    if (!time12) return '';
-    const [time, modifier] = time12.split(' ');
+  const convertTo24Hour = (time, modifier) => {
+    if (!time) return '';
     let [hours, minutes] = time.split(':');
     hours = parseInt(hours);
     
@@ -44,42 +37,113 @@ const RequestForm = () => {
     
     return `${hours.toString().padStart(2, '0')}:${minutes}`;
   };
-  const validateTime = (startTime, endTime) => {
+
+  const convertTo12Hour = (time24) => {
+    if (!time24) return '';
+    const [hours, minutes] = time24.split(':');
+    const hour = parseInt(hours);
+    const ampm = hour >= 12 ? 'PM' : 'AM';
+    const hour12 = hour % 12 || 12;
+    return `${hour12}:${minutes} ${ampm}`;
+  };
+
+  const validateTime = (startTime, startModifier, endTime, endModifier) => {
     if (!startTime || !endTime) return null;
     
     const workingHoursStart = 8; // 8 AM
     const workingHoursEnd = 17; // 5 PM
     
-    const [startHour] = startTime.split(':').map(Number);
-    const [endHour] = endTime.split(':').map(Number);
+    const startHour24 = parseInt(convertTo24Hour(startTime, startModifier).split(':')[0]);
+    const endHour24 = parseInt(convertTo24Hour(endTime, endModifier).split(':')[0]);
     
-    if (startHour < workingHoursStart || startHour > workingHoursEnd ||
-        endHour < workingHoursStart || endHour > workingHoursEnd) {
-      return 'Please select times between 8:00 AM and 5:00 PM';
-    }
     
-    if (startHour >= endHour) {
+    // Compare times considering AM/PM
+    const startDateTime = new Date(2024, 0, 1, startHour24, 0);
+    const endDateTime = new Date(2024, 0, 1, endHour24, 0);
+    
+    if (startDateTime >= endDateTime) {
       return 'End time must be after start time';
     }
     
     return null;
   };
 
-  // Modified time change handlers
   const handleFromTimeChange = (e) => {
-    const time24 = e.target.value;
-    setFromTime(time24);
-    const timeValidation = validateTime(time24, toTime);
+    const time = e.target.value;
+    setFromTime(time);
+    const timeValidation = validateTime(time, fromTimeModifier, toTime, toTimeModifier);
     setTimeError(timeValidation || '');
   };
 
   const handleToTimeChange = (e) => {
-    const time24 = e.target.value;
-    setToTime(time24);
-    const timeValidation = validateTime(fromTime, time24);
+    const time = e.target.value;
+    setToTime(time);
+    const timeValidation = validateTime(fromTime, fromTimeModifier, time, toTimeModifier);
     setTimeError(timeValidation || '');
   };
 
+  const handleSendRequest = async () => {
+    const validationError = validateForm();
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
+
+    try {
+      const fromTime24 = convertTo24Hour(fromTime, fromTimeModifier);
+      const toTime24 = convertTo24Hour(toTime, toTimeModifier);
+
+      const requests = selectedStudents.map(userId => ({
+        user_id: userId,
+        reason,
+        description,
+        from_time: new Date(`2024-01-01T${fromTime24}`).toISOString(),
+        to_time: new Date(`2024-01-01T${toTime24}`).toISOString(),
+        request_type: 'OD Request',
+        teamlead_id: session.user.id
+      }));
+
+      const response = await fetch('/api/requests', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ requests }),
+      });
+
+      if (response.status === 401) {
+        router.push('/api/auth/signin');
+        return;
+      }
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to send request');
+      }
+
+      setSuccessMessage('Requests sent successfully');
+      setSelectedStudents([]);
+      setReason('');
+      setDescription('');
+      setFromTime('');
+      setToTime('');
+      
+      await fetchStudents();
+    } catch (error) {
+      setError('Failed to send request: ' + error.message);
+    }
+  };
+
+  const validateForm = () => {
+    if (selectedStudents.length === 0) return 'Please select at least one student';
+    if (!reason) return 'Please enter a reason';
+    if (!description) return 'Please enter a description';
+    if (!fromTime) return 'Please select start time';
+    if (!toTime) return 'Please select end time';
+    const timeValidation = validateTime(fromTime, fromTimeModifier, toTime, toTimeModifier);
+    if (timeValidation) return timeValidation;
+    return null;
+  };
     const teamOptions = [
     'Event Coordinator',
     'Committee Coordinator',
@@ -214,66 +278,6 @@ const RequestForm = () => {
 
 
 
-  const validateForm = () => {
-    if (selectedStudents.length === 0) return 'Please select at least one student';
-    if (!reason) return 'Please enter a reason';
-    if (!description) return 'Please enter a description';
-    if (!fromTime) return 'Please select start time';
-    if (!toTime) return 'Please select end time';
-    if (fromTime >= toTime) return 'End time must be after start time';
-    const timeValidation = validateTime(fromTime, toTime);
-    if (timeValidation) return timeValidation;
-    return null;
-  };
-
-  const handleSendRequest = async () => {
-    const validationError = validateForm();
-    if (validationError) {
-      setError(validationError);
-      return;
-    }
-
-    try {
-      const requests = selectedStudents.map(userId => ({
-        user_id: userId,
-        reason,
-        description,
-        from_time: new Date(`2024-01-01T${fromTime}`).toISOString(),
-        to_time: new Date(`2024-01-01T${toTime}`).toISOString(),
-        request_type: 'OD Request',
-        teamlead_id: session.user.id
-      }));
-
-      const response = await fetch('/api/requests', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ requests }),
-      });
-
-      if (response.status === 401) {
-        router.push('/api/auth/signin');
-        return;
-      }
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'Failed to send request');
-      }
-
-      setSuccessMessage('Requests sent successfully');
-      setSelectedStudents([]);
-      setReason('');
-      setDescription('');
-      setFromTime('');
-      setToTime('');
-      
-      await fetchStudents();
-    } catch (error) {
-      setError('Failed to send request: ' + error.message);
-    }
-  };
 
   return (
     <div className="min-h-screen bg-black py-8 px-4 sm:px-6 lg:px-8">
@@ -321,8 +325,8 @@ const RequestForm = () => {
             <select
               value={selectedSection}
               onChange={(e) => setSelectedSection(e.target.value)}
-                className="px-4 py-2.5 bg-white/5 backdrop-blur-xl rounded-lg text-gray-300 border border-white/10 focus:ring-2 focus:ring-[#00f5d0] focus:border-[#00f5d0]"
-              >
+              className="px-4 py-2.5 bg-white/5 backdrop-blur-xl rounded-lg text-gray-300 border border-white/10 focus:ring-2 focus:ring-[#00f5d0] focus:border-[#00f5d0]"
+            >
               <option value="all">All Sections</option>
               {sectionsOptions.map((section) => (
                 <option key={section} value={section}>
@@ -438,11 +442,11 @@ const RequestForm = () => {
               <select
                 value={reason}
                 onChange={(e) => setReason(e.target.value)}
-                className="w-full px-4 py-2.5 bg-white/5 backdrop-blur-xl rounded-lg text-gray-300 border border-white/10 focus:ring-2 focus:ring-[#00f5d0] focus:border-[#00f5d0]"
+                className="w-full px-4 py-2.5 bg-white/5 backdrop-blur-xl rounded-lg border border-white/10 focus:ring-2 focus:ring-[#00f5d0] focus:border-[#00f5d0]"
               >
-                <option value="">Select Team</option>
+                <option className='text-white bg-black'   value="">Select Team</option>
                 {teamOptions.map((team) => (
-                  <option className='text-black' key={team} value={team}>
+                  <option className='text-white bg-black' key={team} value={team}>
                     {team}
                   </option>
                 ))}
@@ -459,41 +463,67 @@ const RequestForm = () => {
               />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">
-                  Start Time
-                </label>
-                <input
-                  type="time"
-                  value={fromTime}
-                  onChange={handleFromTimeChange}
-                  className="w-full px-4 py-2 bg-white/5 backdrop-blur-xl rounded-lg text-gray-300 border border-white/10 focus:ring-2 focus:ring-[#00f5d0] focus:border-[#00f5d0]"
-                  data-format="12"
-                />
-                {fromTime && (
-                  <span className="text-sm text-gray-400 mt-1 block">
-                    {convertTo12Hour(fromTime)}
-                  </span>
-                )}
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">
-                  End Time
-                </label>
-                <input
-                  type="time"
-                  value={toTime}
-                  onChange={handleToTimeChange}
-                  className="w-full px-4 py-2 bg-white/5 backdrop-blur-xl rounded-lg text-gray-300 border border-white/10 focus:ring-2 focus:ring-[#00f5d0] focus:border-[#00f5d0]"
-                  data-format="12"
-                />
-                {toTime && (
-                  <span className="text-sm text-gray-400 mt-1 block">
-                    {convertTo12Hour(toTime)}
-                  </span>
-                )}
-              </div>
-            </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-300 mb-1">
+          Start Time
+        </label>
+        <div className="flex space-x-2">
+          <input
+            type="time"
+            value={fromTime}
+            onChange={handleFromTimeChange}
+            className="w-full px-4 py-2 bg-white/5 backdrop-blur-xl rounded-lg text-gray-300 border border-white/10 focus:ring-2 focus:ring-[#00f5d0] focus:border-[#00f5d0]"
+          />
+          <select
+            value={fromTimeModifier}
+            onChange={(e) => {
+              setFromTimeModifier(e.target.value);
+              const timeValidation = validateTime(fromTime, e.target.value, toTime, toTimeModifier);
+              setTimeError(timeValidation || '');
+            }}
+            className="px-2 py-2 bg-white/5 backdrop-blur-xl rounded-lg text-gray-300 border border-white/10"
+          >
+            <option value="AM">AM</option>
+            <option value="PM">PM</option>
+          </select>
+        </div>
+        {fromTime && (
+          <span className="text-sm text-gray-400 mt-1 block">
+            {`${fromTime} ${fromTimeModifier}`}
+          </span>
+        )}
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-300 mb-1">
+          End Time
+        </label>
+        <div className="flex space-x-2">
+          <input
+            type="time"
+            value={toTime}
+            onChange={handleToTimeChange}
+            className="w-full px-4 py-2 bg-white/5 backdrop-blur-xl rounded-lg text-gray-300 border border-white/10 focus:ring-2 focus:ring-[#00f5d0] focus:border-[#00f5d0]"
+          />
+          <select
+            value={toTimeModifier}
+            onChange={(e) => {
+              setToTimeModifier(e.target.value);
+              const timeValidation = validateTime(fromTime, fromTimeModifier, toTime, e.target.value);
+              setTimeError(timeValidation || '');
+            }}
+            className="px-2 py-2 bg-white/5 backdrop-blur-xl rounded-lg text-gray-300 border border-white/10"
+          >
+            <option value="AM">AM</option>
+            <option value="PM">PM</option>
+          </select>
+        </div>
+        {toTime && (
+          <span className="text-sm text-gray-400 mt-1 block">
+            {`${toTime} ${toTimeModifier}`}
+          </span>
+        )}
+      </div>
+    </div>
             {timeError && (
               <div className="mt-2 text-sm text-red-400">
                 {timeError}

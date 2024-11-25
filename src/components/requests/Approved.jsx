@@ -249,7 +249,7 @@ export const Approved = () => {
             Team Hackerz24
           </div>
 
-          <div className="signature-section mt-8 flex flex-col  items-end justify-end">
+           <div className="signature-section mt-8 flex flex-col  items-end justify-end">
               <img 
                 className="w-20 md:w-32 h-12 " 
                 src="sign.png" 
