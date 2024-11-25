@@ -638,6 +638,7 @@ export default function ProtectedPage() {
     month: 'long', 
     day: 'numeric' 
   };
+  
   const formattedDate = today.toLocaleDateString('en-US', options);
 
   return (
