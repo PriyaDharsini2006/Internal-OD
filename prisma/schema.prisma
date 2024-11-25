@@ -30,19 +30,30 @@ model User {
 }
 
 model ODRequest {
-  id           String   @id @default(uuid())
-  date         DateTime @default(now())
+  id           String           @id @default(uuid())
+  date         DateTime         @default(now())
   user_id      String
   reason       String
   description  String
   teamlead_id  Int
-  status       Int      @default(0)
+  status       Int              @default(0)
   from_time    DateTime
   to_time      DateTime
   request_type String
-  attendance   Boolean  @default(false)
-  request_by   TeamLead @relation("RequestedBy", fields: [teamlead_id], references: [id])
-  user         User     @relation("RequestFor", fields: [user_id], references: [user_id])
+  attendance   Boolean          @default(false)
+  request_by   TeamLead         @relation("RequestedBy", fields: [teamlead_id], references: [id])
+  user         User             @relation("RequestFor", fields: [user_id], references: [user_id])
+  attendance_detail AttendanceDetail?
+}
+
+
+model AttendanceDetail {
+  id           String     @id @default(uuid())
+  request_id   String     @unique
+  request      ODRequest  @relation(fields: [request_id], references: [id])
+  forenoon     Boolean    @default(false)
+  afternoon    Boolean    @default(false)
+  date         DateTime
 }
 
 model Count {

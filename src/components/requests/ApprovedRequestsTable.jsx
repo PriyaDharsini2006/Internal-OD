@@ -8,6 +8,7 @@ export const ApprovedRequestsTable = () => {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
   useEffect(() => {
     if (status === 'authenticated' && session?.user?.role === 'TeamLead') {
       fetchApprovedRequests();
@@ -29,6 +30,22 @@ export const ApprovedRequestsTable = () => {
     }
   };
 
+  const renderAttendanceStatus = (request) => {
+    const fromTime = new Date(request.from_time);
+    const toTime = new Date(request.to_time);
+    const noonCutoff = new Date(fromTime);
+    noonCutoff.setHours(12, 0, 0, 0);
+
+    const isForenoon = fromTime < noonCutoff;
+    const isAfternoon = toTime > noonCutoff;
+
+    if (request.attendance) {
+      if (isForenoon && isAfternoon) return 'Full Day';
+      if (isForenoon) return 'Forenoon';
+      if (isAfternoon) return 'Afternoon';
+    }
+    return 'Not Marked';
+  };
 
   const handleAttendanceUpdate = async (requestId, currentAttendance) => {
     try {
@@ -48,11 +65,13 @@ export const ApprovedRequestsTable = () => {
       console.error('Error updating attendance:', err);
     }
   };
+
   if (status === 'loading' || loading) return (
     <div className="flex justify-center items-center min-h-[400px]">
       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
     </div>
   );
+
   const formatTime = (dateTime) => {
     return new Date(dateTime).toLocaleTimeString([], { 
       hour: '2-digit', 
@@ -77,18 +96,17 @@ export const ApprovedRequestsTable = () => {
   return (
     <div className="bg-black text-white shadow-sm rounded-lg overflow-hidden">
       <div className='flex flex-row space-x-96'>
-        <div className="flex-shrink-0 ">
-              <img 
-                className="w-36 h-36 rounded object-contain" 
-                src="/logo1.png" 
-                alt="Company Logo" 
-              />
-            </div>
-          <div className=" text-3xl py-10  print:hidden text-[#00f5d0]">
+        <div className="flex-shrink-0">
+          <img 
+            className="w-36 h-36 rounded object-contain" 
+            src="/logo1.png" 
+            alt="Company Logo" 
+          />
+        </div>
+        <div className="text-3xl py-10 print:hidden text-[#00f5d0]">
           ATTENDANCE
-          
-          </div>
-          </div>
+        </div>
+      </div>
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-700">
           <thead className="bg-gray-900">
@@ -142,28 +160,25 @@ export const ApprovedRequestsTable = () => {
                     <div className="flex items-center">
                       <CalendarDays className="w-5 h-5 text-gray-400 mr-3" />
                       <div>
-                      <div className="text-sm text-white">
-                              From: {formatTime(request.from_time)}
-                            </div>
-                            <div className="text-sm text-white">
-                              To: {formatTime(request.to_time)}
-                            </div>
+                        <div className="text-sm text-white">
+                          From: {formatTime(request.from_time)}
+                        </div>
+                        <div className="text-sm text-white">
+                          To: {formatTime(request.to_time)}
+                        </div>
                       </div>
                     </div>
                   </td>
                   <td className="px-6 py-4">
                     <button
                       onClick={() => handleAttendanceUpdate(request.id, request.attendance)}
-                      className={`flex items-center px-4 py-2 rounded-md transition-colors ${
-                        request.attendance
-                          ? 'bg-[#00f5d0]/20 text-[#00f5d0]'
+                      className={`px-4 py-2 rounded-md ${
+                        request.attendance 
+                          ? 'bg-[#00f5d0]/20 text-[#00f5d0]' 
                           : 'bg-gray-800 text-gray-300'
                       }`}
                     >
-                      <CheckSquare className={`w-4 h-4 mr-2 ${
-                        request.attendance ? 'text-[#00f5d0]' : 'text-gray-400'
-                      }`} />
-                      {request.attendance ? 'Attended' : 'Mark Attendance'}
+                      {renderAttendanceStatus(request)}
                     </button>
                   </td>
                 </tr>
