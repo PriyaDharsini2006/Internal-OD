@@ -1,4 +1,4 @@
-//api/requests/[id]/reject/route.js
+// api/attendance/[id]/route.js
 export const dynamic = 'force-dynamic';
 export const fetchCache = 'force-no-store';
 import { NextResponse } from 'next/server';
@@ -11,44 +11,35 @@ const prisma = new PrismaClient();
 export async function PATCH(req, { params }) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session) {
+    if (!session || session.user.role !== 'TeamLead') {
       return NextResponse.json(
         { message: 'Unauthorized' },
         { status: 401 }
       );
     }
 
-    // Log the params to verify the ID
-    console.log('Params:', params);
     const { id } = params;
+    const { attendance } = await req.json();
 
     // Validate ID
     if (!id) {
-      console.error('No ID provided');
       return NextResponse.json(
         { message: 'Request ID is required' },
         { status: 400 }
       );
     }
 
-    // Attempt to update
+    // Update attendance
     const updatedRequest = await prisma.oDRequest.update({
-      where: { id: id }, // Explicitly use id parameter
-      data: { 
-        status: 0 // Change back to pending status
-      }
+      where: { id: id },
+      data: { attendance }
     });
 
     return NextResponse.json(updatedRequest, { status: 200 });
   } catch (error) {
-    console.error('Detailed unreject error:', error);
+    console.error('Attendance update error:', error);
     return NextResponse.json(
-      { 
-        message: 'Internal server error', 
-        errorName: error.name,
-        errorMessage: error.message,
-        errorStack: error.stack 
-      },
+      { message: 'Internal server error' },
       { status: 500 }
     );
   } finally {
