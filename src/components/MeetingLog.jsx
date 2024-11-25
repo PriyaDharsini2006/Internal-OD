@@ -114,75 +114,85 @@ const MeetingLog = ({ meetings, setMeetings, fetchMeetings }) => {
 
   return (
     <div className="p-6 max-w-7xl mx-auto">
+      {/* Meetings Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-        {meetings.map(meeting => (
-          <div 
-            key={meeting.id} 
-            className={`p-4 rounded-md shadow-md cursor-pointer ${
-              new Date() > new Date(meeting.to_time) 
-                ? 'bg-green-100 hover:bg-green-200' 
-                : 'bg-red-100 hover:bg-red-200'
+        {meetings.map((meeting) => (
+          <div
+            key={meeting.id}
+            className={`p-4 rounded-md shadow-md cursor-pointer transition ${
+              new Date() > new Date(meeting.to_time)
+                ? "bg-[#00f5d0] text-black hover:bg-green-200"
+                : "bg-red-500 text-black hover:bg-red-200"
             }`}
             onClick={() => openMeetingDetails(meeting)}
           >
             <h3 className="font-semibold text-lg">{meeting.title}</h3>
             <p>Team: {meeting.team}</p>
             <p>Date: {new Date(meeting.date).toLocaleDateString()}</p>
-            <p>Time: {new Date(meeting.from_time).toLocaleTimeString()} - {new Date(meeting.to_time).toLocaleTimeString()}</p>
+            <p>
+              Time: {new Date(meeting.from_time).toLocaleTimeString()} -{" "}
+              {new Date(meeting.to_time).toLocaleTimeString()}
+            </p>
           </div>
         ))}
       </div>
-
+  
+      {/* Meeting Details Modal */}
       {selectedMeeting && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg w-11/12 max-w-7xl max-h-[90vh] flex flex-col">
-            <h2 className="text-2xl font-bold mb-6">{selectedMeeting.title} Details</h2>
-            
-            <div className="flex-grow overflow-auto space-y-6">
+          <div className="bg-black p-6 rounded-lg w-11/12 max-w-7xl max-h-[90vh] flex flex-col">
+            <h2 className="text-2xl font-bold mb-6">
+              {selectedMeeting.title} Details
+            </h2>
+  
+            {/* Modal Content */}
+            <div className="flex-grow overflow-auto space-y-6 bg-black">
               {/* Available Students Section */}
               <div className="border rounded-lg p-6">
-                <div className="mb-4">
-                  <h3 className="text-xl font-semibold mb-4">Available Students</h3>
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-                    <input 
-                      type="text" 
-                      placeholder="Search students..." 
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="w-full pl-10 pr-3 py-2 border rounded-md"
-                    />
-                  </div>
+                <h3 className="text-xl font-semibold mb-4">Available Students</h3>
+                <div className="relative mb-4">
+                  <Search
+                    className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#00f5d0]"
+                    size={20}
+                  />
+                  <input
+                    type="text"
+                    placeholder="Search students..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full pl-10 pr-3 py-2 border bg-black rounded-md"
+                  />
                 </div>
-
+  
+                {/* Students Table */}
                 <div className="max-h-96 overflow-y-auto border rounded-md">
                   <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50 sticky top-0">
+                    <thead className="bg-black sticky top-0">
                       <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-6 py-3 text-left text-xs font-medium text-[#00f5d0] uppercase tracking-wider">
                           Select
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-6 py-3 text-left text-xs font-medium text-[#00f5d0] uppercase tracking-wider">
                           Name
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-6 py-3 text-left text-xs font-medium text-[#00f5d0] uppercase tracking-wider">
                           Section
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-6 py-3 text-left text-xs font-medium text-[#00f5d0] uppercase tracking-wider">
                           Year
                         </th>
                       </tr>
                     </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                      {currentStudents.map(student => (
-                        <tr 
+                    <tbody className="bg-black divide-y divide-gray-200">
+                      {currentStudents.map((student) => (
+                        <tr
                           key={student.email}
-                          className="hover:bg-gray-50 cursor-pointer"
+                          className="hover:bg-gray-900 cursor-pointer"
                           onClick={() => addStudentToMeeting(student.email)}
                         >
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <button 
-                              className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-sm"
+                            <button
+                              className="bg-[#00f5d0] hover:bg-green-600 text-black px-3 py-1 rounded text-sm"
                               onClick={(e) => {
                                 e.stopPropagation();
                                 addStudentToMeeting(student.email);
@@ -192,29 +202,33 @@ const MeetingLog = ({ meetings, setMeetings, fetchMeetings }) => {
                             </button>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm font-medium text-gray-900">{student.name}</div>
-                            <div className="text-sm text-gray-500">{student.email}</div>
+                            <div className="text-sm font-medium text-white">
+                              {student.name}
+                            </div>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            {student.sec || '-'}
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
+                            {student.sec || "-"}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            {student.year || '-'}
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
+                            {student.year || "-"}
                           </td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
                 </div>
-
+  
+                {/* Pagination */}
                 <div className="flex items-center justify-between mt-4">
                   <div className="text-sm text-gray-500">
-                    Showing {startIndex + 1} to {Math.min(endIndex, filteredAvailableStudents.length)} of {filteredAvailableStudents.length} students
+                    Showing {startIndex + 1} to{" "}
+                    {Math.min(endIndex, filteredAvailableStudents.length)} of{" "}
+                    {filteredAvailableStudents.length} students
                   </div>
                   <div className="flex items-center space-x-2">
                     <button
-                      className="p-2 border rounded-md hover:bg-gray-50 disabled:opacity-50"
-                      onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                      className="p-2 border rounded-md hover:bg-black-100 disabled:opacity-50"
+                      onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
                       disabled={currentPage === 1}
                     >
                       <ChevronLeft className="h-4 w-4" />
@@ -223,8 +237,8 @@ const MeetingLog = ({ meetings, setMeetings, fetchMeetings }) => {
                       Page {currentPage} of {totalPages}
                     </span>
                     <button
-                      className="p-2 border rounded-md hover:bg-gray-50 disabled:opacity-50"
-                      onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                      className="p-2 border rounded-md hover:bg-black-100 disabled:opacity-50"
+                      onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
                       disabled={currentPage === totalPages}
                     >
                       <ChevronRight className="h-4 w-4" />
@@ -232,7 +246,7 @@ const MeetingLog = ({ meetings, setMeetings, fetchMeetings }) => {
                   </div>
                 </div>
               </div>
-
+  
               {/* Selected Students Section */}
               <div className="border rounded-lg p-6">
                 <h3 className="text-xl font-semibold mb-4">
@@ -240,29 +254,29 @@ const MeetingLog = ({ meetings, setMeetings, fetchMeetings }) => {
                 </h3>
                 <div className="max-h-96 overflow-y-auto border rounded-md">
                   <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50 sticky top-0">
+                    <thead className="bg-black sticky top-0">
                       <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-6 py-3 text-left text-xs font-medium text-[#00f5d0] uppercase tracking-wider">
                           Action
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-6 py-3 text-left text-xs font-medium text-[#00f5d0] uppercase tracking-wider">
                           Name
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-6 py-3 text-left text-xs font-medium text-[#00f5d0] uppercase tracking-wider">
                           Section
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-6 py-3 text-left text-xs font-medium text-[#00f5d0] uppercase tracking-wider">
                           Year
                         </th>
                       </tr>
                     </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                      {students.map(email => {
-                        const student = allStudents.find(s => s.email === email);
+                    <tbody className="bg-black divide-y divide-gray-200">
+                      {students.map((email) => {
+                        const student = allStudents.find((s) => s.email === email);
                         return (
-                          <tr key={email} className="hover:bg-gray-50">
+                          <tr key={email} className="hover:bg-black-400">
                             <td className="px-6 py-4 whitespace-nowrap">
-                              <button 
+                              <button
                                 onClick={() => removeStudentFromMeeting(email)}
                                 className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm"
                               >
@@ -270,14 +284,15 @@ const MeetingLog = ({ meetings, setMeetings, fetchMeetings }) => {
                               </button>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm font-medium text-gray-900">{student?.name || '-'}</div>
-                              <div className="text-sm text-gray-500">{email}</div>
+                              <div className="text-sm font-medium text-white">
+                                {student?.name || "-"}
+                              </div>
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                              {student?.sec || '-'}
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
+                              {student?.sec || "-"}
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                              {student?.year || '-'}
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
+                              {student?.year || "-"}
                             </td>
                           </tr>
                         );
@@ -287,10 +302,11 @@ const MeetingLog = ({ meetings, setMeetings, fetchMeetings }) => {
                 </div>
               </div>
             </div>
-            
-            <button 
+  
+            {/* Close Button */}
+            <button
               onClick={() => setSelectedMeeting(null)}
-              className="mt-6 w-full bg-blue-500 hover:bg-blue-700 text-white py-2 rounded-md transition duration-200"
+              className="mt-6 w-full bg-[#00f5d0] text-black py-2 rounded-md transition duration-200"
             >
               Close
             </button>
@@ -300,5 +316,4 @@ const MeetingLog = ({ meetings, setMeetings, fetchMeetings }) => {
     </div>
   );
 };
-
 export default MeetingLog;
