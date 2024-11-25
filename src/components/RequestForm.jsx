@@ -276,35 +276,34 @@ const RequestForm = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-5xl mx-auto bg-white rounded-2xl shadow-xl">
+    <div className="min-h-screen bg-black py-8 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-5xl mx-auto bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10">
         {/* Header Section */}
-        <div className="border-b border-gray-200 bg-gray-50 rounded-t-2xl px-6 py-5">
-          <div className='flex flex-row'>
-        <div className="flex-shrink-0 flex flex-row">
+        <div className="border-b border-white/10 bg-black/30 rounded-t-2xl px-6 py-5">
+          <div className="flex flex-row">
+            <div className="flex-shrink-0 flex flex-row">
               <img 
                 className="w-36 h-36 rounded object-contain" 
-                src="/logo.png" 
+                src="/logo1.png" 
                 alt="Company Logo" 
               />
             </div>
-          <h1 className="text-2xl px-36 py-10 md:text-3xl font-bold text-black">
-            Send OD Request
-          </h1>
+            <h1 className="text-2xl px-36 py-10 md:text-3xl font-grotesk font-bold text-[#00f5d0]">
+              Send OD Request
+            </h1>
           </div>
         </div>
-        
 
         <div className="p-6 space-y-6">
           {/* Alert Messages */}
           {error && (
-            <div className="bg-red-50 border-l-4 border-red-400 p-4 rounded-md">
-              <p className="text-red-700">{error}</p>
+            <div className="bg-red-900/20 border-l-4 border-red-500 p-4 rounded-md">
+              <p className="text-red-400">{error}</p>
             </div>
           )}
           {successMessage && (
-            <div className="bg-green-50 border-l-4 border-green-400 p-4 rounded-md">
-              <p className="text-green-700">{successMessage}</p>
+            <div className="bg-green-900/20 border-l-4 border-green-500 p-4 rounded-md">
+              <p className="text-green-400">{successMessage}</p>
             </div>
           )}
 
@@ -316,13 +315,13 @@ const RequestForm = () => {
                 placeholder="Search students..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-4 py-2.5 bg-white/5 backdrop-blur-xl rounded-lg text-gray-300 placeholder-gray-500 border border-white/10 focus:ring-2 focus:ring-[#00f5d0] focus:border-[#00f5d0]"
               />
             </div>
             <select
               value={selectedSection}
               onChange={(e) => setSelectedSection(e.target.value)}
-              className="px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="px-4 py-2.5 bg-white/5 backdrop-blur-xl rounded-lg text-gray-300 border border-white/10 focus:ring-2 focus:ring-[#00f5d0] focus:border-[#00f5d0]"
             >
               <option value="all">All Sections</option>
               {sectionsOptions.map((section) => (
@@ -334,7 +333,7 @@ const RequestForm = () => {
             <select
               value={selectedYear}
               onChange={(e) => setSelectedYear(e.target.value)}
-              className="px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="px-4 py-2.5 bg-white/5 backdrop-blur-xl rounded-lg text-gray-300 border border-white/10 focus:ring-2 focus:ring-[#00f5d0] focus:border-[#00f5d0]"
             >
               <option value="all">All Years</option>
               {yearsOptions.map((year) => (
@@ -346,25 +345,25 @@ const RequestForm = () => {
           </div>
 
           {/* Table Section */}
-          <div className="relative overflow-hidden rounded-lg border border-gray-200">
+          <div className="relative overflow-hidden rounded-lg border border-white/10">
             <div className="overflow-x-auto">
               <div className="inline-block min-w-full align-middle">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
+                <table className="min-w-full divide-y divide-white/10">
+                  <thead className="bg-white/5">
                     <tr>
-                      <th className="px-4 py-3 text-left text-sm font-semibold text-black-900">Select</th>
-                      <th className="px-4 py-3 text-left text-sm font-semibold text-black-900">Name</th>
-                      <th className="px-4 py-3 text-left text-sm font-semibold text-black-900">Email</th>
-                      <th className="px-4 py-3 text-left text-sm font-semibold text-black-900">Section</th>
-                      <th className="px-4 py-3 text-left text-sm font-semibold text-black-900">Year</th>
-                      <th className="px-4 py-3 text-left text-sm font-semibold text-black-900">Stayback</th>
-                      <th className="px-4 py-3 text-left text-sm font-semibold text-black-900">Meeting</th>
+                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Select</th>
+                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Name</th>
+                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Email</th>
+                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Section</th>
+                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Year</th>
+                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Stayback</th>
+                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Meeting</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-200 bg-white">
+                  <tbody className="divide-y divide-white/10">
                     {loading ? (
                       <tr>
-                        <td colSpan="7" className="px-4 py-4 text-center text-sm text-black-500">
+                        <td colSpan="7" className="px-4 py-4 text-center text-sm text-gray-400">
                           Loading...
                         </td>
                       </tr>
@@ -372,22 +371,22 @@ const RequestForm = () => {
                       currentStudents.map((student) => (
                         <tr 
                           key={student.user_id}
-                          className="hover:bg-gray-50 transition-colors"
+                          className="hover:bg-white/5 transition-colors"
                         >
                           <td className="px-4 py-3 text-center">
                             <input
                               type="checkbox"
                               checked={selectedStudents.includes(student.user_id)}
                               onChange={() => handleSelectStudent(student.user_id)}
-                              className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                              className="w-4 h-4 text-[#00f5d0] bg-white/5 border-white/10 rounded focus:ring-[#00f5d0]"
                             />
                           </td>
-                          <td className="px-4 py-3 text-sm text-black-900">{student.name}</td>
-                          <td className="px-4 py-3 text-sm text-black-600">{student.email}</td>
-                          <td className="px-4 py-3 text-sm text-black-600">{student.sec}</td>
-                          <td className="px-4 py-3 text-sm text-black-600">{student.year}</td>
-                          <td className="px-4 py-3 text-sm text-black-600">{student.counts?.stayback_cnt || 0}</td>
-                          <td className="px-4 py-3 text-sm text-black-600">{student.counts?.meeting_cnt || 0}</td>
+                          <td className="px-4 py-3 text-sm text-gray-300">{student.name}</td>
+                          <td className="px-4 py-3 text-sm text-gray-400">{student.email}</td>
+                          <td className="px-4 py-3 text-sm text-gray-400">{student.sec}</td>
+                          <td className="px-4 py-3 text-sm text-gray-400">{student.year}</td>
+                          <td className="px-4 py-3 text-sm text-gray-400">{student.counts?.stayback_cnt || 0}</td>
+                          <td className="px-4 py-3 text-sm text-gray-400">{student.counts?.meeting_cnt || 0}</td>
                         </tr>
                       ))
                     )}
@@ -399,14 +398,14 @@ const RequestForm = () => {
 
           {/* Pagination */}
           <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-            <div className="text-sm text-black">
+            <div className="text-sm text-gray-400">
               Showing {startIndex + 1} to {endIndex} of {totalStudents.length} entries
             </div>
             <div className="flex space-x-1">
               <button
                 onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1}
-                className="px-3 py-1 border rounded-md text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                className="px-3 py-1 border border-white/10 rounded-md text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-white/5 text-gray-300"
               >
                 Previous
               </button>
@@ -416,8 +415,8 @@ const RequestForm = () => {
                   onClick={() => setCurrentPage(i + 1)}
                   className={`px-3 py-1 border rounded-md text-sm font-medium ${
                     currentPage === i + 1
-                      ? 'bg-blue-600 text-white border-blue-600'
-                      : 'hover:bg-gray-50'
+                      ? 'bg-[#00f5d0] text-black border-[#00f5d0]'
+                      : 'border-white/10 text-gray-300 hover:bg-white/5'
                   }`}
                 >
                   {i + 1}
@@ -426,7 +425,7 @@ const RequestForm = () => {
               <button
                 onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
                 disabled={currentPage === totalPages}
-                className="px-3 py-1 border rounded-md text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                className="px-3 py-1 border border-white/10 rounded-md text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-white/5 text-gray-300"
               >
                 Next
               </button>
@@ -435,94 +434,79 @@ const RequestForm = () => {
 
           {/* Form Fields */}
           <div className="space-y-4">
-          <div>
-      <select
-        value={reason}
-        onChange={(e) => setReason(e.target.value)}
-        className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-      >
-        <option value="">Select Team</option>
-        {teamOptions.map((team) => (
-          <option key={team} value={team}>
-            {team}
-          </option>
-        ))}
-      </select>
-    </div>
             <div>
-            <textarea
-                placeholder="Description"
+              <select
+                value={reason}
+                onChange={(e) => setReason(e.target.value)}
+                className="w-full px-4 py-2.5 bg-white/5 backdrop-blur-xl rounded-lg text-gray-300 border border-white/10 focus:ring-2 focus:ring-[#00f5d0] focus:border-[#00f5d0]"
+              >
+                <option value="">Select Team</option>
+                {teamOptions.map((team) => (
+                  <option key={team} value={team}>
+                    {team}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <input
+                type="text"
+                placeholder="Task"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
+                className="w-full px-4 py-2 bg-white/5 backdrop-blur-xl rounded-lg text-gray-300 placeholder-gray-500 border border-white/10 focus:ring-2 focus:ring-[#00f5d0] focus:border-[#00f5d0] resize-none"
                 rows="3"
               />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-    <div>
-      <label className="block text-sm font-medium text-gray-700 mb-1">
-        Start Time
-      </label>
-      <input
-        type="time"
-        value={fromTime}
-        onChange={handleFromTimeChange}
-        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-      />
-      {fromTime && (
-        <span className="text-sm text-gray-500 mt-1 block">
-          {convertTo12Hour(fromTime)}
-        </span>
-      )}
-    </div>
-    <div>
-      <label className="block text-sm font-medium text-gray-700 mb-1">
-        End Time
-      </label>
-      <input
-        type="time"
-        value={toTime}
-        onChange={handleToTimeChange}
-        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-      />
-      {toTime && (
-        <span className="text-sm text-gray-500 mt-1 block">
-          {convertTo12Hour(toTime)}
-        </span>
-      )}
-    </div>
-  </div>
-  {timeError && (
-    <div className="mt-2 text-sm text-red-600">
-      {timeError}
-    </div>
-  )}
-            {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
+                <label className="block text-sm font-medium text-gray-300 mb-1">
+                  Start Time
+                </label>
                 <input
                   type="time"
                   value={fromTime}
-                  onChange={(e) => setFromTime(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  onChange={handleFromTimeChange}
+                  className="w-full px-4 py-2 bg-white/5 backdrop-blur-xl rounded-lg text-gray-300 border border-white/10 focus:ring-2 focus:ring-[#00f5d0] focus:border-[#00f5d0]"
+                  data-format="12"
                 />
+                {fromTime && (
+                  <span className="text-sm text-gray-400 mt-1 block">
+                    {convertTo12Hour(fromTime)}
+                  </span>
+                )}
               </div>
               <div>
+                <label className="block text-sm font-medium text-gray-300 mb-1">
+                  End Time
+                </label>
                 <input
                   type="time"
                   value={toTime}
-                  onChange={(e) => setToTime(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  onChange={handleToTimeChange}
+                  className="w-full px-4 py-2 bg-white/5 backdrop-blur-xl rounded-lg text-gray-300 border border-white/10 focus:ring-2 focus:ring-[#00f5d0] focus:border-[#00f5d0]"
+                  data-format="12"
                 />
+                {toTime && (
+                  <span className="text-sm text-gray-400 mt-1 block">
+                    {convertTo12Hour(toTime)}
+                  </span>
+                )}
               </div>
-            </div> */}
+            </div>
+            {timeError && (
+              <div className="mt-2 text-sm text-red-400">
+                {timeError}
+              </div>
+            )}
           </div>
         </div>
 
         {/* Footer Section */}
-        <div className="px-6 py-4 bg-gray-50 rounded-b-2xl">
+        <div className="px-6 py-4 bg-black/30 rounded-b-2xl">
           <button
             onClick={handleSendRequest}
-            className="w-full py-2.5 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+            className="w-full py-2.5 bg-[#00f5d0] text-black rounded-lg font-medium hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-[#00f5d0] focus:ring-offset-2 transition-all"
           >
             Send Request
           </button>
