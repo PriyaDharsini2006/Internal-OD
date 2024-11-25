@@ -389,7 +389,7 @@ if (selectedSection !== 'All') {
       )}
 
       {showBatchTimingForm && (
-        <div className="mt-4 p-4 border rounded-md bg-gray-50">
+        <div className="mt-4 p-4 border rounded-md  bg-white/5">
           <h2 className="text-lg font-bold mb-4">Modify Batch Timings</h2>
           <form
             onSubmit={(e) => {
@@ -398,14 +398,14 @@ if (selectedSection !== 'All') {
             }}
             className="space-y-4"
           >
-            <div className="flex space-x-4">
+            <div className="flex space-x-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">From Time</label>
                 <input
                   type="time"
                   value={batchTimings.from_time}
                   onChange={(e) => setBatchTimings(prev => ({...prev, from_time: e.target.value}))}
-                  className="border px-4 py-2 rounded"
+                  className="border px-4 py-2 rounded  bg-white/5"
                   required
                 />
               </div>
@@ -415,7 +415,7 @@ if (selectedSection !== 'All') {
                   type="time"
                   value={batchTimings.to_time}
                   onChange={(e) => setBatchTimings(prev => ({...prev, to_time: e.target.value}))}
-                  className="border px-4 py-2 rounded"
+                  className="border px-4 py-2  bg-white/5 rounded"
                   required
                 />
               </div>
