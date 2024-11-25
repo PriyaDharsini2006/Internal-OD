@@ -1,13 +1,14 @@
 'use client'
 import React, { useState, useEffect } from 'react';
-import { XCircle, User, CalendarDays, Printer, Menu, X, RefreshCw } from 'lucide-react';
+import { User, CalendarDays, Printer, Menu, X, XCircle, RefreshCw } from 'lucide-react';
 
-const RejectedRequestsTable = () => {
+export const Rejected = () => {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+  // Get current date
   const currentDate = new Date().toLocaleDateString('en-GB', {
     day: 'numeric',
     month: 'long',
@@ -48,6 +49,7 @@ const RejectedRequestsTable = () => {
     }
   };
 
+  // Format time without date
   const formatTime = (dateTime) => {
     return new Date(dateTime).toLocaleTimeString([], { 
       hour: '2-digit', 
@@ -64,88 +66,90 @@ const RejectedRequestsTable = () => {
   };
 
   if (loading) return (
-    <div className="flex justify-center items-center min-h-screen">
-      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500"></div>
+    <div className="flex justify-center items-center min-h-[400px]">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
     </div>
   );
 
   if (error) return (
-    <div className="flex justify-center items-center min-h-screen">
-      <div className="bg-red-50 p-4 rounded-lg">
-        <p className="text-red-600 text-center">Error: {error}</p>
-      </div>
+    <div className="text-red-600 text-center p-4">
+      Error: {error}
     </div>
   );
 
   return (
-    <div className="min-h-screen ">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Mobile Header */}
-        <div className="lg:hidden mb-6">
-        <div className="flex-shrink-0 ">
-              <img 
-                className="w-36 h-36 rounded object-contain" 
-                src="/logo1.png" 
-                alt="Company Logo" 
-              
-            />
+    <div className="print-container container mx-auto px-4 sm:px-6 lg:px-8">
+    {/* Mobile Menu Toggle */}
+    <div className="lg:hidden mb-4">
+        <button 
+          onClick={toggleMobileMenu} 
+          className="flex print:hidden items-center justify-center w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
+        >
+          {isMobileMenuOpen ? (
+            <>
+              <X className="mr-2 w-5 h-5" />
+              Close Menu
+            </>
+          ) : (
+            <>
+              <Menu className="mr-2 print:hidden w-5 h-5" />
+              Actions
+            </>
+          )}
+        </button>
+
+        {isMobileMenuOpen && (
+          <div className="mobile-actions mt-2 space-y-2">
             <button 
-              onClick={toggleMobileMenu}
-              className="bg-[#00f5d0] text-black p-2 rounded-lg transition-colors"
+              onClick={handlePrint} 
+              className="w-full flex items-center justify-center bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition"
             >
-              {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+              <Printer className="mr-2 w-5 h-5" />
+              Print
             </button>
           </div>
+        )}
+      </div>
 
-          {isMobileMenuOpen && (
-            <div className="mt-4 space-y-2 bg-white p-4 rounded-lg shadow-lg">
-              <button 
-                onClick={handlePrint}
-                className="w-full flex items-center justify-center gap-2 bg-red-500 text-white px-4 py-3 rounded-lg hover:bg-red-600 transition-colors"
-              >
-                <Printer size={20} />
-                Print Document
-              </button>
+      {/* Browser-only view */}
+      <div className="browser-view backdrop-blur-xl rounded-2xl border border-white/10">
+        <div className="bg-white/5 shadow-sm rounded-lg overflow-hidden">
+          {/* Desktop Print Button */}
+          <div className="hidden lg:block p-4 flex justify-end print:hidden">
+            <div className='flex flex-row space-x-96'>
+              <div className="flex-shrink-0 ">
+                <img 
+                  className="w-36 h-36 rounded object-contain" 
+                  src="/logo1.png" 
+                  alt="Company Logo" 
+                />
+              </div>
+              <div className="py-10 justify-start print:hidden">
+                <button 
+                  onClick={handlePrint} 
+                  className="flex items-center bg-[#00f5d0] text-black px-6 py-4 rounded hover:bg-white/5 hover:text-white transition"
+                >
+                  <Printer className="mr-2 w-5 h-5" />
+                  Print
+                </button>
+              </div>
             </div>
-          )}
-        </div>
-
-        {/* Desktop Header */}
-        <div className="hidden lg:flex justify-between items-center mb-8">
-          <img 
-            src="/logo.png"
-            alt="Company Logo"
-            className="w-32 h-32 object-contain"
-          />
-          <button 
-            onClick={handlePrint}
-            className="flex items-center gap-2 bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-red-600 transition-colors print:hidden"
-          >
-            <Printer size={20} />
-            Print 
-          </button>
-        </div>
-
-        {/* Main Content */}
-        <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-          {/* Desktop View */}
-          <div className="hidden lg:block overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-gray-50">
+          </div>
+          
+          <div className="overflow-x-auto print:hidden">
+            <table className="min-w-full divide-y divide-gray-700">
+              <thead className="bg-gray-900">
                 <tr>
-                  <th className="px-4 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300 uppercase tracking-wider">
                     Student Details
                   </th>
-                  <th className="px-4 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300 uppercase tracking-wider hidden md:table-cell">
                     Request Details
                   </th>
-                  <th className="px-4 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300 uppercase tracking-wider">
                     Duration
                   </th>
-                  <th className="px-4 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Status
-                  </th>
-                  <th className="px-4 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300 uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
@@ -153,49 +157,53 @@ const RejectedRequestsTable = () => {
               <tbody className="divide-y divide-gray-200">
                 {requests.length === 0 ? (
                   <tr>
-                    <td colSpan="5" className="px-4 py-8 text-center text-gray-500">
+                    <td colSpan="4" className="px-4 sm:px-6 py-4 text-center text-gray-500">
                       No rejected requests found
                     </td>
                   </tr>
                 ) : (
                   requests.map((request) => (
-                    <tr key={request.id} className="hover:bg-gray-50">
-                      <td className="px-4 py-4">
-                        <div className="flex items-center gap-3">
-                          <User className="w-5 h-5 text-gray-400 flex-shrink-0" />
+                    <tr key={request.id}>
+                      <td className="px-4 sm:px-6 py-4">
+                        <div className="flex items-center">
+                          <User className="w-5 h-5 text-gray-400 mr-3 hidden sm:block" />
                           <div>
-                            <div className="font-medium text-gray-900">{request.user.name}</div>
-                            <div className="text-sm text-gray-500">{request.studentId}</div>
+                            <div className="text-sm font-medium text-white">
+                              {request.user.name}
+                            </div>
+                            <div className="text-sm text-gray-500">
+                              {request.user.sec} Year {request.user.year}
+                            </div>
                           </div>
                         </div>
                       </td>
-                      <td className="px-4 py-4">
-                        <div className="text-sm">
-                          <div className="font-medium text-gray-900">{request.requestType}</div>
-                          <div className="text-gray-500">{request.description}</div>
+                      <td className="px-4 sm:px-6 py-4 hidden md:table-cell">
+                        <div className="text-sm text-gwhite font-medium">
+                          {request.reason}
+                        </div>
+                        <div className="text-sm text-gray-500">
+                          {request.description}
                         </div>
                       </td>
-                      <td className="px-4 py-4">
-                        <div className="flex items-center gap-3">
-                          <CalendarDays className="w-5 h-5 text-gray-400 flex-shrink-0" />
-                          <div className="text-sm">
-                            <div className="text-gray-900">From: {formatTime(request.from_time)}</div>
-                            <div className="text-gray-900">To: {formatTime(request.to_time)}</div>
+                      <td className="px-4 sm:px-6 py-4">
+                        <div className="flex items-center">
+                          <CalendarDays className="w-5 h-5 text-gray-400 mr-3 hidden sm:block" />
+                          <div>
+                            <div className="text-sm text-white">
+                              From: {formatTime(request.from_time)}
+                            </div>
+                            <div className="text-sm text-white">
+                              To: {formatTime(request.to_time)}
+                            </div>
                           </div>
                         </div>
                       </td>
-                      <td className="px-4 py-4">
-                        <div className="flex items-center gap-2">
-                          <XCircle className="w-5 h-5 text-red-500" />
-                          <span className="text-sm font-medium text-red-500">Rejected</span>
-                        </div>
-                      </td>
-                      <td className="px-4 py-4">
+                      <td className="px-4 sm:px-6 py-4">
                         <button 
                           onClick={() => handleUnreject(request.id)}
-                          className="flex items-center gap-2 bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors"
+                          className="flex items-center bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition"
                         >
-                          <RefreshCw className="w-4 h-4" />
+                          <RefreshCw className="mr-2 w-5 h-5" />
                           Unreject
                         </button>
                       </td>
@@ -205,108 +213,141 @@ const RejectedRequestsTable = () => {
               </tbody>
             </table>
           </div>
+        </div>
+      </div>
 
-          {/* Mobile View */}
-          <div className="lg:hidden">
-            {requests.length === 0 ? (
-              <div className="p-4 text-center text-gray-500">
-                No rejected requests found
-              </div>
-            ) : (
-              <div className="divide-y divide-gray-200">
-                {requests.map((request) => (
-                  <div key={request.id} className="p-4 space-y-4">
-                    <div className="flex justify-between items-start">
-                      <div className="flex items-start gap-3">
-                        <User className="w-5 h-5 text-gray-400 mt-1" />
-                        <div>
-                          <div className="font-medium text-gray-900">{request.user.name}</div>
-                          <div className="text-sm text-gray-500">{request.studentId}</div>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <XCircle className="w-4 h-4 text-red-500" />
-                        <span className="text-sm font-medium text-red-500">Rejected</span>
-                      </div>
-                    </div>
+      {/* Print View - Full Document */}
+      <div className="print-view hidden print:block">
+        {/* First Page Content */}
+        <div className="first-page print-page">
+          <div className="header flex justify-between items-center mb-8">
+            <img 
+              id="citLogo" 
+              src="citlogo.png" 
+              alt="Chennai Institute of Technology Logo" 
+              className="w-16 sm:w-24 h-auto"
+            />
+            <img 
+              id="hackerzLogo" 
+              src="logo.png" 
+              alt="Hackerz Logo" 
+              className="w-16 sm:w-24 h-auto"
+            />
+          </div>
 
-                    <div className="space-y-2">
-                      <div>
-                        <div className="text-sm font-medium text-gray-900">{request.requestType}</div>
-                        <div className="text-sm text-gray-500">{request.description}</div>
-                      </div>
+          <div className="address-from mb-4 sm:mb-6">
+            <strong>From</strong>
+            <div className="text-sm sm:text-base">
+              Team Hackerz24,<br />
+              Department of Computer Science,<br />
+              Chennai Institute of Technology,<br />
+              Sarathy Nagar, Nandambakkam Post,<br />
+              Kundrathur, Chennai-600069.
+            </div>
+          </div>
 
-                      <div className="flex items-center gap-2 text-sm text-gray-900">
-                        <CalendarDays className="w-4 h-4 text-gray-400" />
-                        <div>
-                          <div>From: {formatTime(request.from_time)}</div>
-                          <div>To: {formatTime(request.to_time)}</div>
-                        </div>
-                      </div>
+          <div className="address-to mb-4 sm:mb-6">
+            <strong>To</strong>
+            <div className="text-sm sm:text-base">
+              The Head of Department,<br />
+              Chennai Institute of Technology,<br />
+              Sarathy Nagar, Nandambakkam Post,<br />
+              Kundrathur, Chennai-600069.
+            </div>
+          </div>
 
-                      <button 
-                        onClick={() => handleUnreject(request.id)}
-                        className="w-full flex items-center justify-center gap-2 bg-green-500 text-white px-4 py-3 rounded-lg hover:bg-green-600 transition-colors"
-                      >
-                        <RefreshCw className="w-4 h-4" />
-                        Unreject Request
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
+          <div className="subject font-bold mb-4 sm:mb-6 text-sm sm:text-base">
+            Subject: Rejected Requests Report for Hackerz24 Symposium
+          </div>
+
+          <div className="content leading-relaxed mb-6 sm:mb-10 text-sm sm:text-base">
+            <p>Respected Mam,</p>
+            <p>We hereby provide a report of rejected requests for the Hackerz24 symposium on {currentDate}. This document contains details of requests that were not initially approved.</p>
+          </div>
+
+          <div className="closing mb-4 sm:mb-7 text-sm sm:text-base">
+            Regards,<br />
+            Team Hackerz24
+          </div>
+
+          <div className="signature-section mt-8 flex flex-col items-end justify-end">
+            <img 
+              className="w-20 md:w-32 h-12 " 
+              src="sign.png" 
+              alt="Signature" 
+            />
+            <div className="text-sm md:text-base">
+              <p className="m-0 ml-10">Head of Department</p>
+              <p className="m-0">Computer Science and Engineering</p>
+            </div>
           </div>
         </div>
 
-        {/* Print View */}
-        <div className="hidden print:block">
-          <div className="mb-8 page-break-after-always">
-            <div className="flex justify-between items-center mb-8">
-              <img 
-                src="/citlogo.png"
-                alt="Chennai Institute of Technology Logo"
-                className="w-24 h-auto"
-              />
-              <img 
-                src="/logo.png"
-                alt="Hackerz Logo"
-                className="w-24 h-auto"
-              />
-            </div>
-
-            <div className="space-y-6">
-              <h1 className="text-2xl font-bold text-center mb-6">Rejected Requests Report</h1>
-              
-              <div className="text-right mb-4">
-                <div className="font-medium">Date: {currentDate}</div>
-              </div>
-
-              <table className="w-full border-collapse">
-                <thead>
+        {/* Second Page - Requests Table */}
+        <div className="second-page print-page">
+          <div className="bg-white shadow-sm rounded-lg overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
                   <tr>
-                    <th className="border border-gray-300 px-4 py-2 text-left">Student Details</th>
-                    <th className="border border-gray-300 px-4 py-2 text-left">Request Details</th>
-                    <th className="border border-gray-300 px-4 py-2 text-left">Duration</th>
+                    <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Student Details
+                    </th>
+                    <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">
+                      Request Details
+                    </th>
+                    <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Duration
+                    </th>
                   </tr>
                 </thead>
-                <tbody>
-                  {requests.map((request) => (
-                    <tr key={request.id}>
-                      <td className="border border-gray-300 px-4 py-2">
-                        <div className="font-medium">{request.user.name}</div>
-                        <div className="text-sm">{request.studentId}</div>
-                      </td>
-                      <td className="border border-gray-300 px-4 py-2">
-                        <div className="font-medium">{request.requestType}</div>
-                        <div className="text-sm">{request.description}</div>
-                      </td>
-                      <td className="border border-gray-300 px-4 py-2">
-                        <div>From: {formatTime(request.from_time)}</div>
-                        <div>To: {formatTime(request.to_time)}</div>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {requests.length === 0 ? (
+                    <tr>
+                      <td colSpan="3" className="px-4 sm:px-6 py-4 text-center text-gray-500">
+                        No rejected requests found
                       </td>
                     </tr>
-                  ))}
+                  ) : (
+                    requests.map((request) => (
+                      <tr key={request.id}>
+                        <td className="px-4 sm:px-6 py-4">
+                          <div className="flex items-center">
+                            <User className="w-5 h-5 text-gray-400 mr-3 hidden sm:block" />
+                            <div>
+                              <div className="text-sm font-medium text-gray-900">
+                                {request.user.name}
+                              </div>
+                              <div className="text-sm text-gray-500">
+                                {request.user.sec} Year {request.user.year}
+                              </div>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-4 sm:px-6 py-4 hidden md:table-cell">
+                          <div className="text-sm text-gray-900 font-medium">
+                            {request.reason}
+                          </div>
+                          <div className="text-sm text-gray-500">
+                            {request.description}
+                          </div>
+                        </td>
+                        <td className="px-4 sm:px-6 py-4">
+                          <div className="flex items-center">
+                            <CalendarDays className="w-5 h-5 text-gray-400 mr-3 hidden sm:block" />
+                            <div>
+                              <div className="text-sm text-gray-900">
+                                From: {formatTime(request.from_time)}
+                              </div>
+                              <div className="text-sm text-gray-900">
+                                To: {formatTime(request.to_time)}
+                              </div>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>
@@ -314,23 +355,66 @@ const RejectedRequestsTable = () => {
         </div>
       </div>
 
+      {/* Print-specific styles */}
       <style jsx global>{`
         @media print {
-          @page {
-            margin: 2cm;
-          }
-
-          nav, footer, .print\:hidden {
+          /* Hide the navbar during print */
+          nav, .mobile-actions {
             display: none !important;
+          }
+            footer{
+            display:none !important}
+
+          /* Ensure the printed content starts from the top */
+          .print-container {
+            margin-top: 0 !important;
+            padding: 0 !important;
           }
 
           body {
-            print-color-adjust: exact;
-            -webkit-print-color-adjust: exact;
+            margin: 0;
+            padding: 0;
           }
 
-          .page-break-after-always {
+          .print-page {
             page-break-after: always;
+            margin: 0;
+            padding: 1rem sm:2rem;
+          }
+
+          .print-page:last-child {
+            page-break-after: avoid;
+          }
+
+          .print:hidden {
+            display: none !important;
+          }
+
+          .browser-view {
+            display: none !important;
+          }
+
+          .print-view {
+            display: block !important;
+          }
+        }
+
+        @media screen {
+          .print-view {
+            display: none !important;
+          }
+        }
+
+        /* Mobile and Responsive Adjustments */
+        @media (max-width: 640px) {
+          .px-6 {
+            padding-left: 0.5rem;
+            padding-right: 0.5rem;
+          }
+
+          .text-sm {
+            font-size: 0.75rem;
+            line-height: 1rem;
           }
         }
       `}</style>
@@ -338,4 +422,4 @@ const RejectedRequestsTable = () => {
   );
 };
 
-export default RejectedRequestsTable;
+export default Rejected;
