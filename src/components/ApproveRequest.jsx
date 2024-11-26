@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { ChevronDown, AlertTriangle } from 'lucide-react';
-
 
 const ODRequestApproval = () => {
   const { data: session, status } = useSession();
@@ -19,14 +17,8 @@ const ODRequestApproval = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [batchTimings, setBatchTimings] = useState({
     from_time: '',
-    from_time_modifier: 'AM',
-    to_time: '',
-    to_time_modifier: 'AM'
+    to_time: ''
   });
-  const [timeError, setTimeError] = useState('');
-  const [businessHoursWarning, setBusinessHoursWarning] = useState(false);
-  const [proceedWithSubmit, setProceedWithSubmit] = useState(false);
-
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -40,90 +32,6 @@ const ODRequestApproval = () => {
       minute: '2-digit'
     });
   };
-  const convertTo24Hour = (time, modifier) => {
-    if (!time) return '';
-    let [hours, minutes] = time.split(':');
-    hours = parseInt(hours);
-
-    if (modifier === 'PM' && hours < 12) hours += 12;
-    if (modifier === 'AM' && hours === 12) hours = 0;
-
-    return `${hours.toString().padStart(2, '0')}:${minutes}`;
-  };
-
-  const validateTime = (startTime, startModifier, endTime, endModifier) => {
-    // Check if both times are provided
-    if (!startTime || !endTime) return null;
-
-    // Convert times to 24-hour format
-    const start24Hour = convertTo24Hour(startTime, startModifier);
-    const end24Hour = convertTo24Hour(endTime, endModifier);
-
-    // Split into hours and minutes
-    const [startHours, startMinutes] = start24Hour.split(':').map(Number);
-    const [endHours, endMinutes] = end24Hour.split(':').map(Number);
-
-    // Create comparison times
-    const startTotalMinutes = startHours * 60 + startMinutes;
-    const endTotalMinutes = endHours * 60 + endMinutes;
-
-    // Check if end time is after start time
-    if (startTotalMinutes >= endTotalMinutes) {
-      return 'End time must be after start time';
-    }
-
-    return null;
-  };
-
-  const isOutsideBusinessHours = (time, modifier) => {
-    // Convert time to 24-hour format for easier comparison
-    let [hours, minutes] = time.split(':').map(Number);
-
-    // Adjust for AM/PM
-    if (modifier === 'PM' && hours < 12) hours += 12;
-    if (modifier === 'AM' && hours === 12) hours = 0;
-
-    // Check if time is before 8 AM or after 5 PM
-    return hours < 8 || hours >= 17;
-  };
-
-  const handleTimeChange = (e, timeType) => {
-    const time = e.target.value;
-
-    setBatchTimings(prev => ({
-      ...prev,
-      [timeType]: time
-    }));
-
-    const timeValidation = validateTime(
-      timeType === 'from_time' ? time : batchTimings.from_time,
-      timeType === 'from_time' ? batchTimings.from_time_modifier : batchTimings.to_time_modifier,
-      timeType === 'to_time' ? time : batchTimings.to_time,
-      timeType === 'to_time' ? batchTimings.to_time_modifier : batchTimings.from_time_modifier
-    );
-
-    setTimeError(timeValidation || '');
-  };
-
-  const handleTimeModifierChange = (modifier, timeType) => {
-    const modifierKey = timeType === 'from_time' ? 'from_time_modifier' : 'to_time_modifier';
-
-    setBatchTimings(prev => ({
-      ...prev,
-      [modifierKey]: modifier
-    }));
-
-    const timeValidation = validateTime(
-      batchTimings.from_time,
-      timeType === 'from_time' ? modifier : batchTimings.from_time_modifier,
-      batchTimings.to_time,
-      timeType === 'to_time' ? modifier : batchTimings.to_time_modifier
-    );
-
-    setTimeError(timeValidation || '');
-  };
-
-
 
   // Function to handle reason selection
   const handleReasonSelect = (reason) => {
@@ -155,24 +63,8 @@ const ODRequestApproval = () => {
 
   // Bulk action handler (approve, reject, modify)
   const handleBulkAction = async (action) => {
-    if (!proceedWithSubmit && (
-      isOutsideBusinessHours(batchTimings.from_time, batchTimings.from_time_modifier) ||
-      isOutsideBusinessHours(batchTimings.to_time, batchTimings.to_time_modifier)
-    )) {
-      setBusinessHoursWarning(true);
-      return;
-    }
-
-    // Reset business hours warning and proceed flag
-    setBusinessHoursWarning(false);
-    setProceedWithSubmit(false);
-
-    // Existing bulk action logic, but now using modified time format
     setLoading(true);
     try {
-      const fromTime24 = convertTo24Hour(batchTimings.from_time, batchTimings.from_time_modifier);
-      const toTime24 = convertTo24Hour(batchTimings.to_time, batchTimings.to_time_modifier);
-
       const response = await fetch('/api/od-request/bulk-action', {
         method: 'POST',
         headers: {
@@ -182,8 +74,8 @@ const ODRequestApproval = () => {
           requestIds: selectedRequests,
           action: action,
           ...(action === 'modify' && {
-            from_time: new Date(`2024-01-01T${fromTime24}`),
-            to_time: new Date(`2024-01-01T${toTime24}`)
+            from_time: batchTimings.from_time,
+            to_time: batchTimings.to_time
           })
         })
       });
@@ -397,12 +289,12 @@ const ODRequestApproval = () => {
               <thead className=" bg-white/5">
                 <tr>
                   <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">
-                    <input
-                      type="checkbox"
-                      checked={selectedRequests.length === getFilteredRequests.length}
-                      onChange={toggleSelectAll}
-                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded cursor-pointer"
-                    />
+                  <input
+        type="checkbox"
+        checked={selectedRequests.length === getFilteredRequests.length}
+        onChange={toggleSelectAll}
+        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded cursor-pointer"
+      />
                   </th>
                   <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Name</th>
                   <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Section</th>
@@ -443,7 +335,7 @@ const ODRequestApproval = () => {
                     <td className="px-4 py-3 text-sm text-gray-300">{formatTime(request.from_time)}</td>
                     <td className="px-4 py-3 text-sm text-gray-300">{formatTime(request.to_time)}</td>
                     <td className="px-4 py-3 text-sm text-gray-300">{request.description}</td>
-                    {<td className="px-4 py-3 text-sm text-gray-300"> {request.requested_by.split(/[@.]/)[0].replace(/\d+/g, '')}</td>}
+                    <td className="px-4 py-3 text-sm text-gray-300">{request.requested_by}</td>
                   </tr>
                 ))}
               </tbody>
@@ -452,7 +344,7 @@ const ODRequestApproval = () => {
             {/* Pagination Controls */}
             <div className="flex justify-between items-center mt-4">
               <div>
-                Showing {(currentPage - 1) * recordsPerPage + 1} - {Math.min(currentPage * recordsPerPage, getFilteredRequests.length)} of {getFilteredRequests.length} results
+              Showing {(currentPage - 1) * recordsPerPage + 1} - {Math.min(currentPage * recordsPerPage, getFilteredRequests.length)} of {getFilteredRequests.length} results
               </div>
               <div className="flex gap-2">
                 <button
@@ -500,47 +392,8 @@ const ODRequestApproval = () => {
         )}
 
         {showBatchTimingForm && (
-          <div className="mt-4 p-4 border rounded-md bg-white/5">
+          <div className="mt-4 p-4 border rounded-md  bg-white/5">
             <h2 className="text-lg font-bold mb-4">Modify Batch Timings</h2>
-
-            {timeError && (
-              <div className="text-red-500 text-sm mb-4">
-                {timeError}
-              </div>
-            )}
-
-            {businessHoursWarning && (
-              <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 p-4 rounded-md flex items-center mb-4">
-                <AlertTriangle className="mr-3 text-yellow-600" size={24} />
-                <div>
-                  <p className="font-semibold">Outside College Hours</p>
-                  <p className="text-sm">
-                    This modification is scheduled outside standard college hours (8 AM - 5 PM).
-                    Are you sure you want to proceed?
-                  </p>
-                  <div className="mt-2 flex space-x-2">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setProceedWithSubmit(true);
-                        handleBulkAction('modify');
-                      }}
-                      className="bg-yellow-600 text-white px-3 py-1 rounded hover:bg-yellow-700"
-                    >
-                      Yes, Submit Anyway
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setBusinessHoursWarning(false)}
-                      className="bg-gray-200 text-gray-800 px-3 py-1 rounded hover:bg-gray-300"
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
-
             <form
               onSubmit={(e) => {
                 e.preventDefault();
@@ -548,46 +401,26 @@ const ODRequestApproval = () => {
               }}
               className="space-y-4"
             >
-              <div className="grid grid-cols-2 gap-4">
+              <div className="flex space-x-6">
                 <div>
-                  <label className="block mb-2 text-sm font-medium text-[#00f5d0]">From Time</label>
-                  <div className="flex space-x-2">
-                    <input
-                      type="time"
-                      value={batchTimings.from_time}
-                      onChange={(e) => handleTimeChange(e, 'from_time')}
-                      required
-                      className="w-full px-3 py-2 border border-white rounded-md bg-black text-white focus:ring-2 focus:ring-[#00f5d0]"
-                    />
-                    <select
-                      value={batchTimings.from_time_modifier}
-                      onChange={(e) => handleTimeModifierChange(e.target.value, 'from_time')}
-                      className="px-2 py-2 border border-white rounded-md bg-black text-white focus:ring-2 focus:ring-[#00f5d0]"
-                    >
-                      <option value="AM">AM</option>
-                      <option value="PM">PM</option>
-                    </select>
-                  </div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">From Time</label>
+                  <input
+                    type="time"
+                    value={batchTimings.from_time}
+                    onChange={(e) => setBatchTimings(prev => ({ ...prev, from_time: e.target.value }))}
+                    className="border px-4 py-2 rounded  bg-white/5"
+                    required
+                  />
                 </div>
                 <div>
-                  <label className="block mb-2 text-sm font-medium text-[#00f5d0]">To Time</label>
-                  <div className="flex space-x-2">
-                    <input
-                      type="time"
-                      value={batchTimings.to_time}
-                      onChange={(e) => handleTimeChange(e, 'to_time')}
-                      required
-                      className="w-full px-3 py-2 border border-white rounded-md bg-black text-white focus:ring-2 focus:ring-[#00f5d0]"
-                    />
-                    <select
-                      value={batchTimings.to_time_modifier}
-                      onChange={(e) => handleTimeModifierChange(e.target.value, 'to_time')}
-                      className="px-2 py-2 border border-white rounded-md bg-black text-white focus:ring-2 focus:ring-[#00f5d0]"
-                    >
-                      <option value="AM">AM</option>
-                      <option value="PM">PM</option>
-                    </select>
-                  </div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">To Time</label>
+                  <input
+                    type="time"
+                    value={batchTimings.to_time}
+                    onChange={(e) => setBatchTimings(prev => ({ ...prev, to_time: e.target.value }))}
+                    className="border px-4 py-2  bg-white/5 rounded"
+                    required
+                  />
                 </div>
               </div>
               <div className="flex justify-end space-x-2">
@@ -608,7 +441,6 @@ const ODRequestApproval = () => {
             </form>
           </div>
         )}
-
       </div>
     </div>
   );

@@ -19,6 +19,9 @@ const RequestForm = () => {
   const [successMessage, setSuccessMessage] = useState('');
   const { data: session, status } = useSession();
   const [timeError, setTimeError] = useState('');
+  const [selectedTeamType, setSelectedTeamType] = useState('');
+  const [selectedTeam, setSelectedTeam] = useState('');
+
   const router = useRouter();
   
   const ITEMS_PER_PAGE = 10;
@@ -95,7 +98,7 @@ const RequestForm = () => {
 
       const requests = selectedStudents.map(userId => ({
         user_id: userId,
-        reason,
+        reason: selectedTeam,
         description,
         from_time: new Date(`2024-01-01T${fromTime24}`).toISOString(),
         to_time: new Date(`2024-01-01T${toTime24}`).toISOString(),
@@ -136,7 +139,8 @@ const RequestForm = () => {
 
   const validateForm = () => {
     if (selectedStudents.length === 0) return 'Please select at least one student';
-    if (!reason) return 'Please enter a reason';
+    if (!selectedTeamType) return 'Please select team type';
+    if (!selectedTeam) return 'Please select a specific team';
     if (!description) return 'Please enter a description';
     if (!fromTime) return 'Please select start time';
     if (!toTime) return 'Please select end time';
@@ -144,26 +148,28 @@ const RequestForm = () => {
     if (timeValidation) return timeValidation;
     return null;
   };
-    const teamOptions = [
+
+
+  const nonTechnicalTeams = [
     'Event Coordinator',
     'Committee Coordinator',
     'Content',
-    'Development',
-    'Design',
     'Documentation',
     'Helpdesk and Registration',
-    'Hosting',
     'Logistics & Requirements',
-    'Marketing',
-    'Non-technical Events',
-    'Social Media',
-    'Technical',
-    'Workshops',
-    'Sponsorship',
-    'Media',
+    'Hosting',
     'Decoration'
   ];
 
+  const technicalTeams = [
+    'Development',
+    'Design',
+    'Marketing',
+    'Social Media',
+    'Workshops',
+    'Sponsorship',
+    'Media'
+  ];
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -435,21 +441,47 @@ const RequestForm = () => {
           </div>
 
           {/* Form Fields */}
-          <div className="space-y-4">
+         <div className="space-y-4 p-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <select
-                value={reason}
-                onChange={(e) => setReason(e.target.value)}
+                value={selectedTeamType}
+                onChange={(e) => {
+                  setSelectedTeamType(e.target.value);
+                  setSelectedTeam(''); // Reset specific team when type changes
+                }}
                 className="w-full px-4 py-2.5 bg-white/5 backdrop-blur-xl rounded-lg border border-white/10 focus:ring-2 focus:ring-[#00f5d0] focus:border-[#00f5d0]"
               >
-                <option className='text-white bg-black'   value="">Select Team</option>
-                {teamOptions.map((team) => (
-                  <option className='text-white bg-black' key={team} value={team}>
-                    {team}
-                  </option>
-                ))}
+                <option className='text-white bg-black' value="">Select Team Type</option>
+                <option className='text-white bg-black' value="technical">Technical Teams</option>
+                <option className='text-white bg-black' value="non-technical">Non-Technical Teams</option>
               </select>
             </div>
+            <div>
+              <select
+                value={selectedTeam}
+                onChange={(e) => setSelectedTeam(e.target.value)}
+                disabled={!selectedTeamType}
+                className="w-full px-4 py-2.5 bg-white/5 backdrop-blur-xl rounded-lg border border-white/10 focus:ring-2 focus:ring-[#00f5d0] focus:border-[#00f5d0] disabled:opacity-50"
+              >
+                <option className='text-white bg-black' value="">Select Specific Team</option>
+                {selectedTeamType === 'technical' && 
+                  technicalTeams.map((team) => (
+                    <option className='text-white bg-black' key={team} value={team}>
+                      {team}
+                    </option>
+                  ))
+                }
+                {selectedTeamType === 'non-technical' && 
+                  nonTechnicalTeams.map((team) => (
+                    <option className='text-white bg-black' key={team} value={team}>
+                      {team}
+                    </option>
+                  ))
+                }
+              </select>
+            </div>
+          </div>
             <div>
               <input
                 type="text"
