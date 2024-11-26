@@ -267,7 +267,7 @@ const ODRequestApproval = () => {
   className="px-36 py-2.5 bg-white/5 backdrop-blur-xl rounded-lg text-gray-300 border border-white/10 focus:ring-2 focus:ring-[#00f5d0] focus:border-[#00f5d0]"
   >
   {uniqueYears.map(year => (
-    <option key={year} value={year}>{year}</option>
+    <option className='bg-black' key={year} value={year}>{year}</option>
   ))}
 </select>
         </div>
@@ -278,7 +278,7 @@ const ODRequestApproval = () => {
   className="px-36 py-2.5 bg-white/5 backdrop-blur-xl rounded-lg text-gray-300 border border-white/10 focus:ring-2 focus:ring-[#00f5d0] focus:border-[#00f5d0]"
           >
   {uniqueSections.map(section => (
-    <option key={section} value={section}>{section}</option>
+    <option className='bg-black ' key={section} value={section}>{section}</option>
   ))}
 </select>
         </div>
