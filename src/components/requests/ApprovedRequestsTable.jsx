@@ -273,10 +273,9 @@ export const ApprovedRequestsTable = () => {
         },
         body: JSON.stringify({
           attendanceType: attendanceType,
-          toggle: true // Add a toggle flag to handle marking/unmarking
+          toggle: true // Add this line to enable toggling
         }),
       });
-
       if (!response.ok) throw new Error('Failed to update attendance');
       
       // Refetch to get updated data
