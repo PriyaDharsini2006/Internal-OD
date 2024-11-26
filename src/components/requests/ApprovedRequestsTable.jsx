@@ -47,6 +47,8 @@ export const ApprovedRequestsTable = () => {
     return 'Not Marked';
   };
 
+
+
   const handleAttendanceUpdate = async (requestId, currentAttendance) => {
     try {
       const response = await fetch(`/api/attendance/${requestId}`, {

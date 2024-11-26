@@ -53,6 +53,12 @@ export const Approved = () => {
       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
     </div>
   );
+  const today = new Date();
+  const formattedDate = today.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
 
   if (error) return (
     <div className="text-red-600 text-center p-4">
@@ -106,7 +112,9 @@ export const Approved = () => {
                 src="/logo1.png" 
                 alt="Company Logo" 
               />
+              <p className='text-[#00f5d0]'>{formattedDate}</p>
             </div>
+            
           <div className="py-10 justify-start print:hidden">
           
             <button 
@@ -249,17 +257,20 @@ export const Approved = () => {
             Team Hackerz24
           </div>
 
-           <div className="signature-section mt-8 flex flex-col  items-end justify-end">
-              <img 
-                className="w-20 md:w-32 h-12 " 
-                src="sign.png" 
-                alt="Signature" 
-              />
-              <div className="text-sm md:text-base">
-                <p className="m-0 ml-10">Head of Department</p>
-                <p className="m-0">Computer Science and Engineering</p>
-              </div>
-            </div>
+          <div className="signature-section mt-8 flex flex-col items-end justify-end">
+  <div className="flex flex-col items-center">
+    <img 
+      className="w-20 md:w-32 h-12 mb-2" 
+      src="sign.png" 
+      alt="Signature" 
+    />
+    <div className="text-sm md:text-base text-center">
+      <p className="m-0">Head of Department</p>
+      <p className="m-0">Computer Science and Engineering</p>
+    </div>
+  </div>
+</div>
+
         </div>
 
         {/* Second Page - Requests Table */}
