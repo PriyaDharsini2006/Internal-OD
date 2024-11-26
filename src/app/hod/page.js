@@ -64,6 +64,10 @@ const Navbar = ({ onNavItemClick, activeComponent }) => {
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
+  const handleBack = () => {
+    // Directly navigate to the external dashboard URL
+    window.location.href = 'https://dashboard-vs8l.vercel.app/Navbar';
+  };
 
   const handleNavItemClick = (component) => {
     onNavItemClick(component);
@@ -92,6 +96,15 @@ const Navbar = ({ onNavItemClick, activeComponent }) => {
             ))}
           </div>
           <button 
+            variant="outline" 
+            onClick={handleBack} 
+            className="px-3 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+          
+          >
+            Back to Dashboard
+          </button>
+
+          <button 
             onClick={() => signOut()} 
             className="px-3 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
           >
@@ -106,6 +119,13 @@ const Navbar = ({ onNavItemClick, activeComponent }) => {
             className="text-gray-700 hover:text-gray-900"
           >
             {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
+          <button 
+            variant="outline" 
+            onClick={handleBack} 
+            className="px-3 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600"
+          >
+            Back
           </button>
           <button 
             onClick={() => signOut()} 

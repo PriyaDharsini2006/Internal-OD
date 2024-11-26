@@ -32,7 +32,12 @@ const TeamLeadNavbar = ({ onNavItemClick, activeComponent }) => {
     { name: 'Meeting', icon: ArrowUp, component: 'Meeting' },
     { name: 'Stayback', icon: Home, component: 'Stayback' },
   ];
+  const handleBack = () => {
+    // Directly navigate to the external dashboard URL
+    window.location.href = 'https://dashboard-vs8l.vercel.app/Navbar';
+  };
 
+  
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
@@ -47,6 +52,7 @@ const TeamLeadNavbar = ({ onNavItemClick, activeComponent }) => {
       <div className="container mx-auto px-4 py-3 flex justify-between items-center">
         <div className="hidden md:flex space-x-4 w-full justify-between items-center">
           <div className="flex space-x-4 overflow-x-auto">
+          
             {navItems.map((item) => (
               <button
                 key={item.component}
@@ -68,6 +74,15 @@ const TeamLeadNavbar = ({ onNavItemClick, activeComponent }) => {
           >
             Sign Out
           </button>
+          <button 
+            variant="outline" 
+            onClick={handleBack} 
+            className="px-3 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+          
+          >
+            Back to Dashboard
+          </button>
+          
         </div>
 
         <div className="md:hidden flex justify-between items-center w-full">
@@ -77,6 +92,7 @@ const TeamLeadNavbar = ({ onNavItemClick, activeComponent }) => {
           >
             {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
+          
           <button
             onClick={() => signOut()}
             className="px-3 py-2 bg-red-500 text-white rounded-xl hover:bg-red-600 text-sm"
