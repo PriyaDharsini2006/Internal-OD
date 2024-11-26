@@ -232,7 +232,7 @@ const MeetingRequest = () => {
   
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <label className="block mb-2 text-sm font-medium text-[#00f5d0]">Team</label>
+                  <label className="block mb-2 text-sm font-medium text-white">Team</label>
                   <div className="relative">
                     <select
                       name="team"
@@ -249,14 +249,14 @@ const MeetingRequest = () => {
                       ))}
                     </select>
                     <ChevronDown
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[#00f5d0] pointer-events-none"
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-white pointer-events-none"
                       size={20}
                     />
                   </div>
                 </div>
   
                 <div>
-                  <label className="block mb-2 text-sm font-medium text-[#00f5d0]">Title</label>
+                  <label className="block mb-2 text-sm font-medium text-white">Title</label>
                   <input
                     type="text"
                     name="title"
@@ -275,13 +275,13 @@ const MeetingRequest = () => {
                     value={formData.date}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-3 py-2 border border-[#00f5d0] rounded-md bg-white text-black focus:ring-2 focus:ring-[#00f5d0]"
+                    className="w-full px-3 py-2 border border-white rounded-md bg-black text-black focus:ring-2 focus:ring-[#00f5d0]"
                   />
                 </div>
   
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block mb-2 text-sm font-medium text-[#00f5d0]">From Time</label>
+                    <label className="block mb-2 text-sm font-medium text-white">From Time</label>
                     <input
                       type="time"
                       name="from_time"
@@ -292,7 +292,7 @@ const MeetingRequest = () => {
                     />
                   </div>
                   <div>
-                    <label className="block mb-2 text-sm font-medium text-[#00f5d0]">To Time</label>
+                    <label className="block mb-2 text-sm font-medium text-white">To Time</label>
                     <input
                       type="time"
                       name="to_time"
