@@ -21,9 +21,10 @@ const RequestForm = () => {
   const [timeError, setTimeError] = useState('');
   const [selectedTeamType, setSelectedTeamType] = useState('');
   const [selectedTeam, setSelectedTeam] = useState('');
+  
 
   const router = useRouter();
-  
+
   const ITEMS_PER_PAGE = 10;
   const sectionsOptions = ['A', 'B', 'C', 'D'];
   const yearsOptions = [2027, 2026, 2025, 2024];
@@ -34,10 +35,10 @@ const RequestForm = () => {
     if (!time) return '';
     let [hours, minutes] = time.split(':');
     hours = parseInt(hours);
-    
+
     if (modifier === 'PM' && hours < 12) hours += 12;
     if (modifier === 'AM' && hours === 12) hours = 0;
-    
+
     return `${hours.toString().padStart(2, '0')}:${minutes}`;
   };
 
@@ -52,22 +53,22 @@ const RequestForm = () => {
 
   const validateTime = (startTime, startModifier, endTime, endModifier) => {
     if (!startTime || !endTime) return null;
-    
+
     const workingHoursStart = 8; // 8 AM
     const workingHoursEnd = 17; // 5 PM
-    
+
     const startHour24 = parseInt(convertTo24Hour(startTime, startModifier).split(':')[0]);
     const endHour24 = parseInt(convertTo24Hour(endTime, endModifier).split(':')[0]);
-    
-    
+
+
     // Compare times considering AM/PM
     const startDateTime = new Date(2024, 0, 1, startHour24, 0);
     const endDateTime = new Date(2024, 0, 1, endHour24, 0);
-    
+
     if (startDateTime >= endDateTime) {
       return 'End time must be after start time';
     }
-    
+
     return null;
   };
 
@@ -130,7 +131,7 @@ const RequestForm = () => {
       setDescription('');
       setFromTime('');
       setToTime('');
-      
+
       await fetchStudents();
     } catch (error) {
       setError('Failed to send request: ' + error.message);
@@ -171,6 +172,7 @@ const RequestForm = () => {
     'Media'
   ];
 
+
   useEffect(() => {
     if (status === 'unauthenticated') {
       router.push('/api/auth/signin');
@@ -183,22 +185,22 @@ const RequestForm = () => {
     if (status === 'authenticated' && session?.user?.role === 'TeamLead') {
       fetchStudents();
     }
-  }, []); 
+  }, []);
 
   const fetchStudents = async () => {
     try {
       setLoading(true);
       setError('');
-      
+
       const params = new URLSearchParams({
         search: searchTerm,
         section: selectedSection,
         year: selectedYear
       });
-  
+
       let studentsData = [];
       let countsData = [];
-  
+
       try {
         const studentsResponse = await fetch(`/api/students?${params}`);
         if (!studentsResponse.ok) {
@@ -209,7 +211,7 @@ const RequestForm = () => {
         console.error('Students fetch error:', studentError);
         throw new Error('Failed to fetch students data');
       }
-  
+
       try {
         const countsResponse = await fetch('/api/counts');
         if (!countsResponse.ok) {
@@ -220,13 +222,13 @@ const RequestForm = () => {
         console.error('Counts fetch error:', countsError);
         countsData = [];
       }
-  
+
       const countsArray = Array.isArray(countsData) ? countsData : [];
-      
+
       const countsMap = new Map(
         countsArray.map(count => [count.email, count])
       );
-      
+
       const studentsWithCounts = studentsData.map(student => {
         const studentCounts = countsMap.get(student.email);
         return {
@@ -238,7 +240,7 @@ const RequestForm = () => {
           }
         };
       });
-  
+
       setStudents(studentsWithCounts);
     } catch (error) {
       console.error('Fetch error:', error);
@@ -292,10 +294,10 @@ const RequestForm = () => {
         <div className="border-b border-white/10 bg-black/30 rounded-t-2xl px-6 py-5">
           <div className="flex flex-row">
             <div className="flex-shrink-0 flex flex-row">
-              <img 
-                className="w-36 h-36 rounded object-contain" 
-                src="/logo1.png" 
-                alt="Company Logo" 
+              <img
+                className="w-36 h-36 rounded object-contain"
+                src="/logo1.png"
+                alt="Company Logo"
               />
             </div>
             <h1 className="text-2xl px-36 py-10 md:text-3xl font-grotesk font-bold text-[#00f5d0]">
@@ -378,7 +380,7 @@ const RequestForm = () => {
                       </tr>
                     ) : (
                       currentStudents.map((student) => (
-                        <tr 
+                        <tr
                           key={student.user_id}
                           className="hover:bg-white/5 transition-colors"
                         >
@@ -417,19 +419,54 @@ const RequestForm = () => {
               >
                 Previous
               </button>
-              {Array.from({ length: totalPages }, (_, i) => (
-                <button
-                  key={i}
-                  onClick={() => setCurrentPage(i + 1)}
-                  className={`px-3 py-1 border rounded-md text-sm font-medium ${
-                    currentPage === i + 1
-                      ? 'bg-[#00f5d0] text-black border-[#00f5d0]'
-                      : 'border-white/10 text-gray-300 hover:bg-white/5'
-                  }`}
-                >
-                  {i + 1}
-                </button>
-              ))}
+
+              {currentPage > 2 && (
+                <>
+                  <button
+                    onClick={() => setCurrentPage(1)}
+                    className="px-3 py-1 border border-white/10 rounded-md text-sm font-medium text-gray-300 hover:bg-white/5"
+                  >
+                    1
+                  </button>
+                  {currentPage > 3 && (
+                    <span className="px-3 py-1 text-sm text-gray-300">...</span>
+                  )}
+                </>
+              )}
+
+              {[...Array(3)].map((_, i) => {
+                const pageNumber = currentPage - 1 + i;
+                if (pageNumber > 0 && pageNumber <= totalPages) {
+                  return (
+                    <button
+                      key={pageNumber}
+                      onClick={() => setCurrentPage(pageNumber)}
+                      className={`px-3 py-1 border rounded-md text-sm font-medium ${currentPage === pageNumber
+                          ? 'bg-[#00f5d0] text-black border-[#00f5d0]'
+                          : 'border-white/10 text-gray-300 hover:bg-white/5'
+                        }`}
+                    >
+                      {pageNumber}
+                    </button>
+                  );
+                }
+                return null;
+              })}
+
+              {currentPage < totalPages - 1 && (
+                <>
+                  {currentPage < totalPages - 2 && (
+                    <span className="px-3 py-1 text-sm text-gray-300">...</span>
+                  )}
+                  <button
+                    onClick={() => setCurrentPage(totalPages)}
+                    className="px-3 py-1 border border-white/10 rounded-md text-sm font-medium text-gray-300 hover:bg-white/5"
+                  >
+                    {totalPages}
+                  </button>
+                </>
+              )}
+
               <button
                 onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
                 disabled={currentPage === totalPages}
@@ -441,47 +478,47 @@ const RequestForm = () => {
           </div>
 
           {/* Form Fields */}
-         <div className="space-y-4 p-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <select
-                value={selectedTeamType}
-                onChange={(e) => {
-                  setSelectedTeamType(e.target.value);
-                  setSelectedTeam(''); // Reset specific team when type changes
-                }}
-                className="w-full px-4 py-2.5 bg-white/5 backdrop-blur-xl rounded-lg border border-white/10 focus:ring-2 focus:ring-[#00f5d0] focus:border-[#00f5d0]"
-              >
-                <option className='text-white bg-black' value="">Select Team Type</option>
-                <option className='text-white bg-black' value="technical">Technical Teams</option>
-                <option className='text-white bg-black' value="non-technical">Non-Technical Teams</option>
-              </select>
+          <div className="space-y-4 p-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <select
+                  value={selectedTeamType}
+                  onChange={(e) => {
+                    setSelectedTeamType(e.target.value);
+                    setSelectedTeam(''); // Reset specific team when type changes
+                  }}
+                  className="w-full px-4 py-2.5 bg-white/5 backdrop-blur-xl rounded-lg border border-white/10 focus:ring-2 focus:ring-[#00f5d0] focus:border-[#00f5d0]"
+                >
+                  <option className='text-white bg-black' value="">Select Team Type</option>
+                  <option className='text-white bg-black' value="technical">Technical Teams</option>
+                  <option className='text-white bg-black' value="non-technical">Non-Technical Teams</option>
+                </select>
+              </div>
+              <div>
+                <select
+                  value={selectedTeam}
+                  onChange={(e) => setSelectedTeam(e.target.value)}
+                  disabled={!selectedTeamType}
+                  className="w-full px-4 py-2.5 bg-white/5 backdrop-blur-xl rounded-lg border border-white/10 focus:ring-2 focus:ring-[#00f5d0] focus:border-[#00f5d0] disabled:opacity-50"
+                >
+                  <option className='text-white bg-black' value="">Select Specific Team</option>
+                  {selectedTeamType === 'technical' &&
+                    technicalTeams.map((team) => (
+                      <option className='text-white bg-black' key={team} value={team}>
+                        {team}
+                      </option>
+                    ))
+                  }
+                  {selectedTeamType === 'non-technical' &&
+                    nonTechnicalTeams.map((team) => (
+                      <option className='text-white bg-black' key={team} value={team}>
+                        {team}
+                      </option>
+                    ))
+                  }
+                </select>
+              </div>
             </div>
-            <div>
-              <select
-                value={selectedTeam}
-                onChange={(e) => setSelectedTeam(e.target.value)}
-                disabled={!selectedTeamType}
-                className="w-full px-4 py-2.5 bg-white/5 backdrop-blur-xl rounded-lg border border-white/10 focus:ring-2 focus:ring-[#00f5d0] focus:border-[#00f5d0] disabled:opacity-50"
-              >
-                <option className='text-white bg-black' value="">Select Specific Team</option>
-                {selectedTeamType === 'technical' && 
-                  technicalTeams.map((team) => (
-                    <option className='text-white bg-black' key={team} value={team}>
-                      {team}
-                    </option>
-                  ))
-                }
-                {selectedTeamType === 'non-technical' && 
-                  nonTechnicalTeams.map((team) => (
-                    <option className='text-white bg-black' key={team} value={team}>
-                      {team}
-                    </option>
-                  ))
-                }
-              </select>
-            </div>
-          </div>
             <div>
               <input
                 type="text"
@@ -493,67 +530,67 @@ const RequestForm = () => {
               />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <div>
-        <label className="block text-sm font-medium text-gray-300 mb-1">
-          Start Time
-        </label>
-        <div className="flex space-x-2">
-          <input
-            type="time"
-            value={fromTime}
-            onChange={handleFromTimeChange}
-            className="w-full px-4 py-2 bg-white/5 backdrop-blur-xl rounded-lg text-gray-300 border border-white/10 focus:ring-2 focus:ring-[#00f5d0] focus:border-[#00f5d0]"
-          />
-          <select
-            value={fromTimeModifier}
-            onChange={(e) => {
-              setFromTimeModifier(e.target.value);
-              const timeValidation = validateTime(fromTime, e.target.value, toTime, toTimeModifier);
-              setTimeError(timeValidation || '');
-            }}
-            className="px-2 py-2 bg-white/5 backdrop-blur-xl rounded-lg text-gray-300 border border-white/10"
-          >
-            <option value="AM">AM</option>
-            <option value="PM">PM</option>
-          </select>
-        </div>
-        {fromTime && (
-          <span className="text-sm text-gray-400 mt-1 block">
-            {`${fromTime} ${fromTimeModifier}`}
-          </span>
-        )}
-      </div>
-      <div>
-        <label className="block text-sm font-medium text-gray-300 mb-1">
-          End Time
-        </label>
-        <div className="flex space-x-2">
-          <input
-            type="time"
-            value={toTime}
-            onChange={handleToTimeChange}
-            className="w-full px-4 py-2 bg-white/5 backdrop-blur-xl rounded-lg text-gray-300 border border-white/10 focus:ring-2 focus:ring-[#00f5d0] focus:border-[#00f5d0]"
-          />
-          <select
-            value={toTimeModifier}
-            onChange={(e) => {
-              setToTimeModifier(e.target.value);
-              const timeValidation = validateTime(fromTime, fromTimeModifier, toTime, e.target.value);
-              setTimeError(timeValidation || '');
-            }}
-            className="px-2 py-2 bg-white/5 backdrop-blur-xl rounded-lg text-gray-300 border border-white/10"
-          >
-            <option value="AM">AM</option>
-            <option value="PM">PM</option>
-          </select>
-        </div>
-        {toTime && (
-          <span className="text-sm text-gray-400 mt-1 block">
-            {`${toTime} ${toTimeModifier}`}
-          </span>
-        )}
-      </div>
-    </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-1">
+                  Start Time
+                </label>
+                <div className="flex space-x-2">
+                  <input
+                    type="time"
+                    value={fromTime}
+                    onChange={handleFromTimeChange}
+                    className="w-full px-4 py-2 bg-white/5 backdrop-blur-xl rounded-lg text-gray-300 border border-white/10 focus:ring-2 focus:ring-[#00f5d0] focus:border-[#00f5d0]"
+                  />
+                  <select
+                    value={fromTimeModifier}
+                    onChange={(e) => {
+                      setFromTimeModifier(e.target.value);
+                      const timeValidation = validateTime(fromTime, e.target.value, toTime, toTimeModifier);
+                      setTimeError(timeValidation || '');
+                    }}
+                    className="px-2 py-2 bg-white/5 backdrop-blur-xl rounded-lg text-gray-300 border border-white/10"
+                  >
+                    <option value="AM">AM</option>
+                    <option value="PM">PM</option>
+                  </select>
+                </div>
+                {fromTime && (
+                  <span className="text-sm text-gray-400 mt-1 block">
+                    {`${fromTime} ${fromTimeModifier}`}
+                  </span>
+                )}
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-1">
+                  End Time
+                </label>
+                <div className="flex space-x-2">
+                  <input
+                    type="time"
+                    value={toTime}
+                    onChange={handleToTimeChange}
+                    className="w-full px-4 py-2 bg-white/5 backdrop-blur-xl rounded-lg text-gray-300 border border-white/10 focus:ring-2 focus:ring-[#00f5d0] focus:border-[#00f5d0]"
+                  />
+                  <select
+                    value={toTimeModifier}
+                    onChange={(e) => {
+                      setToTimeModifier(e.target.value);
+                      const timeValidation = validateTime(fromTime, fromTimeModifier, toTime, e.target.value);
+                      setTimeError(timeValidation || '');
+                    }}
+                    className="px-2 py-2 bg-white/5 backdrop-blur-xl rounded-lg text-gray-300 border border-white/10"
+                  >
+                    <option value="AM">AM</option>
+                    <option value="PM">PM</option>
+                  </select>
+                </div>
+                {toTime && (
+                  <span className="text-sm text-gray-400 mt-1 block">
+                    {`${toTime} ${toTimeModifier}`}
+                  </span>
+                )}
+              </div>
+            </div>
             {timeError && (
               <div className="mt-2 text-sm text-red-400">
                 {timeError}
