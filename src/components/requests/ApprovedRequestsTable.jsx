@@ -220,7 +220,7 @@ export const ApprovedRequestsTable = () => {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [optimisticUpdates, setOptimisticUpdates] = useState({});
+  const [processingRequests, setProcessingRequests] = useState(new Set());
 
   useEffect(() => {
     if (status === 'authenticated' && session?.user?.role === 'TeamLead') {
@@ -256,20 +256,37 @@ export const ApprovedRequestsTable = () => {
   };
 
   const handleAttendanceUpdate = async (requestId, attendanceType) => {
-    // Immediately update local state for responsiveness
-    const currentRequest = requests.find(r => r.id === requestId);
-    const currentAttendanceDetail = currentRequest.attendance_detail || { forenoon: false, afternoon: false };
+    // Prevent multiple simultaneous updates
+    if (processingRequests.has(requestId)) return;
 
-    // Track optimistic updates
-    setOptimisticUpdates(prev => ({
-      ...prev,
-      [requestId]: {
-        ...currentAttendanceDetail,
-        [attendanceType]: !currentAttendanceDetail[attendanceType]
-      }
-    }));
+    // Mark this request as currently processing
+    setProcessingRequests(prev => new Set(prev).add(requestId));
 
     try {
+      // Find the current request
+      const currentRequest = requests.find(r => r.id === requestId);
+      const currentAttendanceDetail = currentRequest.attendance_detail || { forenoon: false, afternoon: false };
+
+      // Determine the new state
+      const newAttendanceState = !currentAttendanceDetail[attendanceType];
+
+      // Optimistically update the local state
+      const updatedRequests = requests.map(request => {
+        if (request.id === requestId) {
+          return {
+            ...request,
+            attendance_detail: {
+              ...currentAttendanceDetail,
+              [attendanceType]: newAttendanceState
+            }
+          };
+        }
+        return request;
+      });
+
+      setRequests(updatedRequests);
+
+      // Send update to server
       const response = await fetch(`/api/attendance/${requestId}`, {
         method: 'PATCH',
         headers: {
@@ -277,26 +294,26 @@ export const ApprovedRequestsTable = () => {
         },
         body: JSON.stringify({
           attendanceType: attendanceType,
+          value: newAttendanceState
         }),
       });
 
-      if (!response.ok) throw new Error('Failed to update attendance');
-      
-      // Refetch to ensure data consistency
+      if (!response.ok) {
+        throw new Error('Failed to update attendance');
+      }
+
+      // Refresh data to ensure consistency
       await fetchApprovedRequests();
-      
-      // Clear optimistic update
-      setOptimisticUpdates(prev => {
-        const updated = {...prev};
-        delete updated[requestId];
-        return updated;
-      });
     } catch (err) {
       console.error('Error updating attendance:', err);
-      // Revert optimistic update on error
-      setOptimisticUpdates(prev => {
-        const updated = {...prev};
-        delete updated[requestId];
+      
+      // Refetch to revert to server state if update fails
+      await fetchApprovedRequests();
+    } finally {
+      // Remove request from processing set
+      setProcessingRequests(prev => {
+        const updated = new Set(prev);
+        updated.delete(requestId);
         return updated;
       });
     }
@@ -371,8 +388,8 @@ export const ApprovedRequestsTable = () => {
             ) : (
               requests.map((request) => {
                 const { isForenoon, isAfternoon } = renderAttendanceStatus(request);
-                const originalAttendanceDetail = request.attendance_detail || { forenoon: false, afternoon: false };
-                const optimisticDetail = optimisticUpdates[request.id] || originalAttendanceDetail;
+                const attendanceDetail = request.attendance_detail || { forenoon: false, afternoon: false };
+                const isProcessing = processingRequests.has(request.id);
 
                 return (
                   <tr key={request.id}>
@@ -415,26 +432,36 @@ export const ApprovedRequestsTable = () => {
                         {isForenoon && (
                           <button
                             onClick={() => handleAttendanceUpdate(request.id, 'forenoon')}
-                            className={`px-4 py-2 rounded-md ${
-                              optimisticDetail.forenoon 
+                            className={`px-4 py-2 rounded-md relative ${
+                              attendanceDetail.forenoon 
                                 ? 'bg-[#00f5d0]/20 text-[#00f5d0]' 
                                 : 'bg-gray-800 text-gray-300'
-                            }`}
-                            disabled={!isForenoon}
+                            } ${isProcessing ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            disabled={!isForenoon || isProcessing}
                           >
+                            {isProcessing && (
+                              <span className="absolute inset-0 flex items-center justify-center">
+                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                              </span>
+                            )}
                             Forenoon
                           </button>
                         )}
                         {isAfternoon && (
                           <button
                             onClick={() => handleAttendanceUpdate(request.id, 'afternoon')}
-                            className={`px-4 py-2 rounded-md ${
-                              optimisticDetail.afternoon 
+                            className={`px-4 py-2 rounded-md relative ${
+                              attendanceDetail.afternoon 
                                 ? 'bg-[#00f5d0]/20 text-[#00f5d0]' 
                                 : 'bg-gray-800 text-gray-300'
-                            }`}
-                            disabled={!isAfternoon}
+                            } ${isProcessing ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            disabled={!isAfternoon || isProcessing}
                           >
+                            {isProcessing && (
+                              <span className="absolute inset-0 flex items-center justify-center">
+                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                              </span>
+                            )}
                             Afternoon
                           </button>
                         )}
