@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
-import { Search, ChevronLeft, ChevronRight, ChevronDown,Trash2, ChevronRight as ChevronRightFolder, Calendar } from 'lucide-react';
+import { Search, ChevronLeft, ChevronRight, ChevronDown, Trash2, ChevronRight as ChevronRightFolder, Calendar } from 'lucide-react';
 
 const StaybackLog = ({ staybacks, setStaybacks, fetchStaybacks }) => {
   const { status } = useSession();
@@ -48,7 +48,7 @@ const StaybackLog = ({ staybacks, setStaybacks, fetchStaybacks }) => {
       // Get the complete stayback details including students
       const response = await fetch(`/api/staybacklogs/${stayback.id}`);
       const detailedStayback = await response.json();
-      
+
       setSelectedStayback(detailedStayback);
       setStudents(detailedStayback.students || []);
       setCurrentPage(1);
@@ -78,7 +78,7 @@ const StaybackLog = ({ staybacks, setStaybacks, fetchStaybacks }) => {
         // Remove the deleted stayback from the staybacks list
         setStaybacks(prevStaybacks => {
           // Assuming staybacks is an object with date-based keys
-          const updatedStaybacks = {...prevStaybacks};
+          const updatedStaybacks = { ...prevStaybacks };
           Object.keys(updatedStaybacks).forEach(date => {
             updatedStaybacks[date] = updatedStaybacks[date].filter(
               stayback => stayback.id !== staybackToDelete.id
@@ -103,7 +103,7 @@ const StaybackLog = ({ staybacks, setStaybacks, fetchStaybacks }) => {
 
   const addStudentToStayback = async (email) => {
     if (!selectedStayback) return;
-  
+
     try {
       const response = await fetch(`/api/staybacklogs/${selectedStayback.id}/students`, {
         method: 'PATCH',
@@ -113,7 +113,7 @@ const StaybackLog = ({ staybacks, setStaybacks, fetchStaybacks }) => {
           students: [...students, email] // Use the students state array
         })
       });
-      
+
       if (response.ok) {
         setStudents(prev => [...prev, email]);
         await fetchStaybacks();
@@ -122,10 +122,10 @@ const StaybackLog = ({ staybacks, setStaybacks, fetchStaybacks }) => {
       console.error('Failed to add student', error);
     }
   };
-  
+
   const removeStudentFromStayback = async (email) => {
     if (!selectedStayback) return;
-  
+
     try {
       const response = await fetch(`/api/staybacklogs/${selectedStayback.id}/students`, {
         method: 'PATCH',
@@ -135,7 +135,7 @@ const StaybackLog = ({ staybacks, setStaybacks, fetchStaybacks }) => {
           students: students.filter(e => e !== email) // Filter from the students state array
         })
       });
-      
+
       if (response.ok) {
         setStudents(prev => prev.filter(e => e !== email));
         await fetchStaybacks();
@@ -146,12 +146,12 @@ const StaybackLog = ({ staybacks, setStaybacks, fetchStaybacks }) => {
   };
 
   const filteredAvailableStudents = allStudents
-    .filter(student => 
-      student && 
-      student.email && 
-      !students.includes(student.email) && 
+    .filter(student =>
+      student &&
+      student.email &&
+      !students.includes(student.email) &&
       (
-        (student.name && student.name.toLowerCase().includes(searchTerm.toLowerCase())) || 
+        (student.name && student.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
         student.email.toLowerCase().includes(searchTerm.toLowerCase())
       )
     );
@@ -184,7 +184,7 @@ const StaybackLog = ({ staybacks, setStaybacks, fetchStaybacks }) => {
           .sort(([dateA], [dateB]) => new Date(dateB) - new Date(dateA))
           .map(([date, dateStaybacks]) => (
             <div key={date} className="border rounded-lg bg-black shadow-sm">
-              <div 
+              <div
                 className="p-4 flex items-center cursor-pointer hover:bg-gray-900"
                 onClick={() => toggleFolder(date)}
               >
@@ -195,7 +195,7 @@ const StaybackLog = ({ staybacks, setStaybacks, fetchStaybacks }) => {
                 )}
                 <Calendar className="h-5 w-5 text-[#00f5d0] mr-2" />
                 <span className="font-medium text-white">
-                  {new Date(date).toLocaleDateString('en-US', { 
+                  {new Date(date).toLocaleDateString('en-US', {
                     weekday: 'long',
                     year: 'numeric',
                     month: 'long',
@@ -206,11 +206,11 @@ const StaybackLog = ({ staybacks, setStaybacks, fetchStaybacks }) => {
                   ({dateStaybacks.length} staybacks)
                 </span>
               </div>
-              
+
               {openFolders.has(date) && (
                 <div className="p-4 pt-0 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {dateStaybacks.map(stayback => (
-                    <div 
+                    <div
                       key={stayback.id}
                       className="p-4 rounded-md border bg-[#00f5d0] relative cursor-pointer hover:bg-green-200 transition-colors"
                       onClick={() => openStaybackDetails(stayback)}
@@ -259,9 +259,10 @@ const StaybackLog = ({ staybacks, setStaybacks, fetchStaybacks }) => {
               Delete Stayback
             </h2>
             <p className="mb-6 text-gray-300">
-              Are you sure you want to delete the stayback "{staybackToDelete?.title}"?
+              Are you sure you want to delete the stayback &quot;{staybackToDelete?.title}&quot;?
               This action cannot be undone.
             </p>
+
             <div className="flex justify-center space-x-4">
               <button
                 onClick={() => {
@@ -283,7 +284,7 @@ const StaybackLog = ({ staybacks, setStaybacks, fetchStaybacks }) => {
         </div>
       )}
 
-  
+
       {/* Modal for stayback details */}
       {selectedStayback && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -295,7 +296,7 @@ const StaybackLog = ({ staybacks, setStaybacks, fetchStaybacks }) => {
                 <p>Date: {new Date(selectedStayback.dateGroup.date).toLocaleDateString()}</p>
               </div>
             </div>
-            
+
             <div className="flex-grow overflow-auto space-y-6">
               {/* Available Students Section */}
               <div className="border rounded-lg p-6">
@@ -303,16 +304,16 @@ const StaybackLog = ({ staybacks, setStaybacks, fetchStaybacks }) => {
                   <h3 className="text-xl font-semibold mb-4 text-white">Available Students</h3>
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#00f5d0]" size={20} />
-                    <input 
-                      type="text" 
-                      placeholder="Search students..." 
+                    <input
+                      type="text"
+                      placeholder="Search students..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
                       className="w-full pl-10 pr-3 py-2 border bg-black rounded-md text-white"
                     />
                   </div>
                 </div>
-  
+
                 <div className="max-h-96 overflow-y-auto border rounded-md">
                   <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-black sticky top-0">
@@ -333,13 +334,13 @@ const StaybackLog = ({ staybacks, setStaybacks, fetchStaybacks }) => {
                     </thead>
                     <tbody className="bg-black divide-y divide-gray-200">
                       {currentStudents.map(student => (
-                        <tr 
+                        <tr
                           key={student.email}
                           className="hover:bg-gray-900 cursor-pointer"
                           onClick={() => addStudentToStayback(student.email)}
                         >
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <button 
+                            <button
                               className="bg-[#00f5d0] hover:bg-green-600 text-black px-3 py-1 rounded text-sm"
                               onClick={(e) => {
                                 e.stopPropagation();
@@ -363,7 +364,7 @@ const StaybackLog = ({ staybacks, setStaybacks, fetchStaybacks }) => {
                     </tbody>
                   </table>
                 </div>
-  
+
                 <div className="flex items-center justify-between mt-4">
                   <div className="text-sm text-gray-500">
                     Showing {startIndex + 1} to {Math.min(endIndex, filteredAvailableStudents.length)} of {filteredAvailableStudents.length} students
@@ -389,7 +390,7 @@ const StaybackLog = ({ staybacks, setStaybacks, fetchStaybacks }) => {
                   </div>
                 </div>
               </div>
-  
+
               {/* Selected Students Section */}
               <div className="border rounded-lg p-6">
                 <h3 className="text-xl font-semibold mb-4 text-white">
@@ -419,7 +420,7 @@ const StaybackLog = ({ staybacks, setStaybacks, fetchStaybacks }) => {
                         return (
                           <tr key={email} className="hover:bg-gray-900">
                             <td className="px-6 py-4 whitespace-nowrap">
-                              <button 
+                              <button
                                 className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm"
                               >
                                 Remove
@@ -441,18 +442,18 @@ const StaybackLog = ({ staybacks, setStaybacks, fetchStaybacks }) => {
                 </div>
               </div>
             </div>
-            
-            <button 
+
+            <button
               onClick={() => setSelectedStayback(null)}
               className="mt-6 w-full bg-[#00f5d0] text-black py-2 rounded-md transition duration-200"
             >
               Close
             </button>
-          </div>    
+          </div>
         </div>
       )}
     </div>
   );
-  };
-  
-  export default StaybackLog;
+};
+
+export default StaybackLog;

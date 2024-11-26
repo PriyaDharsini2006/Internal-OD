@@ -161,8 +161,8 @@ const MeetingLog = ({ meetings, setMeetings, fetchMeetings }) => {
           <div
             key={meeting.id}
             className={`p-4 rounded-md shadow-md relative transition ${new Date() > new Date(meeting.to_time)
-                ? "bg-[#00f5d0] text-black hover:bg-green-200"
-                : "bg-red-500 text-black hover:bg-red-200"
+              ? "bg-[#00f5d0] text-black hover:bg-green-200"
+              : "bg-red-500 text-black hover:bg-red-200"
               }`}
           >
             {/* Delete Button */}
@@ -215,9 +215,10 @@ const MeetingLog = ({ meetings, setMeetings, fetchMeetings }) => {
               Delete Meeting
             </h2>
             <p className="mb-6 text-gray-300">
-              Are you sure you want to delete the meeting "{meetingToDelete?.title}"?
+              Are you sure you want to delete the stayback &quot;{staybackToDelete?.title}&quot;?
               This action cannot be undone.
             </p>
+
             <div className="flex justify-center space-x-4">
               <button
                 onClick={() => {
