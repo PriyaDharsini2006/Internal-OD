@@ -335,7 +335,7 @@ const ODRequestApproval = () => {
                     <td className="px-4 py-3 text-sm text-gray-300">{formatTime(request.from_time)}</td>
                     <td className="px-4 py-3 text-sm text-gray-300">{formatTime(request.to_time)}</td>
                     <td className="px-4 py-3 text-sm text-gray-300">{request.description}</td>
-                    <td className="px-4 py-3 text-sm text-gray-300">{request.requested_by}</td>
+                    {<td className="px-4 py-3 text-sm text-gray-300"> {request.requested_by.split(/[@.]/)[0].replace(/\d+/g, '')}</td>}
                   </tr>
                 ))}
               </tbody>
