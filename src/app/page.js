@@ -47,11 +47,15 @@ export default function ProtectedPage() {
     month: 'long', 
     day: 'numeric' 
   };
-  
+  const handleBack = () => {
+    // Directly navigate to the external dashboard URL
+    window.location.href = 'https://dashboard-vs8l.vercel.app/Navbar';
+  };
   const formattedDate = today.toLocaleDateString('en-US', options);
 
   return (
     <div className="relative min-h-screen flex flex-col bg-black text-gray-300">
+      
       {/* Navigation Bar */}
       <nav className="fixed top-0 w-full bg-black backdrop-blur-xl border-b border-white/10 z-10">
         <div className="container mx-auto px-4">
@@ -71,6 +75,14 @@ export default function ProtectedPage() {
                 {formattedDate}
               </p>
             </div>
+            <button 
+            variant="outline" 
+            onClick={handleBack} 
+            className="px-2 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+          
+          >
+            Back to Dashboard
+          </button>
 
             {/* Desktop Navigation */}
             <div className="hidden md:block">
