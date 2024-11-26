@@ -26,7 +26,14 @@ export async function GET(request) {
             name: true,
             sec: true,
             year: true,
-            user_id: true
+            user_id: true,
+            email: true  // Include email to join with Count model
+          }
+        },
+        // Optional: Include user's counts if needed
+        user: {
+          include: {
+            counts: true
           }
         }
       },
@@ -35,7 +42,7 @@ export async function GET(request) {
       }
     });
 
-    // Transform requests to include user details
+    // Transform requests to include user details and counts
     const transformedRequests = requests.map(request => ({
       od_id: request.id,
       user_id: request.user_id,
@@ -48,7 +55,10 @@ export async function GET(request) {
       to_time: request.to_time,
       status: request.status,
       request_type: request.request_type,
-      date: request.date
+      date: request.date,
+      // Add stayback and meeting counts
+      stayback_cnt: request.user.counts?.stayback_cnt || 0,
+      meeting_cnt: request.user.counts?.meeting_cnt || 0
     }));
 
     return NextResponse.json(transformedRequests, { status: 200 });

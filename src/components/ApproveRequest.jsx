@@ -159,17 +159,17 @@ const ODRequestApproval = () => {
         filteredRequests = filteredRequests.filter(r => r.reason === selectedReason);
       }
 
-     // Filter by year
-if (selectedYear !== 'All') {
-  filteredRequests = filteredRequests.filter(r => 
-    String(r.year).trim() === String(selectedYear).trim()
-  );
-}
+      // Filter by year
+      if (selectedYear !== 'All') {
+        filteredRequests = filteredRequests.filter(r => 
+          String(r.year).trim() === String(selectedYear).trim()
+        );
+      }
 
-// Filter by section
-if (selectedSection !== 'All') {
-  filteredRequests = filteredRequests.filter(r => r.sec === selectedSection);
-}
+      // Filter by section
+      if (selectedSection !== 'All') {
+        filteredRequests = filteredRequests.filter(r => r.sec === selectedSection);
+      }
 
       // Search by name
       if (searchQuery) {
@@ -247,8 +247,6 @@ if (selectedSection !== 'All') {
                 ? 'bg-[#00f5d0] text-black ring-2 ring-blue-300'
                 : ' bg-white/5 hover:bg-white/5 text-gray-300'
             }`}
-            
-               
           >
             <div className="font-medium">{reason}</div>
             <div className="text-sm mt-1">
@@ -277,7 +275,7 @@ if (selectedSection !== 'All') {
         <select 
   value={selectedSection}
   onChange={(e) => handleSectionSelect(e.target.value)}
-  className="px-36   py-2.5 bg-white/5 backdrop-blur-xl rounded-lg text-gray-300 border border-white/10 focus:ring-2 focus:ring-[#00f5d0] focus:border-[#00f5d0]"
+  className="px-36 py-2.5 bg-white/5 backdrop-blur-xl rounded-lg text-gray-300 border border-white/10 focus:ring-2 focus:ring-[#00f5d0] focus:border-[#00f5d0]"
           >
   {uniqueSections.map(section => (
     <option key={section} value={section}>{section}</option>
@@ -302,6 +300,8 @@ if (selectedSection !== 'All') {
                 <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Name</th>
                 <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Section</th>
                 <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Year</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Stayback</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Meeting</th>
                 {selectedReason === "All" && (
                   <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Reason</th>
                 )}
@@ -327,6 +327,8 @@ if (selectedSection !== 'All') {
                   <td className="px-4 py-3 text-sm text-gray-300">{request.name}</td>
                   <td className="px-4 py-3 text-sm text-gray-300">{request.sec}</td>
                   <td className="px-4 py-3 text-sm text-gray-300">{request.year}</td>
+                  <td className="px-4 py-3 text-sm text-gray-300">{request.stayback_cnt || 0}</td>
+                  <td className="px-4 py-3 text-sm text-gray-300">{request.meeting_cnt || 0}</td>
                   {selectedReason === "All" && (
                     <td className="px-4 py-3 text-sm text-gray-300">{request.reason}</td>
                   )}
