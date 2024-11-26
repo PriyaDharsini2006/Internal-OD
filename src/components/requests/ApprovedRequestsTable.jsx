@@ -273,6 +273,7 @@ export const ApprovedRequestsTable = () => {
         },
         body: JSON.stringify({
           attendanceType: attendanceType,
+          toggle: true // Add a toggle flag to handle marking/unmarking
         }),
       });
 
@@ -409,7 +410,7 @@ export const ApprovedRequestsTable = () => {
                               isProcessing?.forenoon 
                                 ? 'bg-green-500/20 text-green-500 cursor-wait' 
                                 : attendanceDetail.forenoon 
-                                ? 'bg-[#00f5d0]/20 text-[#00f5d0]' 
+                                ? 'bg-green-500/20 text-green-500' 
                                 : 'bg-gray-800 text-gray-300'
                             }`}
                             disabled={!!isProcessing?.forenoon}
@@ -429,7 +430,7 @@ export const ApprovedRequestsTable = () => {
                               isProcessing?.afternoon 
                                 ? 'bg-green-500/20 text-green-500 cursor-wait' 
                                 : attendanceDetail.afternoon 
-                                ? 'bg-[#00f5d0]/20 text-[#00f5d0]' 
+                                ? 'bg-green-500/20 text-green-500' 
                                 : 'bg-gray-800 text-gray-300'
                             }`}
                             disabled={!!isProcessing?.afternoon}
