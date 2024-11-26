@@ -397,12 +397,12 @@ const ODRequestApproval = () => {
               <thead className=" bg-white/5">
                 <tr>
                   <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">
-                  <input
-        type="checkbox"
-        checked={selectedRequests.length === getFilteredRequests.length}
-        onChange={toggleSelectAll}
-        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded cursor-pointer"
-      />
+                    <input
+                      type="checkbox"
+                      checked={selectedRequests.length === getFilteredRequests.length}
+                      onChange={toggleSelectAll}
+                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded cursor-pointer"
+                    />
                   </th>
                   <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Name</th>
                   <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Section</th>
@@ -452,7 +452,7 @@ const ODRequestApproval = () => {
             {/* Pagination Controls */}
             <div className="flex justify-between items-center mt-4">
               <div>
-              Showing {(currentPage - 1) * recordsPerPage + 1} - {Math.min(currentPage * recordsPerPage, getFilteredRequests.length)} of {getFilteredRequests.length} results
+                Showing {(currentPage - 1) * recordsPerPage + 1} - {Math.min(currentPage * recordsPerPage, getFilteredRequests.length)} of {getFilteredRequests.length} results
               </div>
               <div className="flex gap-2">
                 <button
@@ -499,115 +499,115 @@ const ODRequestApproval = () => {
           </div>
         )}
 
-{showBatchTimingForm && (
-    <div className="mt-4 p-4 border rounded-md bg-white/5">
-      <h2 className="text-lg font-bold mb-4">Modify Batch Timings</h2>
-      
-      {timeError && (
-        <div className="text-red-500 text-sm mb-4">
-          {timeError}
-        </div>
-      )}
+        {showBatchTimingForm && (
+          <div className="mt-4 p-4 border rounded-md bg-white/5">
+            <h2 className="text-lg font-bold mb-4">Modify Batch Timings</h2>
 
-      {businessHoursWarning && (
-        <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 p-4 rounded-md flex items-center mb-4">
-          <AlertTriangle className="mr-3 text-yellow-600" size={24} />
-          <div>
-            <p className="font-semibold">Outside College Hours</p>
-            <p className="text-sm">
-              This modification is scheduled outside standard college hours (8 AM - 5 PM).
-              Are you sure you want to proceed?
-            </p>
-            <div className="mt-2 flex space-x-2">
-              <button
-                type="button"
-                onClick={() => {
-                  setProceedWithSubmit(true);
-                  handleBulkAction('modify');
-                }}
-                className="bg-yellow-600 text-white px-3 py-1 rounded hover:bg-yellow-700"
-              >
-                Yes, Submit Anyway
-              </button>
-              <button
-                type="button"
-                onClick={() => setBusinessHoursWarning(false)}
-                className="bg-gray-200 text-gray-800 px-3 py-1 rounded hover:bg-gray-300"
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+            {timeError && (
+              <div className="text-red-500 text-sm mb-4">
+                {timeError}
+              </div>
+            )}
 
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          handleBulkAction('modify');
-        }}
-        className="space-y-4"
-      >
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="block mb-2 text-sm font-medium text-[#00f5d0]">From Time</label>
-            <div className="flex space-x-2">
-              <input
-                type="time"
-                value={batchTimings.from_time}
-                onChange={(e) => handleTimeChange(e, 'from_time')}
-                required
-                className="w-full px-3 py-2 border border-white rounded-md bg-black text-white focus:ring-2 focus:ring-[#00f5d0]"
-              />
-              <select
-                value={batchTimings.from_time_modifier}
-                onChange={(e) => handleTimeModifierChange(e.target.value, 'from_time')}
-                className="px-2 py-2 border border-white rounded-md bg-black text-white focus:ring-2 focus:ring-[#00f5d0]"
-              >
-                <option value="AM">AM</option>
-                <option value="PM">PM</option>
-              </select>
-            </div>
+            {businessHoursWarning && (
+              <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 p-4 rounded-md flex items-center mb-4">
+                <AlertTriangle className="mr-3 text-yellow-600" size={24} />
+                <div>
+                  <p className="font-semibold">Outside College Hours</p>
+                  <p className="text-sm">
+                    This modification is scheduled outside standard college hours (8 AM - 5 PM).
+                    Are you sure you want to proceed?
+                  </p>
+                  <div className="mt-2 flex space-x-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setProceedWithSubmit(true);
+                        handleBulkAction('modify');
+                      }}
+                      className="bg-yellow-600 text-white px-3 py-1 rounded hover:bg-yellow-700"
+                    >
+                      Yes, Submit Anyway
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setBusinessHoursWarning(false)}
+                      className="bg-gray-200 text-gray-800 px-3 py-1 rounded hover:bg-gray-300"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleBulkAction('modify');
+              }}
+              className="space-y-4"
+            >
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block mb-2 text-sm font-medium text-[#00f5d0]">From Time</label>
+                  <div className="flex space-x-2">
+                    <input
+                      type="time"
+                      value={batchTimings.from_time}
+                      onChange={(e) => handleTimeChange(e, 'from_time')}
+                      required
+                      className="w-full px-3 py-2 border border-white rounded-md bg-black text-white focus:ring-2 focus:ring-[#00f5d0]"
+                    />
+                    <select
+                      value={batchTimings.from_time_modifier}
+                      onChange={(e) => handleTimeModifierChange(e.target.value, 'from_time')}
+                      className="px-2 py-2 border border-white rounded-md bg-black text-white focus:ring-2 focus:ring-[#00f5d0]"
+                    >
+                      <option value="AM">AM</option>
+                      <option value="PM">PM</option>
+                    </select>
+                  </div>
+                </div>
+                <div>
+                  <label className="block mb-2 text-sm font-medium text-[#00f5d0]">To Time</label>
+                  <div className="flex space-x-2">
+                    <input
+                      type="time"
+                      value={batchTimings.to_time}
+                      onChange={(e) => handleTimeChange(e, 'to_time')}
+                      required
+                      className="w-full px-3 py-2 border border-white rounded-md bg-black text-white focus:ring-2 focus:ring-[#00f5d0]"
+                    />
+                    <select
+                      value={batchTimings.to_time_modifier}
+                      onChange={(e) => handleTimeModifierChange(e.target.value, 'to_time')}
+                      className="px-2 py-2 border border-white rounded-md bg-black text-white focus:ring-2 focus:ring-[#00f5d0]"
+                    >
+                      <option value="AM">AM</option>
+                      <option value="PM">PM</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div className="flex justify-end space-x-2">
+                <button
+                  type="button"
+                  onClick={() => setShowBatchTimingForm(false)}
+                  className="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700"
+                >
+                  Save Changes
+                </button>
+              </div>
+            </form>
           </div>
-          <div>
-            <label className="block mb-2 text-sm font-medium text-[#00f5d0]">To Time</label>
-            <div className="flex space-x-2">
-              <input
-                type="time"
-                value={batchTimings.to_time}
-                onChange={(e) => handleTimeChange(e, 'to_time')}
-                required
-                className="w-full px-3 py-2 border border-white rounded-md bg-black text-white focus:ring-2 focus:ring-[#00f5d0]"
-              />
-              <select
-                value={batchTimings.to_time_modifier}
-                onChange={(e) => handleTimeModifierChange(e.target.value, 'to_time')}
-                className="px-2 py-2 border border-white rounded-md bg-black text-white focus:ring-2 focus:ring-[#00f5d0]"
-              >
-                <option value="AM">AM</option>
-                <option value="PM">PM</option>
-              </select>
-            </div>
-          </div>
-        </div>
-        <div className="flex justify-end space-x-2">
-          <button
-            type="button"
-            onClick={() => setShowBatchTimingForm(false)}
-            className="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400"
-          >
-            Cancel
-          </button>
-          <button
-            type="submit"
-            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700"
-          >
-            Save Changes
-          </button>
-        </div>
-      </form>
-    </div>
-  )}
+        )}
 
       </div>
     </div>
