@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
-import { Search, ChevronLeft, ChevronRight, ChevronDown, ChevronRight as ChevronRightFolder, Calendar } from 'lucide-react';
+import { Search, ChevronLeft, ChevronRight, ChevronDown,Trash2, ChevronRight as ChevronRightFolder, Calendar } from 'lucide-react';
 
 const StaybackLog = ({ staybacks, setStaybacks, fetchStaybacks }) => {
   const { status } = useSession();
@@ -10,6 +10,8 @@ const StaybackLog = ({ staybacks, setStaybacks, fetchStaybacks }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [openFolders, setOpenFolders] = useState(new Set());
+  const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
+  const [staybackToDelete, setStaybackToDelete] = useState(null);
   const recordsPerPage = 15;
 
   // Handle folder toggle
@@ -53,6 +55,49 @@ const StaybackLog = ({ staybacks, setStaybacks, fetchStaybacks }) => {
       setSearchTerm('');
     } catch (error) {
       console.error('Failed to fetch stayback details', error);
+    }
+  };
+
+  const confirmDeleteStayback = (stayback, e) => {
+    // Stop event propagation to prevent opening stayback details
+    e.stopPropagation();
+    setStaybackToDelete(stayback);
+    setIsDeleteConfirmOpen(true);
+  };
+
+  const deleteStayback = async () => {
+    if (!staybackToDelete) return;
+
+    try {
+      const response = await fetch(`/api/staybacklogs/${staybackToDelete.id}`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' }
+      });
+
+      if (response.ok) {
+        // Remove the deleted stayback from the staybacks list
+        setStaybacks(prevStaybacks => {
+          // Assuming staybacks is an object with date-based keys
+          const updatedStaybacks = {...prevStaybacks};
+          Object.keys(updatedStaybacks).forEach(date => {
+            updatedStaybacks[date] = updatedStaybacks[date].filter(
+              stayback => stayback.id !== staybackToDelete.id
+            );
+          });
+          return updatedStaybacks;
+        });
+
+        // Close the delete confirmation 
+        setIsDeleteConfirmOpen(false);
+        setStaybackToDelete(null);
+
+        // Refresh staybacks data
+        await fetchStaybacks();
+      } else {
+        console.error('Failed to delete stayback');
+      }
+    } catch (error) {
+      console.error('Failed to delete stayback', error);
     }
   };
 
@@ -167,9 +212,18 @@ const StaybackLog = ({ staybacks, setStaybacks, fetchStaybacks }) => {
                   {dateStaybacks.map(stayback => (
                     <div 
                       key={stayback.id}
-                      className="p-4 rounded-md  border bg-[#00f5d0] cursor-pointer hover:bg-green-200 transition-colors"
+                      className="p-4 rounded-md border bg-[#00f5d0] relative cursor-pointer hover:bg-green-200 transition-colors"
                       onClick={() => openStaybackDetails(stayback)}
                     >
+                      {/* Delete Button */}
+                      <button
+                        onClick={(e) => confirmDeleteStayback(stayback, e)}
+                        className="absolute top-2 right-2 bg-red-600 hover:bg-red-700 text-white p-1 rounded-full z-10"
+                        title="Delete Stayback"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+
                       <h3 className="font-semibold text-lg text-black mt-[-8px]">{stayback.title}</h3>
                       <p className="text-black">Team: {stayback.team}</p>
                       <p className="text-black">Students: {stayback.students?.length || 0}</p>
@@ -180,6 +234,55 @@ const StaybackLog = ({ staybacks, setStaybacks, fetchStaybacks }) => {
             </div>
           ))}
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {isDeleteConfirmOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999]"
+          style={{ zIndex: 9999 }}
+        >
+          <div className="bg-black p-8 rounded-lg w-96 text-center relative shadow-2xl border border-red-500">
+            {/* Close Icon */}
+            <button
+              onClick={() => {
+                setIsDeleteConfirmOpen(false);
+                setStaybackToDelete(null);
+              }}
+              className="absolute top-2 right-2 text-white hover:text-red-500 transition"
+              title="Cancel"
+            >
+              ✕
+            </button>
+
+            <Trash2 className="mx-auto mb-4 text-red-500" size={64} />
+            <h2 className="text-2xl font-bold mb-4 text-white">
+              Delete Stayback
+            </h2>
+            <p className="mb-6 text-gray-300">
+              Are you sure you want to delete the stayback "{staybackToDelete?.title}"?
+              This action cannot be undone.
+            </p>
+            <div className="flex justify-center space-x-4">
+              <button
+                onClick={() => {
+                  setIsDeleteConfirmOpen(false);
+                  setStaybackToDelete(null);
+                }}
+                className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={deleteStayback}
+                className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
   
       {/* Modal for stayback details */}
       {selectedStayback && (
