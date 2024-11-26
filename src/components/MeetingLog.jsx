@@ -215,7 +215,7 @@ const MeetingLog = ({ meetings, setMeetings, fetchMeetings }) => {
               Delete Meeting
             </h2>
             <p className="mb-6 text-gray-300">
-              Are you sure you want to delete the stayback &quot;{staybackToDelete?.title}&quot;?
+              Are you sure you want to delete the meeting?
               This action cannot be undone.
             </p>
 
