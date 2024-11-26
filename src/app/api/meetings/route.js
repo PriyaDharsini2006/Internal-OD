@@ -6,6 +6,7 @@ import { authOptions } from '../auth/[...nextauth]/route';
 
 const prisma = new PrismaClient();
 
+
 export async function POST(req) {
   try {
     const session = await getServerSession(authOptions);

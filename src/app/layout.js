@@ -27,7 +27,7 @@ export default function RootLayout({ children }) {
       <footer className="bg-black shadow-md mt-auto">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-center space-x-2 text-gray-600 font-grotesk text-[#00f5d0]">
-            <p className="text-sm">
+            <p className="text-sm font-grotesk">
               {new Date().getFullYear()} Copyrights@Hackerz.
             </p>
           </div>

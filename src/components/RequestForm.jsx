@@ -357,7 +357,6 @@ const RequestForm = () => {
                     <tr>
                       <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Select</th>
                       <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Name</th>
-                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Email</th>
                       <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Section</th>
                       <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Year</th>
                       <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Stayback</th>
@@ -386,7 +385,6 @@ const RequestForm = () => {
                             />
                           </td>
                           <td className="px-4 py-3 text-sm text-gray-300">{student.name}</td>
-                          <td className="px-4 py-3 text-sm text-gray-400">{student.email}</td>
                           <td className="px-4 py-3 text-sm text-gray-400">{student.sec}</td>
                           <td className="px-4 py-3 text-sm text-gray-400">{student.year}</td>
                           <td className="px-4 py-3 text-sm text-gray-400">{student.counts?.stayback_cnt || 0}</td>
