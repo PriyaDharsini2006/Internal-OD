@@ -19,7 +19,7 @@ export const ApprovedRequestsTable = () => {
 
   const fetchApprovedRequests = async () => {
     try {
-      const response = await fetch('/api/requests?status=1');
+      const response = await fetch('/api/attendance?status=1');
       if (!response.ok) throw new Error('Failed to fetch requests');
       const data = await response.json();
       setRequests(data.data);
@@ -39,17 +39,10 @@ export const ApprovedRequestsTable = () => {
     const isForenoon = fromTime < noonCutoff;
     const isAfternoon = toTime > noonCutoff;
 
-    if (request.attendance) {
-      if (isForenoon && isAfternoon) return 'Full Day';
-      if (isForenoon) return 'Forenoon';
-      if (isAfternoon) return 'Afternoon';
-    }
-    return 'Not Marked';
+    return { isForenoon, isAfternoon };
   };
 
-
-
-  const handleAttendanceUpdate = async (requestId, currentAttendance) => {
+  const handleAttendanceUpdate = async (requestId, attendanceType) => {
     try {
       const response = await fetch(`/api/attendance/${requestId}`, {
         method: 'PATCH',
@@ -57,7 +50,7 @@ export const ApprovedRequestsTable = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          attendance: !currentAttendance,
+          attendanceType: attendanceType,
         }),
       });
 
@@ -135,56 +128,79 @@ export const ApprovedRequestsTable = () => {
                 </td>
               </tr>
             ) : (
-              requests.map((request) => (
-                <tr key={request.id}>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center">
-                      <User className="w-5 h-5 text-gray-400 mr-3" />
-                      <div>
-                        <div className="text-sm font-medium text-white">
-                          {request.user.name}
-                        </div>
-                        <div className="text-sm text-gray-400">
-                          {request.user.sec} Year {request.user.year}
-                        </div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="text-sm text-white font-medium">
-                      {request.reason}
-                    </div>
-                    <div className="text-sm text-gray-400">
-                      {request.description}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center">
-                      <CalendarDays className="w-5 h-5 text-gray-400 mr-3" />
-                      <div>
-                        <div className="text-sm text-white">
-                          From: {formatTime(request.from_time)}
-                        </div>
-                        <div className="text-sm text-white">
-                          To: {formatTime(request.to_time)}
+              requests.map((request) => {
+                const { isForenoon, isAfternoon } = renderAttendanceStatus(request);
+                const attendanceDetail = request.attendance_detail || { forenoon: false, afternoon: false };
+
+                return (
+                  <tr key={request.id}>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center">
+                        <User className="w-5 h-5 text-gray-400 mr-3" />
+                        <div>
+                          <div className="text-sm font-medium text-white">
+                            {request.user.name}
+                          </div>
+                          <div className="text-sm text-gray-400">
+                            {request.user.sec} Year {request.user.year}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <button
-                      onClick={() => handleAttendanceUpdate(request.id, request.attendance)}
-                      className={`px-4 py-2 rounded-md ${
-                        request.attendance 
-                          ? 'bg-[#00f5d0]/20 text-[#00f5d0]' 
-                          : 'bg-gray-800 text-gray-300'
-                      }`}
-                    >
-                      {renderAttendanceStatus(request)}
-                    </button>
-                  </td>
-                </tr>
-              ))
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="text-sm text-white font-medium">
+                        {request.reason}
+                      </div>
+                      <div className="text-sm text-gray-400">
+                        {request.description}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center">
+                        <CalendarDays className="w-5 h-5 text-gray-400 mr-3" />
+                        <div>
+                          <div className="text-sm text-white">
+                            From: {formatTime(request.from_time)}
+                          </div>
+                          <div className="text-sm text-white">
+                            To: {formatTime(request.to_time)}
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex space-x-2">
+                        {isForenoon && (
+                          <button
+                            onClick={() => handleAttendanceUpdate(request.id, 'forenoon')}
+                            className={`px-4 py-2 rounded-md ${
+                              attendanceDetail.forenoon 
+                                ? 'bg-[#00f5d0]/20 text-[#00f5d0]' 
+                                : 'bg-gray-800 text-gray-300'
+                            }`}
+                            disabled={!isForenoon}
+                          >
+                            Forenoon
+                          </button>
+                        )}
+                        {isAfternoon && (
+                          <button
+                            onClick={() => handleAttendanceUpdate(request.id, 'afternoon')}
+                            className={`px-4 py-2 rounded-md ${
+                              attendanceDetail.afternoon 
+                                ? 'bg-[#00f5d0]/20 text-[#00f5d0]' 
+                                : 'bg-gray-800 text-gray-300'
+                            }`}
+                            disabled={!isAfternoon}
+                          >
+                            Afternoon
+                          </button>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })
             )}
           </tbody>
         </table>
