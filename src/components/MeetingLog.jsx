@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useSession } from 'next-auth/react';
-import { Search, ChevronLeft, ChevronRight, Trash2 } from 'lucide-react';
+import { Search, ChevronLeft, ChevronRight, Trash2, Printer } from 'lucide-react';
 
 const MeetingLog = ({ meetings, setMeetings, fetchMeetings }) => {
   const { status } = useSession();
@@ -11,7 +11,64 @@ const MeetingLog = ({ meetings, setMeetings, fetchMeetings }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
   const [meetingToDelete, setMeetingToDelete] = useState(null);
+  const printRef = useRef(null);
   const recordsPerPage = 15;
+  const printMeetingStudents = () => {
+    // Create a print window
+    const printWindow = window.open('', '_blank');
+    
+    // Get the students with complete details
+    const meetingStudentDetails = students.map(email => 
+      allStudents.find(student => student.email === email) || { email }
+    ); printWindow.document.write(`
+      <html>
+        <head>
+          <title>Meeting Attendees - ${selectedMeeting.title}</title>
+          <style>
+            body { font-family: Arial, sans-serif; }
+            .print-header { text-align: center; margin-bottom: 20px; }
+            table { width: 100%; border-collapse: collapse; }
+            th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+            th { background-color: #f2f2f2; }
+          </style>
+        </head>
+        <body>
+          <div class="print-header">
+            <h1>Meeting Attendees</h1>
+            <h2>${selectedMeeting.title}</h2>
+            <p>Date: ${new Date(selectedMeeting.date).toLocaleDateString()}</p>
+            <p>Time: ${new Date(selectedMeeting.from_time).toLocaleTimeString()} - ${new Date(selectedMeeting.to_time).toLocaleTimeString()}</p>
+            <p>Total Attendees: ${meetingStudentDetails.length}</p>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Section</th>
+                <th>Year</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${meetingStudentDetails.map(student => `
+                <tr>
+                  <td>${student.name || 'N/A'}</td>
+                  <td>${student.email}</td>
+                  <td>${student.sec || 'N/A'}</td>
+                  <td>${student.year || 'N/A'}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </body>
+      </html>
+    `);
+    
+    // Close the document and trigger print
+    printWindow.document.close();
+    printWindow.print();
+    printWindow.close();
+  };
 
   useEffect(() => {
     const fetchStudents = async () => {
@@ -247,7 +304,17 @@ const MeetingLog = ({ meetings, setMeetings, fetchMeetings }) => {
               <h2 className="text-2xl font-bold">
                 {selectedMeeting.title} Details
               </h2>
-            </div>
+           
+            <button
+                onClick={printMeetingStudents}
+                className="bg-[#00f5d0] hover:bg-green-600 text-black px-4 py-2 rounded flex items-center"
+                disabled={students.length === 0}
+              >
+                <Printer className="mr-2" size={20} />
+                Print
+              </button>
+              </div>
+            
 
             {/* Modal Content */}
             <div className="flex-grow overflow-auto space-y-6 bg-black">
@@ -414,6 +481,7 @@ const MeetingLog = ({ meetings, setMeetings, fetchMeetings }) => {
             >
               Close
             </button>
+            
           </div>
         </div>
       )}

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
-import { Search, ChevronLeft, ChevronRight, ChevronDown, Trash2, ChevronRight as ChevronRightFolder, Calendar } from 'lucide-react';
+import { Search, ChevronLeft, ChevronRight, ChevronDown, Printer, Trash2, ChevronRight as ChevronRightFolder, Calendar } from 'lucide-react';
 
 const StaybackLog = ({ staybacks, setStaybacks, fetchStaybacks }) => {
   const { status } = useSession();
@@ -177,6 +177,80 @@ const StaybackLog = ({ staybacks, setStaybacks, fetchStaybacks }) => {
     return groups;
   }, [staybacks]);
 
+  const printStudents = () => {
+    // Create a new window for printing
+    const printWindow = window.open('', '_blank');
+    
+    // Construct the print content
+    const studentDetails = students.map(email => {
+      const student = allStudents.find(s => s.email === email);
+      return student;
+    }).filter(student => student); // Remove any undefined students
+
+    // HTML content for printing
+    const printContent = `
+      <html>
+        <head>
+          <title>Stayback Students - ${selectedStayback.title}</title>
+          <style>
+            body { font-family: Arial, sans-serif; }
+            h1, h2 { text-align: center; }
+            table { 
+              width: 100%; 
+              border-collapse: collapse; 
+              margin-top: 20px; 
+            }
+            th, td { 
+              border: 1px solid #ddd; 
+              padding: 8px; 
+              text-align: left; 
+            }
+            th { 
+              background-color: #f2f2f2; 
+            }
+          </style>
+        </head>
+        <body>
+          <h1>${selectedStayback.title}</h1>
+          <h2>Team: ${selectedStayback.team} | Date: ${new Date(selectedStayback.dateGroup.date).toLocaleDateString()}</h2>
+          
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Section</th>
+                <th>Year</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${studentDetails.map(student => `
+                <tr>
+                  <td>${student.name || '-'}</td>
+                  <td>${student.email}</td>
+                  <td>${student.sec || '-'}</td>
+                  <td>${student.year || '-'}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </body>
+      </html>
+    `;
+
+    // Write the content to the new window
+    printWindow.document.write(printContent);
+    
+    // Close the document writing
+    printWindow.document.close();
+    
+    // Trigger print
+    printWindow.print();
+    
+    // Close the print window after printing
+    printWindow.close();
+  };  
+
   return (
     <div className="p-6 max-w-7xl mx-auto">
       <div className="mb-6 space-y-2">
@@ -287,15 +361,23 @@ const StaybackLog = ({ staybacks, setStaybacks, fetchStaybacks }) => {
 
       {/* Modal for stayback details */}
       {selectedStayback && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-black p-6 rounded-lg w-11/12 max-w-7xl max-h-[90vh] flex flex-col">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold text-white">{selectedStayback.title}</h2>
-              <div className="text-[#00f5d0]">
-                <p>Team: {selectedStayback.team}</p>
-                <p>Date: {new Date(selectedStayback.dateGroup.date).toLocaleDateString()}</p>
-              </div>
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-black p-6 rounded-lg w-11/12 max-w-7xl max-h-[90vh] flex flex-col">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-bold text-white">{selectedStayback.title}</h2>
+          <div className="text-[#00f5d0] flex items-center space-x-4">
+            <div>
+              <p>Team: {selectedStayback.team}</p>
+              <p>Date: {new Date(selectedStayback.dateGroup.date).toLocaleDateString()}</p>
             </div>
+            <button
+              onClick={printStudents}
+              className="bg-[#00f5d0] hover:bg-green-600 text-black px-3 py-2 rounded flex items-center"
+            >
+              <Printer className="mr-2" size={20} /> Print
+            </button>
+          </div>
+        </div>
 
             <div className="flex-grow overflow-auto space-y-6">
               {/* Available Students Section */}
