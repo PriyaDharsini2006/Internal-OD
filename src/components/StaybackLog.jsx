@@ -178,23 +178,37 @@ const StaybackLog = ({ staybacks, setStaybacks, fetchStaybacks }) => {
   }, [staybacks]);
 
   const printStudents = () => {
-    // Create a new window for printing
     const printWindow = window.open('', '_blank');
     
-    // Construct the print content
     const studentDetails = students.map(email => {
       const student = allStudents.find(s => s.email === email);
       return student;
-    }).filter(student => student); // Remove any undefined students
-
-    // HTML content for printing
+    }).filter(student => student);
+  
     const printContent = `
       <html>
         <head>
           <title>Stayback Students - ${selectedStayback.title}</title>
           <style>
-            body { font-family: Arial, sans-serif; }
-            h1, h2 { text-align: center; }
+            body { 
+              font-family: Arial, sans-serif; 
+              margin: 0; 
+              padding: 0; 
+            }
+            .page {
+              page-break-after: always;
+              min-height: 90vh;
+              display: flex;
+              flex-direction: column;
+              padding: 20px;
+              box-sizing: border-box;
+            }
+            .appreciation-text {
+              text-align: center;
+              max-width: 800px;
+              margin: 0 auto 20px;
+              line-height: 1.6;
+            }
             table { 
               width: 100%; 
               border-collapse: collapse; 
@@ -211,46 +225,51 @@ const StaybackLog = ({ staybacks, setStaybacks, fetchStaybacks }) => {
           </style>
         </head>
         <body>
-          <h1>${selectedStayback.title}</h1>
-          <h2>Team: ${selectedStayback.team} | Date: ${new Date(selectedStayback.dateGroup.date).toLocaleDateString()}</h2>
+          <div class="page">
+            <div class="appreciation-text">
+              <h1>Thank You for Your Contribution</h1>
+              <p>Thank you for staying back to contribute to the event. Your presence and valuable input made a significant impact, and we truly appreciate your active involvement. Let's continue working together to make this event a great success!</p>
+              <img 
+  
+  src="/logo1.png" 
+  alt="Company Logo" 
+/>
+              <h2>${selectedStayback.title}</h2>
+              <p>Team: ${selectedStayback.team} | Date: ${new Date(selectedStayback.dateGroup.date).toLocaleDateString()}</p>
+            </div>
+          </div>
           
-          <table>
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Section</th>
-                <th>Year</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${studentDetails.map(student => `
+          <div class="page">
+            <table>
+              <thead>
                 <tr>
-                  <td>${student.name || '-'}</td>
-                  <td>${student.email}</td>
-                  <td>${student.sec || '-'}</td>
-                  <td>${student.year || '-'}</td>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Section</th>
+                  <th>Year</th>
                 </tr>
-              `).join('')}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                ${studentDetails.map(student => `
+                  <tr>
+                    <td>${student.name || '-'}</td>
+                    <td>${student.email}</td>
+                    <td>${student.sec || '-'}</td>
+                    <td>${student.year || '-'}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
         </body>
       </html>
     `;
-
-    // Write the content to the new window
+  
     printWindow.document.write(printContent);
-    
-    // Close the document writing
     printWindow.document.close();
-    
-    // Trigger print
     printWindow.print();
-    
-    // Close the print window after printing
     printWindow.close();
-  };  
-
+  };
   return (
     <div className="p-6 max-w-7xl mx-auto">
       <div className="mb-6 space-y-2">

@@ -18,48 +18,101 @@ const MeetingLog = ({ meetings, setMeetings, fetchMeetings }) => {
     const printWindow = window.open('', '_blank');
     
     // Get the students with complete details
+    const citLogo = 'logo1.png';
+    const hackerzLogo = 'logo1.png';
+  
     const meetingStudentDetails = students.map(email => 
       allStudents.find(student => student.email === email) || { email }
-    ); printWindow.document.write(`
+    );
+  
+    printWindow.document.write(`
       <html>
         <head>
           <title>Meeting Attendees - ${selectedMeeting.title}</title>
           <style>
-            body { font-family: Arial, sans-serif; }
-            .print-header { text-align: center; margin-bottom: 20px; }
-            table { width: 100%; border-collapse: collapse; }
-            th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-            th { background-color: #f2f2f2; }
+            @page {
+              size: A4;
+              margin: 20mm;
+            }
+            body { 
+              font-family: Arial, sans-serif; 
+              margin: 0;
+              padding: 0;
+            }
+            .first-page {
+              height: 100vh;
+              display: flex;
+              flex-direction: column;
+              justify-content: center;
+              align-items: center;
+              text-align: center;
+              page-break-after: always;
+            }
+            .logo {
+              max-width: 300px;
+              margin-bottom: 30px;
+            }
+            .welcome-message {
+              max-width: 600px;
+              line-height: 1.6;
+              padding: 20px;
+            }
+            .second-page {
+              page-break-before: always;
+            }
+            table { 
+              width: 100%; 
+              border-collapse: collapse; 
+              margin-top: 20px;
+            }
+            th, td { 
+              border: 1px solid #ddd; 
+              padding: 8px; 
+              text-align: left; 
+            }
+            th { 
+              background-color: #f2f2f2; 
+            }
           </style>
         </head>
         <body>
-          <div class="print-header">
-            <h1>Meeting Attendees</h1>
-            <h2>${selectedMeeting.title}</h2>
-            <p>Date: ${new Date(selectedMeeting.date).toLocaleDateString()}</p>
-            <p>Time: ${new Date(selectedMeeting.from_time).toLocaleTimeString()} - ${new Date(selectedMeeting.to_time).toLocaleTimeString()}</p>
-            <p>Total Attendees: ${meetingStudentDetails.length}</p>
+          <div class="first-page">
+            <img src="${citLogo}" alt="Chennai Institute of Technology Logo" class="logo" />
+          <img src="${hackerzLogo}" alt="Hackerz Logo" class="logo" />
+            <div class="welcome-message">
+              <h1>Team Meeting Attendance</h1>
+              <p>Thanks for attending the${selectedMeeting.title} meeting. Your presence and valuable contribution truly made a difference, and we appreciate your active involvement. It means a lot to the team and the success of our efforts.</p>
+            </div>
           </div>
-          <table>
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Section</th>
-                <th>Year</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${meetingStudentDetails.map(student => `
+  
+          <div class="second-page">
+            <h2>Meeting Details</h2>
+            <p><strong>Meeting:</strong> ${selectedMeeting.title}</p>
+            <p><strong>Date:</strong> ${new Date(selectedMeeting.date).toLocaleDateString()}</p>
+            <p><strong>Time:</strong> ${new Date(selectedMeeting.from_time).toLocaleTimeString()} - ${new Date(selectedMeeting.to_time).toLocaleTimeString()}</p>
+            <p><strong>Total Attendees:</strong> ${meetingStudentDetails.length}</p>
+  
+            <table>
+              <thead>
                 <tr>
-                  <td>${student.name || 'N/A'}</td>
-                  <td>${student.email}</td>
-                  <td>${student.sec || 'N/A'}</td>
-                  <td>${student.year || 'N/A'}</td>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Section</th>
+                  <th>Year</th>
                 </tr>
-              `).join('')}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                ${meetingStudentDetails.map(student => `
+                  <tr>
+                    <td>${student.name || 'N/A'}</td>
+                    <td>${student.email}</td>
+                    <td>${student.sec || 'N/A'}</td>
+                    <td>${student.year || 'N/A'}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
         </body>
       </html>
     `);
@@ -69,7 +122,6 @@ const MeetingLog = ({ meetings, setMeetings, fetchMeetings }) => {
     printWindow.print();
     printWindow.close();
   };
-
   useEffect(() => {
     const fetchStudents = async () => {
       try {
