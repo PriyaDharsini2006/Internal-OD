@@ -47,7 +47,6 @@ const StaybackRequest = () => {
   const [registerNumberSearch, setRegisterNumberSearch] = useState('');
   const [staybacks, setStaybacks] = useState({});  // Grouped by date
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedSection, setSelectedSection] = useState('all');
   const [selectedYear, setSelectedYear] = useState('all');
   const [localSearch, setLocalSearch] = useState('');
   const [selectedTeamType, setSelectedTeamType] = useState('');
@@ -100,7 +99,6 @@ const StaybackRequest = () => {
       try {
         const params = new URLSearchParams();
         if (searchTerm) params.append('search', searchTerm);
-        if (selectedSection !== 'all') params.append('section', selectedSection);
         if (selectedYear !== 'all') params.append('year', selectedYear);
   
         const response = await fetch(`/api/students?${params.toString()}`);
@@ -115,7 +113,7 @@ const StaybackRequest = () => {
       fetchStudents();
       fetchStaybacks();
     }
-  }, [status, searchTerm, selectedSection, selectedYear]);
+  }, [status, searchTerm, selectedYear]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -365,9 +363,6 @@ const StaybackRequest = () => {
                           Name
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-[#00f5d0] uppercase tracking-wider">
-                          Section
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-[#00f5d0] uppercase tracking-wider">
                           Year
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-[#00f5d0] uppercase tracking-wider">
@@ -394,9 +389,6 @@ const StaybackRequest = () => {
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="text-sm font-medium text-white">{student.name}</div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
-                            {student.sec}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
                             {student.year}

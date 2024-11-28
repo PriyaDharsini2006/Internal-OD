@@ -328,7 +328,7 @@ const RequestForm = () => {
               <p className="text-green-400">{successMessage}</p>
             </div>
           )}
-          
+
           {/* Search and Filter Section */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="relative">
@@ -349,18 +349,6 @@ const RequestForm = () => {
                 className="w-full px-4 py-2.5 bg-white/5 backdrop-blur-xl rounded-lg text-gray-300 placeholder-gray-500 border border-white/10 focus:ring-2 focus:ring-[#00f5d0] focus:border-[#00f5d0]"
               />
             </div>
-            <select
-              value={selectedSection}
-              onChange={(e) => setSelectedSection(e.target.value)}
-              className="px-4 py-2.5 bg-white/5 backdrop-blur-xl rounded-lg text-gray-300 border border-white/10 focus:ring-2 focus:ring-[#00f5d0] focus:border-[#00f5d0]"
-            >
-              <option value="all">All Sections</option>
-              {sectionsOptions.map((section) => (
-                <option key={section} value={section}>
-                  Section {section}
-                </option>
-              ))}
-            </select>
           </div>
 
 
@@ -373,7 +361,6 @@ const RequestForm = () => {
                     <tr>
                       <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Select</th>
                       <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Name</th>
-                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Section</th>
                       <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Year</th>
                       <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Stayback</th>
                       <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Meeting</th>
@@ -402,7 +389,6 @@ const RequestForm = () => {
                             />
                           </td>
                           <td className="px-4 py-3 text-sm text-gray-300">{student.name}</td>
-                          <td className="px-4 py-3 text-sm text-gray-400">{student.sec}</td>
                           <td className="px-4 py-3 text-sm text-gray-400">{student.year}</td>
                           <td className="px-4 py-3 text-sm text-gray-400">{student.counts?.stayback_cnt || 0}</td>
                           <td className="px-4 py-3 text-sm text-gray-400">{student.counts?.meeting_cnt || 0}</td>

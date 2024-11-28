@@ -8,10 +8,8 @@ const ODRequestApproval = () => {
   const [requests, setRequests] = useState([]);
   const [uniqueReasons, setUniqueReasons] = useState(['All']);
   const [uniqueYears, setUniqueYears] = useState(['All']);
-  const [uniqueSections, setUniqueSections] = useState(['All']);
   const [selectedReason, setSelectedReason] = useState('All');
   const [selectedYear, setSelectedYear] = useState('All');
-  const [selectedSection, setSelectedSection] = useState('All');
   const [selectedRequests, setSelectedRequests] = useState([]);
   const [showBatchTimingForm, setShowBatchTimingForm] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -45,11 +43,7 @@ const ODRequestApproval = () => {
     setCurrentPage(1);
   };
 
-  // Function to handle section selection
-  const handleSectionSelect = (section) => {
-    setSelectedSection(section);
-    setCurrentPage(1);
-  };
+  
 
   // Function to toggle request selection
   const toggleSelection = (odId) => {
@@ -120,14 +114,11 @@ const ODRequestApproval = () => {
         const data = await response.json();
         setRequests(data);
 
-        // Extract unique reasons, years, and sections dynamically
         const reasons = ['All', ...new Set(data.map(request => request.reason).filter(Boolean))];
         const years = ['All', ...new Set(data.map(request => request.year).filter(Boolean))];
-        const sections = ['All', ...new Set(data.map(request => request.sec).filter(Boolean))];
 
         setUniqueReasons(reasons);
         setUniqueYears(years);
-        setUniqueSections(sections);
       } catch (error) {
         console.error('Failed to fetch requests', error);
         setError('Failed to load requests');
@@ -155,10 +146,6 @@ const ODRequestApproval = () => {
       );
     }
 
-    // Filter by section
-    if (selectedSection !== 'All') {
-      filteredRequests = filteredRequests.filter(r => r.sec === selectedSection);
-    }
 
     // Search by name
     if (searchQuery) {
@@ -169,7 +156,7 @@ const ODRequestApproval = () => {
     }
 
     return filteredRequests;
-  }, [requests, selectedReason, selectedYear, selectedSection, searchQuery]);
+  }, [requests, selectedReason, selectedYear, searchQuery]);
 
   // Select all/deselect all functionality
   const toggleSelectAll = () => {
@@ -220,7 +207,7 @@ const ODRequestApproval = () => {
           </div>
         )}
 
-        {/* Search and Filter Section */}
+        {/* Search and Filter Section*/}
         <div className="mb-6 flex flex-col md:flex-row gap-4">
           <div className="flex-grow">
             <input
@@ -257,7 +244,7 @@ const ODRequestApproval = () => {
           ))}
         </div>
 
-        {/* Year and Section Filters */}
+        {/* Year Filter */}
         <div className="flex gap-4 mb-6">
           <div className="flex-1">
             <select
@@ -267,17 +254,6 @@ const ODRequestApproval = () => {
             >
               {uniqueYears.map(year => (
                 <option className='bg-black' key={year} value={year}>{year}</option>
-              ))}
-            </select>
-          </div>
-          <div className="flex-1">
-            <select
-              value={selectedSection}
-              onChange={(e) => handleSectionSelect(e.target.value)}
-              className="px-36 py-2.5 bg-white/5 backdrop-blur-xl rounded-lg text-gray-300 border border-white/10 focus:ring-2 focus:ring-[#00f5d0] focus:border-[#00f5d0]"
-            >
-              {uniqueSections.map(section => (
-                <option className='bg-black ' key={section} value={section}>{section}</option>
               ))}
             </select>
           </div>
@@ -297,7 +273,6 @@ const ODRequestApproval = () => {
       />
                   </th>
                   <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Name</th>
-                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Section</th>
                   <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Year</th>
                   <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Stayback</th>
                   <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Meeting</th>
@@ -325,7 +300,6 @@ const ODRequestApproval = () => {
                       />
                     </td>
                     <td className="px-4 py-3 text-sm text-gray-300">{request.name}</td>
-                    <td className="px-4 py-3 text-sm text-gray-300">{request.sec}</td>
                     <td className="px-4 py-3 text-sm text-gray-300">{request.year}</td>
                     <td className="px-4 py-3 text-sm text-gray-300">{request.stayback_cnt || 0}</td>
                     <td className="px-4 py-3 text-sm text-gray-300">{request.meeting_cnt || 0}</td>
