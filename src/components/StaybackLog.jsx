@@ -5,6 +5,8 @@ import { Search, ChevronLeft, ChevronRight, ChevronDown, Printer, Trash2, Chevro
 const StaybackLog = ({ staybacks, setStaybacks, fetchStaybacks }) => {
   const { status } = useSession();
   const [selectedStayback, setSelectedStayback] = useState(null);
+  const [selectedAvailableStudents, setSelectedAvailableStudents] = useState(new Set());
+  const [selectedCurrentStudents, setSelectedCurrentStudents] = useState(new Set());
   const [students, setStudents] = useState([]);
   const [allStudents, setAllStudents] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -13,6 +15,59 @@ const StaybackLog = ({ staybacks, setStaybacks, fetchStaybacks }) => {
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
   const [staybackToDelete, setStaybackToDelete] = useState(null);
   const recordsPerPage = 15;
+
+  const toggleAvailableStudentSelection = (email) => {
+    setSelectedAvailableStudents(prev => {
+      const newSelected = new Set(prev);
+      if (newSelected.has(email)) {
+        newSelected.delete(email);
+      } else {
+        newSelected.add(email);
+      }
+      return newSelected;
+    });
+  };
+
+  // Toggle selection of a current student
+  const toggleCurrentStudentSelection = (email) => {
+    setSelectedCurrentStudents(prev => {
+      const newSelected = new Set(prev);
+      if (newSelected.has(email)) {
+        newSelected.delete(email);
+      } else {
+        newSelected.add(email);
+      }
+      return newSelected;
+    });
+  };
+
+  // Add multiple selected students to stayback
+  const addMultipleStudentsToStayback = () => {
+    const studentsToAdd = Array.from(selectedAvailableStudents);
+    studentsToAdd.forEach(email => addStudentToStayback(email));
+    setSelectedAvailableStudents(new Set());
+  };
+
+  // Remove multiple selected students from stayback
+  const removeMultipleStudentsFromStayback = () => {
+    const studentsToRemove = Array.from(selectedCurrentStudents);
+    studentsToRemove.forEach(email => {
+      // Assuming you have a method to remove students, replace with actual implementation
+      setStudents(prev => prev.filter(studentEmail => studentEmail !== email));
+    });
+    setSelectedCurrentStudents(new Set());
+  };
+
+  // Select all available students
+  const selectAllAvailableStudents = () => {
+    const allAvailableEmails = currentStudents.map(student => student.email);
+    setSelectedAvailableStudents(new Set(allAvailableEmails));
+  };
+
+  // Select all current students
+  const selectAllCurrentStudents = () => {
+    setSelectedCurrentStudents(new Set(students));
+  };
 
   // Handle folder toggle
   const toggleFolder = (date) => {
@@ -420,29 +475,51 @@ const StaybackLog = ({ staybacks, setStaybacks, fetchStaybacks }) => {
           </div>
         </div>
 
-            <div className="flex-grow overflow-auto space-y-6">
+        <div className="flex-grow overflow-auto space-y-6">
               {/* Available Students Section */}
               <div className="border rounded-lg p-6">
-                <div className="mb-4">
-                  <h3 className="text-xl font-semibold mb-4 text-white">Available Students</h3>
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#00f5d0]" size={20} />
-                    <input
-                      type="text"
-                      placeholder="Search students..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="w-full pl-10 pr-3 py-2 border bg-black rounded-md text-white"
-                    />
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-xl font-semibold text-white">Available Students</h3>
+                  <div className="flex space-x-2">
+                    {/* <button
+                      onClick={selectAllAvailableStudents}
+                      className="bg-[#00f5d0] hover:bg-green-600 text-black px-3 py-1 rounded text-sm"
+                    >
+                      Select All
+                    </button> */}
+                    <button
+                      onClick={addMultipleStudentsToStayback}
+                      className="bg-[#00f5d0] hover:bg-green-600 text-black px-3 py-1 rounded text-sm"
+                      disabled={selectedAvailableStudents.size === 0}
+                    >
+                      Add Selected ({selectedAvailableStudents.size})
+                    </button>
                   </div>
                 </div>
+
+                <div className="relative mb-4">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#00f5d0]" size={20} />
+                  <input
+                    type="text"
+                    placeholder="Search students..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full pl-10 pr-3 py-2 border bg-black rounded-md text-white"
+                  />
+                </div>
+
 
                 <div className="max-h-96 overflow-y-auto border rounded-md">
                   <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-black sticky top-0">
                       <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-[#00f5d0] uppercase tracking-wider">
-                          Select
+                        <th className="px-2 py-3 text-left text-xs font-medium text-[#00f5d0] uppercase tracking-wider">
+                          {/* <input 
+                            type="checkbox"
+                            checked={selectedAvailableStudents.size === currentStudents.length}
+                            onChange={selectAllAvailableStudents}
+                            className="mr-2"
+                          /> */}
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-[#00f5d0] uppercase tracking-wider">
                           Name
@@ -459,19 +536,18 @@ const StaybackLog = ({ staybacks, setStaybacks, fetchStaybacks }) => {
                       {currentStudents.map(student => (
                         <tr
                           key={student.email}
-                          className="hover:bg-gray-900 cursor-pointer"
-                          onClick={() => addStudentToStayback(student.email)}
+                          className={`hover:bg-gray-900 cursor-pointer ${
+                            selectedAvailableStudents.has(student.email) ? 'bg-gray-800' : ''
+                          }`}
+                          onClick={() => toggleAvailableStudentSelection(student.email)}
                         >
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <button
-                              className="bg-[#00f5d0] hover:bg-green-600 text-black px-3 py-1 rounded text-sm"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                addStudentToStayback(student.email);
-                              }}
-                            >
-                              Add
-                            </button>
+                          <td className="px-2 py-4 whitespace-nowrap">
+                            <input 
+                              type="checkbox"
+                              checked={selectedAvailableStudents.has(student.email)}
+                              onChange={() => toggleAvailableStudentSelection(student.email)}
+                              onClick={(e) => e.stopPropagation()}
+                            />
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="text-sm font-medium text-white">{student.name}</div>
@@ -516,15 +592,38 @@ const StaybackLog = ({ staybacks, setStaybacks, fetchStaybacks }) => {
 
               {/* Selected Students Section */}
               <div className="border rounded-lg p-6">
-                <h3 className="text-xl font-semibold mb-4 text-white">
-                  Stayback Students (Total: {students.length})
-                </h3>
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-xl font-semibold text-white">
+                    Stayback Students (Total: {students.length})
+                  </h3>
+                  <div className="flex space-x-2">
+                    <button
+                      onClick={selectAllCurrentStudents}
+                      className="bg-[#00f5d0] hover:bg-green-600 text-black px-3 py-1 rounded text-sm"
+                    >
+                      Select All
+                    </button>
+                    <button
+                      onClick={removeMultipleStudentsFromStayback}
+                      className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm"
+                      disabled={selectedCurrentStudents.size === 0}
+                    >
+                      Remove Selected ({selectedCurrentStudents.size})
+                    </button>
+                  </div>
+                </div>
+
                 <div className="max-h-96 overflow-y-auto border rounded-md">
                   <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-black sticky top-0">
                       <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-[#00f5d0] uppercase tracking-wider">
-                          Action
+                        <th className="px-2 py-3 text-left text-xs font-medium text-[#00f5d0] uppercase tracking-wider">
+                          <input 
+                            type="checkbox"
+                            checked={selectedCurrentStudents.size === students.length}
+                            onChange={selectAllCurrentStudents}
+                            className="mr-2"
+                          />
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-[#00f5d0] uppercase tracking-wider">
                           Name
@@ -541,18 +640,26 @@ const StaybackLog = ({ staybacks, setStaybacks, fetchStaybacks }) => {
                       {students.map(email => {
                         const student = allStudents.find(s => s.email === email);
                         return (
-                          <tr key={email} className="hover:bg-gray-900">
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <button
-                                className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm"
-                              >
-                                Remove
-                              </button>
+                          <tr 
+                            key={email} 
+                            className={`hover:bg-gray-900 ${
+                              selectedCurrentStudents.has(email) ? 'bg-gray-800' : ''
+                            }`}
+                            onClick={() => toggleCurrentStudentSelection(email)}
+                          >
+                            <td className="px-2 py-4 whitespace-nowrap">
+                              <input 
+                                type="checkbox"
+                                checked={selectedCurrentStudents.has(email)}
+                                onChange={() => toggleCurrentStudentSelection(email)}
+                                onClick={(e) => e.stopPropagation()}
+                              />
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
                               <div className="text-sm font-medium text-white">{student?.name || '-'}</div>
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-white">{student?.sec || '-'}
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
+                              {student?.sec || '-'}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
                               {student?.year || '-'}
@@ -565,7 +672,6 @@ const StaybackLog = ({ staybacks, setStaybacks, fetchStaybacks }) => {
                 </div>
               </div>
             </div>
-
             <button
               onClick={() => setSelectedStayback(null)}
               className="mt-6 w-full bg-[#00f5d0] text-black py-2 rounded-md transition duration-200"

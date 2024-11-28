@@ -13,6 +13,61 @@ const MeetingLog = ({ meetings, setMeetings, fetchMeetings }) => {
   const [meetingToDelete, setMeetingToDelete] = useState(null);
   const printRef = useRef(null);
   const recordsPerPage = 15;
+  const [selectedAvailableStudents, setSelectedAvailableStudents] = useState(new Set());
+  const [selectedCurrentStudents, setSelectedCurrentStudents] = useState(new Set());
+
+  // Toggle selection of an available student
+  const toggleAvailableStudentSelection = (email) => {
+    setSelectedAvailableStudents(prev => {
+      const newSelected = new Set(prev);
+      if (newSelected.has(email)) {
+        newSelected.delete(email);
+      } else {
+        newSelected.add(email);
+      }
+      return newSelected;
+    });
+  };
+
+  // Toggle selection of a current student
+  const toggleCurrentStudentSelection = (email) => {
+    setSelectedCurrentStudents(prev => {
+      const newSelected = new Set(prev);
+      if (newSelected.has(email)) {
+        newSelected.delete(email);
+      } else {
+        newSelected.add(email);
+      }
+      return newSelected;
+    });
+  };
+
+  const addMultipleStudentsToMeeting = () => {
+    const studentsToAdd = Array.from(selectedAvailableStudents);
+    studentsToAdd.forEach(email => addStudentToMeeting(email));
+    setSelectedAvailableStudents(new Set());
+  };
+
+  // Remove multiple selected students from meeting
+  const removeMultipleStudentsFromMeeting = () => {
+    const studentsToRemove = Array.from(selectedCurrentStudents);
+    studentsToRemove.forEach(email => {
+      // Assuming you have a method to remove students, replace with actual implementation
+      setStudents(prev => prev.filter(studentEmail => studentEmail !== email));
+    });
+    setSelectedCurrentStudents(new Set());
+  };
+
+  // Select all available students
+  const selectAllAvailableStudents = () => {
+    const allAvailableEmails = currentStudents.map(student => student.email);
+    setSelectedAvailableStudents(new Set(allAvailableEmails));
+  };
+
+  // Select all current students
+  const selectAllCurrentStudents = () => {
+    setSelectedCurrentStudents(new Set(students));
+  };
 
 
   const printStudents = () => {
@@ -389,28 +444,49 @@ const MeetingLog = ({ meetings, setMeetings, fetchMeetings }) => {
             <div className="flex-grow overflow-auto space-y-6 bg-black">
               {/* Available Students Section */}
               <div className="border rounded-lg p-6">
-                <h3 className="text-xl font-semibold mb-4">Available Students</h3>
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-xl font-semibold text-white">Available Students</h3>
+                  <div className="flex space-x-2">
+                    {/* <button
+                      onClick={selectAllAvailableStudents}
+                      className="bg-[#00f5d0] hover:bg-green-600 text-black px-3 py-1 rounded text-sm"
+                    >
+                      Select All
+                    </button> */}
+                    <button
+                      onClick={addMultipleStudentsToMeeting}
+                      className="bg-[#00f5d0] hover:bg-green-600 text-black px-3 py-1 rounded text-sm"
+                      disabled={selectedAvailableStudents.size === 0}
+                    >
+                      Add Selected ({selectedAvailableStudents.size})
+                    </button>
+                  </div>
+                </div>
+
                 <div className="relative mb-4">
-                  <Search
-                    className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#00f5d0]"
-                    size={20}
-                  />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#00f5d0]" size={20} />
                   <input
                     type="text"
                     placeholder="Search students..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-10 pr-3 py-2 border bg-black rounded-md"
+                    className="w-full pl-10 pr-3 py-2 border bg-black rounded-md text-white"
                   />
                 </div>
+
 
                 {/* Students Table */}
                 <div className="max-h-96 overflow-y-auto border rounded-md">
                   <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-black sticky top-0">
                       <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-[#00f5d0] uppercase tracking-wider">
-                          Select
+                        <th className="px-2 py-3 text-left text-xs font-medium text-[#00f5d0] uppercase tracking-wider">
+                          {/* <input 
+                            type="checkbox"
+                            checked={selectedAvailableStudents.size === currentStudents.length}
+                            onChange={selectAllAvailableStudents}
+                            className="mr-2"
+                          /> */}
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-[#00f5d0] uppercase tracking-wider">
                           Name
@@ -424,40 +500,36 @@ const MeetingLog = ({ meetings, setMeetings, fetchMeetings }) => {
                       </tr>
                     </thead>
                     <tbody className="bg-black divide-y divide-gray-200">
-                      {currentStudents.map((student) => (
+                      {currentStudents.map(student => (
                         <tr
                           key={student.email}
-                          className="hover:bg-gray-900 cursor-pointer"
-                          onClick={() => addStudentToMeeting(student.email)}
+                          className={`hover:bg-gray-900 cursor-pointer ${
+                            selectedAvailableStudents.has(student.email) ? 'bg-gray-800' : ''
+                          }`}
+                          onClick={() => toggleAvailableStudentSelection(student.email)}
                         >
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <button
-                              className="bg-[#00f5d0] hover:bg-green-600 text-black px-3 py-1 rounded text-sm"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                addStudentToMeeting(student.email);
-                              }}
-                            >
-                              Add
-                            </button>
+                          <td className="px-2 py-4 whitespace-nowrap">
+                            <input 
+                              type="checkbox"
+                              checked={selectedAvailableStudents.has(student.email)}
+                              onChange={() => toggleAvailableStudentSelection(student.email)}
+                              onClick={(e) => e.stopPropagation()}
+                            />
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm font-medium text-white">
-                              {student.name}
-                            </div>
+                            <div className="text-sm font-medium text-white">{student.name}</div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
-                            {student.sec || "-"}
+                            {student.sec || '-'}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
-                            {student.year || "-"}
+                            {student.year || '-'}
                           </td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
                 </div>
-
                 {/* Pagination */}
                 <div className="flex items-center justify-between mt-4">
                   <div className="text-sm text-gray-500">
@@ -489,15 +561,38 @@ const MeetingLog = ({ meetings, setMeetings, fetchMeetings }) => {
 
               {/* Selected Students Section */}
               <div className="border rounded-lg p-6">
-                <h3 className="text-xl font-semibold mb-4">
-                  Meeting Students (Total: {students.length})
-                </h3>
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-xl font-semibold text-white">
+                    Meeting Students (Total: {students.length})
+                  </h3>
+                  <div className="flex space-x-2">
+                    <button
+                      onClick={selectAllCurrentStudents}
+                      className="bg-[#00f5d0] hover:bg-green-600 text-black px-3 py-1 rounded text-sm"
+                    >
+                      Select All
+                    </button>
+                    <button
+                      onClick={removeMultipleStudentsFromMeeting}
+                      className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm"
+                      disabled={selectedCurrentStudents.size === 0}
+                    >
+                      Remove Selected ({selectedCurrentStudents.size})
+                    </button>
+                  </div>
+                </div>
+
                 <div className="max-h-96 overflow-y-auto border rounded-md">
                   <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-black sticky top-0">
                       <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-[#00f5d0] uppercase tracking-wider">
-                          Action
+                        <th className="px-2 py-3 text-left text-xs font-medium text-[#00f5d0] uppercase tracking-wider">
+                          <input 
+                            type="checkbox"
+                            checked={selectedCurrentStudents.size === students.length}
+                            onChange={selectAllCurrentStudents}
+                            className="mr-2"
+                          />
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-[#00f5d0] uppercase tracking-wider">
                           Name
@@ -511,28 +606,32 @@ const MeetingLog = ({ meetings, setMeetings, fetchMeetings }) => {
                       </tr>
                     </thead>
                     <tbody className="bg-black divide-y divide-gray-200">
-                      {students.map((email) => {
-                        const student = allStudents.find((s) => s.email === email);
+                      {students.map(email => {
+                        const student = allStudents.find(s => s.email === email);
                         return (
-                          <tr key={email} className="hover:bg-black-400">
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <button
-                                onClick={() => removeStudentFromMeeting(email)}
-                                className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm"
-                              >
-                                Remove
-                              </button>
+                          <tr 
+                            key={email} 
+                            className={`hover:bg-gray-900 ${
+                              selectedCurrentStudents.has(email) ? 'bg-gray-800' : ''
+                            }`}
+                            onClick={() => toggleCurrentStudentSelection(email)}
+                          >
+                            <td className="px-2 py-4 whitespace-nowrap">
+                              <input 
+                                type="checkbox"
+                                checked={selectedCurrentStudents.has(email)}
+                                onChange={() => toggleCurrentStudentSelection(email)}
+                                onClick={(e) => e.stopPropagation()}
+                              />
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm font-medium text-white">
-                                {student?.name || "-"}
-                              </div>
+                              <div className="text-sm font-medium text-white">{student?.name || '-'}</div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
-                              {student?.sec || "-"}
+                              {student?.sec || '-'}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
-                              {student?.year || "-"}
+                              {student?.year || '-'}
                             </td>
                           </tr>
                         );
