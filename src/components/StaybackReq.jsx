@@ -11,25 +11,26 @@ const StaybackRequest = () => {
   const router = useRouter();
 
   
-const teamOptions = [
-  'Event Coordinator',
-  'Committee Coordinator',
-  'Content',
-  'Development',
-  'Design',
-  'Documentation',
-  'Helpdesk and Registration',
-  'Hosting',
-  'Logistics & Requirements',
-  'Marketing',
-  'Non-technical Events',
-  'Social Media',
-  'Technical',
-  'Workshops',
-  'Sponsorship',
-  'Media',
-  'Decoration'
-];
+  const nonTechnicalTeams = [
+    'Event Coordinator',
+    'Committee Coordinator',
+    'Content',
+    'Documentation',
+    'Helpdesk and Registration',
+    'Logistics & Requirements',
+    'Hosting',
+    'Decoration'
+  ];
+
+  const technicalTeams = [
+    'Development',
+    'Design',
+    'Marketing',
+    'Social Media',
+    'Workshops',
+    'Sponsorship',
+    'Media'
+  ];
 
   
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -48,6 +49,8 @@ const teamOptions = [
   const [selectedSection, setSelectedSection] = useState('all');
   const [selectedYear, setSelectedYear] = useState('all');
   const [localSearch, setLocalSearch] = useState('');
+  const [selectedTeamType, setSelectedTeamType] = useState('');
+  const [selectedTeam, setSelectedTeam] = useState('');
 
   const fetchStaybacks = async () => {
     try {
@@ -143,6 +146,7 @@ const teamOptions = [
         },
         body: JSON.stringify({
           ...formData,
+          team: selectedTeam, 
           date: new Date(formData.date)
         })
       });
@@ -249,26 +253,46 @@ const teamOptions = [
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label className="block mb-2 text-sm font-medium text-[#00f5d0]">Team</label>
-                <div className="relative">
+                <div>
+                  <div className="relative">
                   <select
-                    name="team"
-                    value={formData.team}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full px-3 py-2 border border-white rounded-md bg-black text-white focus:ring-2 focus:ring-[#00f5d0] appearance-none"
-                  >
-                    <option value="">Select a team</option>
-                    {teamOptions.map((team) => (
-                      <option key={team} value={team} className="bg-black text-white">
+                  value={selectedTeamType}
+                  onChange={(e) => {
+                    setSelectedTeamType(e.target.value);
+                    setSelectedTeam(''); // Reset specific team when type changes
+                  }}
+                  className="w-full px-4 py-2.5 bg-white/5 backdrop-blur-xl rounded-lg border border-white/10 focus:ring-2 focus:ring-[#00f5d0] focus:border-[#00f5d0]"
+                >
+                  <option className='text-white bg-black' value="">Select Team Type</option>
+                  <option className='text-white bg-black' value="technical">Technical Teams</option>
+                  <option className='text-white bg-black' value="non-technical">Non-Technical Teams</option>
+                </select>
+                </div>
+              <div>
+                <select
+                  value={selectedTeam}
+                  onChange={(e) => setSelectedTeam(e.target.value)}
+                  disabled={!selectedTeamType}
+                  className="w-full px-4 py-2.5 bg-white/5 backdrop-blur-xl rounded-lg border border-white/10 focus:ring-2 focus:ring-[#00f5d0] focus:border-[#00f5d0] disabled:opacity-50"
+                >
+                  <option className='text-white bg-black' value="">Select Specific Team</option>
+                  {selectedTeamType === 'technical' &&
+                    technicalTeams.map((team) => (
+                      <option className='text-white bg-black' key={team} value={team}>
                         {team}
                       </option>
-                    ))}
-                  </select>
-                  <ChevronDown 
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[#00f5d0] pointer-events-none" 
-                    size={20} 
-                  />
-                </div>
+                    ))
+                  }
+                  {selectedTeamType === 'non-technical' &&
+                    nonTechnicalTeams.map((team) => (
+                      <option className='text-white bg-black' key={team} value={team}>
+                        {team}
+                      </option>
+                    ))
+                  }
+                </select>
+                  </div>
+                  </div>
               </div>
   
               <div>
