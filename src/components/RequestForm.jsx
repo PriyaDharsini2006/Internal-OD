@@ -152,27 +152,47 @@ const RequestForm = () => {
   };
 
 
+  const Workshops = [
+    'Linux and Networking',
+    'Github',
+    'UI/UX',
+    'AR/VR',
+    'AWS',
+    'AI',
+  ];
+
   const nonTechnicalTeams = [
-    'Event Coordinator',
-    'Committee Coordinator',
-    'Content',
-    'Documentation',
-    'Helpdesk and Registration',
-    'Logistics & Requirements',
-    'Hosting',
-    'Decoration'
+    'Treasure Hunt',
+    'Mobile Gaming',
+    'Shortfilm',
+    'Meme',
+    'Photography',
   ];
 
   const technicalTeams = [
-    'Development',
-    'Design',
-    'Marketing',
-    'Social Media',
-    'Workshops',
-    'Sponsorship',
-    'Media'
+    'Ideathon',
+    'Paper presentation',
+    'Code-a-thon',
+    'Debuggin event',
+    'Pair programming',
+    'UI event',
+    'Technical Quiz',
+    'Case Study'
   ];
 
+  const committee = [
+    'Development Team',
+    'Design Team',
+    'Documentation Team',
+    'Helpdesk and Registration',
+    'Hosting Team',
+    'Marketing Team',
+    'Logistics and Requirements',
+    'Media team',
+    'Social media Team',
+    'Sponsorship',
+    'Decoration Team'
+  ]
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -488,6 +508,8 @@ const RequestForm = () => {
                   <option className='text-white bg-black' value="">Select Team Type</option>
                   <option className='text-white bg-black' value="technical">Technical Teams</option>
                   <option className='text-white bg-black' value="non-technical">Non-Technical Teams</option>
+                  <option className='text-white bg-black' value="workshops">workshops</option>
+                  <option className='text-white bg-black' value="committee">Committee</option>
                 </select>
               </div>
               <div>
@@ -507,6 +529,20 @@ const RequestForm = () => {
                   }
                   {selectedTeamType === 'non-technical' &&
                     nonTechnicalTeams.map((team) => (
+                      <option className='text-white bg-black' key={team} value={team}>
+                        {team}
+                      </option>
+                    ))
+                  }
+                  {selectedTeamType === 'workshops' &&
+                    Workshops.map((team) => (
+                      <option className='text-white bg-black' key={team} value={team}>
+                        {team}
+                      </option>
+                    ))
+                  }
+                  {selectedTeamType === 'committee' &&
+                    committee.map((team) => (
                       <option className='text-white bg-black' key={team} value={team}>
                         {team}
                       </option>
