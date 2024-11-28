@@ -7,6 +7,7 @@ const RequestForm = () => {
   const [selectedStudents, setSelectedStudents] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedSection, setSelectedSection] = useState('all');
+  const [registerNumberSearch, setRegisterNumberSearch] = useState('');
   const [selectedYear, setSelectedYear] = useState('all');
   const [reason, setReason] = useState('');
   const [description, setDescription] = useState('');
@@ -266,10 +267,18 @@ const RequestForm = () => {
 
   const filteredStudents = students.filter(student => {
     const matchesSearch = student.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesRegisterNumber = 
+      registerNumberSearch === '' || 
+      student.register.toLowerCase().includes(registerNumberSearch.toLowerCase());
     const matchesSection = selectedSection === 'all' || student.sec === selectedSection;
     const matchesYear = selectedYear === 'all' || student.year === parseInt(selectedYear);
-    return matchesSearch && matchesSection && matchesYear;
+    
+    return matchesSearch && 
+           matchesRegisterNumber && 
+           matchesSection && 
+           matchesYear;
   });
+
 
   const totalStudents = filteredStudents;
   const totalPages = Math.ceil(totalStudents.length / ITEMS_PER_PAGE);
@@ -319,7 +328,7 @@ const RequestForm = () => {
               <p className="text-green-400">{successMessage}</p>
             </div>
           )}
-
+          
           {/* Search and Filter Section */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="relative">
@@ -328,6 +337,15 @@ const RequestForm = () => {
                 placeholder="Search students..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full px-4 py-2.5 bg-white/5 backdrop-blur-xl rounded-lg text-gray-300 placeholder-gray-500 border border-white/10 focus:ring-2 focus:ring-[#00f5d0] focus:border-[#00f5d0]"
+              />
+            </div>
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Search by Register Number..."
+                value={registerNumberSearch}
+                onChange={(e) => setRegisterNumberSearch(e.target.value)}
                 className="w-full px-4 py-2.5 bg-white/5 backdrop-blur-xl rounded-lg text-gray-300 placeholder-gray-500 border border-white/10 focus:ring-2 focus:ring-[#00f5d0] focus:border-[#00f5d0]"
               />
             </div>
@@ -343,19 +361,8 @@ const RequestForm = () => {
                 </option>
               ))}
             </select>
-            <select
-              value={selectedYear}
-              onChange={(e) => setSelectedYear(e.target.value)}
-              className="px-4 py-2.5 bg-white/5 backdrop-blur-xl rounded-lg text-gray-300 border border-white/10 focus:ring-2 focus:ring-[#00f5d0] focus:border-[#00f5d0]"
-            >
-              <option value="all">All Years</option>
-              {yearsOptions.map((year) => (
-                <option key={year} value={year}>
-                  Year {year}
-                </option>
-              ))}
-            </select>
           </div>
+
 
           {/* Table Section */}
           <div className="relative overflow-hidden rounded-lg border border-white/10">

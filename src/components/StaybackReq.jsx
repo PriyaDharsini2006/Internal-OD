@@ -44,6 +44,7 @@ const StaybackRequest = () => {
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [registerNumberSearch, setRegisterNumberSearch] = useState('');
   const [staybacks, setStaybacks] = useState({});  // Grouped by date
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedSection, setSelectedSection] = useState('all');
@@ -181,13 +182,22 @@ const StaybackRequest = () => {
   // Filter students based on local search
   const filteredStudents = students.filter(student => {
     const searchLower = localSearch.toLowerCase();
-    return (
+    const registerLower = student.register.toLowerCase();
+    const registerSearchLower = registerNumberSearch.toLowerCase();
+  
+    const matchesLocalSearch = 
       student.name.toLowerCase().includes(searchLower) ||
       student.email.toLowerCase().includes(searchLower) ||
       student.sec.toLowerCase().includes(searchLower) ||
-      student.year.toString().includes(searchLower)
-    );
+      student.year.toString().includes(searchLower);
+  
+    const matchesRegisterNumber = 
+      registerNumberSearch === '' || registerLower.includes(registerSearchLower);
+  
+    return matchesLocalSearch && matchesRegisterNumber;
   });
+
+
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
@@ -332,6 +342,17 @@ const StaybackRequest = () => {
                     className="w-full pl-10 pr-3 py-2 border border-white rounded-md bg-black text-white focus:ring-2 focus:ring-[#00f5d0]"
                   />
                 </div>
+
+                <div className="mb-4 relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#00f5d0]" size={20} />
+                  <input
+                    type="text"
+                    placeholder="Search Register Number..."
+                    value={registerNumberSearch}
+                    onChange={(e) => setRegisterNumberSearch(e.target.value)}
+                    className="w-full pl-10 pr-3 py-2 border border-white rounded-md bg-black text-white focus:ring-2 focus:ring-[#00f5d0]"
+                  />
+                </div>
   
                 <div className="max-h-96 overflow-y-auto border border-white rounded-md">
                   <table className="min-w-full divide-y divide-[#00f5d0]">
@@ -348,6 +369,9 @@ const StaybackRequest = () => {
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-[#00f5d0] uppercase tracking-wider">
                           Year
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-[#00f5d0] uppercase tracking-wider">
+                          Register
                         </th>
                       </tr>
                     </thead>
@@ -376,6 +400,9 @@ const StaybackRequest = () => {
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
                             {student.year}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
+                            {student.register}
                           </td>
                         </tr>
                       ))}
