@@ -192,47 +192,58 @@ const StaybackLog = ({ staybacks, setStaybacks, fetchStaybacks }) => {
       <html>
         <head>
           <style>
-            @media print {
-              body { 
-                margin: 0; 
-                padding: 0; 
-              }
-              .page {
-                page-break-after: always;
-                min-height: 95vh;
-                display: flex;
-                flex-direction: column;
-                padding: 20px;
-                box-sizing: border-box;
-              }
-            }
+          @media print {
             body { 
-              font-family: Arial, sans-serif; 
               margin: 0; 
               padding: 0; 
             }
-            .page {
-              text-align: center;
+            .certificate-page {
+              page-break-after: always;
+              min-height: 95vh;
+              display: flex;
+              flex-direction: column;
               padding: 20px;
+              box-sizing: border-box;
             }
-            .logo {
-              max-width: 200px;
-              margin: 20px auto;
+          }
+          body { 
+            font-family: Arial, sans-serif; 
+            margin: 0; 
+            padding: 0; 
+          }
+          .certificate-page {
+            text-align: center;
+            padding: 20px;
+          }
+          .logo {
+  max-width: 200px;
+  margin: 20px auto;
+  display: block;
+  text-align: center;
+}
+
+          table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin-top: 20px; 
+          }
+          th, td { 
+            border: 1px solid #ddd; 
+            padding: 8px; 
+            text-align: left; 
+          }
+          th { 
+            background-color: #f2f2f2; 
+            position: sticky;
+            top: 0;
+            background: white;
+          }
+          @media print {
+            th {
+              position: static;
             }
-            table { 
-              width: 100%; 
-              border-collapse: collapse; 
-              margin-top: 20px; 
-            }
-            th, td { 
-              border: 1px solid #ddd; 
-              padding: 8px; 
-              text-align: left; 
-            }
-            th { 
-              background-color: #f2f2f2; 
-            }
-          </style>
+          }
+        </style>
         </head>
         <body>
           <div class="page">
@@ -245,8 +256,11 @@ const StaybackLog = ({ staybacks, setStaybacks, fetchStaybacks }) => {
 <h2>Heartfelt thanks to all the students who are part of this stayback journey.</h2>
 
           </div>
-          
-          <div class="page">
+          <br>
+          <hr>
+          <h1>Stayback Details</h1>
+          <h2>${selectedStayback.title}</h2>
+          <h3>Team: ${selectedStayback.team} | Date: ${new Date(selectedStayback.dateGroup.date).toLocaleDateString()}</h3>
             <table>
               <thead>
                 <tr>
@@ -267,7 +281,6 @@ const StaybackLog = ({ staybacks, setStaybacks, fetchStaybacks }) => {
                 `).join('')}
               </tbody>
             </table>
-          </div>
         </body>
       </html>
     `;

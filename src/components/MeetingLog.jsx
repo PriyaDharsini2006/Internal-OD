@@ -33,47 +33,58 @@ const MeetingLog = ({ meetings, setMeetings, fetchMeetings }) => {
       <html>
         <head>
           <style>
-            @media print {
-              body { 
-                margin: 0; 
-                padding: 0; 
-              }
-              .page {
-                page-break-after: always;
-                min-height: 95vh;
-                display: flex;
-                flex-direction: column;
-                padding: 20px;
-                box-sizing: border-box;
-              }
-            }
+          @media print {
             body { 
-              font-family: Arial, sans-serif; 
               margin: 0; 
               padding: 0; 
             }
-            .page {
-              text-align: center;
+            .certificate-page {
+              page-break-after: always;
+              min-height: 95vh;
+              display: flex;
+              flex-direction: column;
               padding: 20px;
+              box-sizing: border-box;
             }
-            .logo {
-              max-width: 200px;
-              margin: 20px auto;
+          }
+          body { 
+            font-family: Arial, sans-serif; 
+            margin: 0; 
+            padding: 0; 
+          }
+          .certificate-page {
+            text-align: center;
+            padding: 20px;
+          }
+          .logo {
+  max-width: 200px;
+  margin: 20px auto;
+  display: block;
+  text-align: center;
+}
+
+          table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin-top: 20px; 
+          }
+          th, td { 
+            border: 1px solid #ddd; 
+            padding: 8px; 
+            text-align: left; 
+          }
+          th { 
+            background-color: #f2f2f2; 
+            position: sticky;
+            top: 0;
+            background: white;
+          }
+          @media print {
+            th {
+              position: static;
             }
-            table { 
-              width: 100%; 
-              border-collapse: collapse; 
-              margin-top: 20px; 
-            }
-            th, td { 
-              border: 1px solid #ddd; 
-              padding: 8px; 
-              text-align: left; 
-            }
-            th { 
-              background-color: #f2f2f2; 
-            }
-          </style>
+          }
+        </style>
         </head>
         <body>
           <div class="page">
@@ -82,12 +93,13 @@ const MeetingLog = ({ meetings, setMeetings, fetchMeetings }) => {
               alt="Company Logo" 
               class="logo"
             />
-            <h1>We deeply appreciate your dedication and valuable time for Hackerz!</h1>
-<h2>Heartfelt thanks to all the students who are part of this stayback journey.</h2>
+            <h1>We deeply appreciate your dedication and valuable time for the meeting!</h1>
+<h2>Heartfelt thanks to all the participants for your active involvement and support.</h2>
+
 
           </div>
-          
-          <div class="second-page">
+          <br>
+          <hr>
             <h2>Meeting Details</h2>
             <p><strong>Meeting:</strong> ${selectedMeeting.title}</p>
             <p><strong>Date:</strong> ${new Date(selectedMeeting.date).toLocaleDateString()}</p>
@@ -114,7 +126,6 @@ const MeetingLog = ({ meetings, setMeetings, fetchMeetings }) => {
                 `).join('')}
               </tbody>
             </table>
-          </div>
         </body>
       </html>
     `;
