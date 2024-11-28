@@ -273,9 +273,9 @@ export const ApprovedRequestsTable = () => {
         },
         body: JSON.stringify({
           attendanceType: attendanceType,
+          toggle: true // Add this line to enable toggling
         }),
       });
-
       if (!response.ok) throw new Error('Failed to update attendance');
       
       // Refetch to get updated data
@@ -409,7 +409,7 @@ export const ApprovedRequestsTable = () => {
                               isProcessing?.forenoon 
                                 ? 'bg-green-500/20 text-green-500 cursor-wait' 
                                 : attendanceDetail.forenoon 
-                                ? 'bg-[#00f5d0]/20 text-[#00f5d0]' 
+                                ? 'bg-green-500/20 text-green-500' 
                                 : 'bg-gray-800 text-gray-300'
                             }`}
                             disabled={!!isProcessing?.forenoon}
@@ -429,7 +429,7 @@ export const ApprovedRequestsTable = () => {
                               isProcessing?.afternoon 
                                 ? 'bg-green-500/20 text-green-500 cursor-wait' 
                                 : attendanceDetail.afternoon 
-                                ? 'bg-[#00f5d0]/20 text-[#00f5d0]' 
+                                ? 'bg-green-500/20 text-green-500' 
                                 : 'bg-gray-800 text-gray-300'
                             }`}
                             disabled={!!isProcessing?.afternoon}

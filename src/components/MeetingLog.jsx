@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useSession } from 'next-auth/react';
-import { Search, ChevronLeft, ChevronRight, Trash2 } from 'lucide-react';
+import { Search, ChevronLeft, ChevronRight, Trash2, Printer } from 'lucide-react';
 
 const MeetingLog = ({ meetings, setMeetings, fetchMeetings }) => {
   const { status } = useSession();
@@ -11,8 +11,117 @@ const MeetingLog = ({ meetings, setMeetings, fetchMeetings }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
   const [meetingToDelete, setMeetingToDelete] = useState(null);
+  const printRef = useRef(null);
   const recordsPerPage = 15;
-
+  const printMeetingStudents = () => {
+    // Create a print window
+    const printWindow = window.open('', '_blank');
+    
+    // Get the students with complete details
+    const citLogo = 'logo1.png';
+    const hackerzLogo = 'logo1.png';
+  
+    const meetingStudentDetails = students.map(email => 
+      allStudents.find(student => student.email === email) || { email }
+    );
+  
+    printWindow.document.write(`
+      <html>
+        <head>
+          <title>Meeting Attendees - ${selectedMeeting.title}</title>
+          <style>
+            @page {
+              size: A4;
+              margin: 20mm;
+            }
+            body { 
+              font-family: Arial, sans-serif; 
+              margin: 0;
+              padding: 0;
+            }
+            .first-page {
+              height: 100vh;
+              display: flex;
+              flex-direction: column;
+              justify-content: center;
+              align-items: center;
+              text-align: center;
+              page-break-after: always;
+            }
+            .logo {
+              max-width: 300px;
+              margin-bottom: 30px;
+            }
+            .welcome-message {
+              max-width: 600px;
+              line-height: 1.6;
+              padding: 20px;
+            }
+            .second-page {
+              page-break-before: always;
+            }
+            table { 
+              width: 100%; 
+              border-collapse: collapse; 
+              margin-top: 20px;
+            }
+            th, td { 
+              border: 1px solid #ddd; 
+              padding: 8px; 
+              text-align: left; 
+            }
+            th { 
+              background-color: #f2f2f2; 
+            }
+          </style>
+        </head>
+        <body>
+          <div class="first-page">
+            <img src="${citLogo}" alt="Chennai Institute of Technology Logo" class="logo" />
+          <img src="${hackerzLogo}" alt="Hackerz Logo" class="logo" />
+            <div class="welcome-message">
+              <h1>Team Meeting Attendance</h1>
+              <p>Thanks for attending the${selectedMeeting.title} meeting. Your presence and valuable contribution truly made a difference, and we appreciate your active involvement. It means a lot to the team and the success of our efforts.</p>
+            </div>
+          </div>
+  
+          <div class="second-page">
+            <h2>Meeting Details</h2>
+            <p><strong>Meeting:</strong> ${selectedMeeting.title}</p>
+            <p><strong>Date:</strong> ${new Date(selectedMeeting.date).toLocaleDateString()}</p>
+            <p><strong>Time:</strong> ${new Date(selectedMeeting.from_time).toLocaleTimeString()} - ${new Date(selectedMeeting.to_time).toLocaleTimeString()}</p>
+            <p><strong>Total Attendees:</strong> ${meetingStudentDetails.length}</p>
+  
+            <table>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Section</th>
+                  <th>Year</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${meetingStudentDetails.map(student => `
+                  <tr>
+                    <td>${student.name || 'N/A'}</td>
+                    <td>${student.email}</td>
+                    <td>${student.sec || 'N/A'}</td>
+                    <td>${student.year || 'N/A'}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        </body>
+      </html>
+    `);
+    
+    // Close the document and trigger print
+    printWindow.document.close();
+    printWindow.print();
+    printWindow.close();
+  };
   useEffect(() => {
     const fetchStudents = async () => {
       try {
@@ -247,7 +356,17 @@ const MeetingLog = ({ meetings, setMeetings, fetchMeetings }) => {
               <h2 className="text-2xl font-bold">
                 {selectedMeeting.title} Details
               </h2>
-            </div>
+           
+            <button
+                onClick={printMeetingStudents}
+                className="bg-[#00f5d0] hover:bg-green-600 text-black px-4 py-2 rounded flex items-center"
+                disabled={students.length === 0}
+              >
+                <Printer className="mr-2" size={20} />
+                Print
+              </button>
+              </div>
+            
 
             {/* Modal Content */}
             <div className="flex-grow overflow-auto space-y-6 bg-black">
@@ -414,6 +533,7 @@ const MeetingLog = ({ meetings, setMeetings, fetchMeetings }) => {
             >
               Close
             </button>
+            
           </div>
         </div>
       )}

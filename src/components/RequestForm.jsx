@@ -207,6 +207,7 @@ const RequestForm = () => {
           throw new Error(`Students API Error: ${studentsResponse.status}`);
         }
         studentsData = await studentsResponse.json();
+        
       } catch (studentError) {
         console.error('Students fetch error:', studentError);
         throw new Error('Failed to fetch students data');
@@ -369,6 +370,7 @@ const RequestForm = () => {
                       <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Year</th>
                       <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Stayback</th>
                       <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Meeting</th>
+                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Register</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-white/10">
@@ -397,6 +399,7 @@ const RequestForm = () => {
                           <td className="px-4 py-3 text-sm text-gray-400">{student.year}</td>
                           <td className="px-4 py-3 text-sm text-gray-400">{student.counts?.stayback_cnt || 0}</td>
                           <td className="px-4 py-3 text-sm text-gray-400">{student.counts?.meeting_cnt || 0}</td>
+                          <td className="px-4 py-3 text-sm text-gray-400">{student.register}</td>
                         </tr>
                       ))
                     )}
