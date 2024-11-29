@@ -329,14 +329,14 @@ const StaybackLog = ({ staybacks, setStaybacks, fetchStaybacks }) => {
     .logo-left, .logo-right {
       position: absolute;
       top: 30px;
-      max-width: 250px;
+      max-width: 150px;
       height: auto;
       padding: 10px;
     }
     .logo-left {
        left: 20px;
       height: 100px;
-      width:700px;
+      width:1000px;
     }
     .logo-right {
       right: 20px;
