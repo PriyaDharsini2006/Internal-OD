@@ -186,7 +186,7 @@ const removeStudentFromMeeting = async (email) => {
     .logo-left, .logo-right {
       position: absolute;
       top: 30px;
-      max-width: 150px;
+      max-width: 250px;
       height: auto;
       padding: 10px;
     }
