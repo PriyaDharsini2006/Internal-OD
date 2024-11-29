@@ -168,14 +168,15 @@ const removeStudentFromMeeting = async (email) => {
     }
     .page {
       position: relative;
-      padding: 80px 20px 20px;
+      padding: 120px 20px 20px;
       border-bottom: 2px solid black;
     }
     .logo-left, .logo-right {
       position: absolute;
-      top: 20px;
+      top: 30px;
       max-width: 150px;
       height: auto;
+      padding: 10px;
     }
     .logo-left {
       left: 20px;
@@ -186,6 +187,7 @@ const removeStudentFromMeeting = async (email) => {
     .certificate-content {
       text-align: center;
       margin-top: 50px;
+      padding: 0 50px;
     }
     table { 
       width: 100%; 
