@@ -43,7 +43,7 @@ const ODRequestApproval = () => {
     setCurrentPage(1);
   };
 
-  
+
 
   // Function to toggle request selection
   const toggleSelection = (odId) => {
@@ -105,7 +105,7 @@ const ODRequestApproval = () => {
       }
     }
   }, [status, session, router]);
-  
+
   // Fetch requests on component mount
   useEffect(() => {
     const fetchRequests = async () => {
@@ -265,12 +265,12 @@ const ODRequestApproval = () => {
               <thead className=" bg-white/5">
                 <tr>
                   <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">
-                  <input
-        type="checkbox"
-        checked={selectedRequests.length === getFilteredRequests.length}
-        onChange={toggleSelectAll}
-        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded cursor-pointer"
-      />
+                    <input
+                      type="checkbox"
+                      checked={selectedRequests.length === getFilteredRequests.length}
+                      onChange={toggleSelectAll}
+                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded cursor-pointer"
+                    />
                   </th>
                   <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Name</th>
                   <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Year</th>
@@ -299,7 +299,27 @@ const ODRequestApproval = () => {
                         className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded cursor-pointer"
                       />
                     </td>
-                    <td className="px-4 py-3 text-sm text-gray-300">{request.name}</td>
+                    <td className="px-4 py-3 text-sm text-gray-300 relative w-48">
+                      {request.name}
+                      <div className="absolute top-0 right-0 flex space-x-1">
+                        {request.roles?.isCoreLead && (
+                          <div
+                            className="w-4 h-4 rounded-full bg-red-500 ml-2 mt-[15px] flex items-center justify-center text-white text-[8px] font-bold"
+                            title="Core Lead"
+                          >
+                            C
+                          </div>
+                        )}
+                        {request.roles?.isTeamLead && (
+                          <div
+                            className="w-4 h-4 rounded-full bg-green-500 mt-[15px] flex items-center justify-center text-white text-[8px] font-bold"
+                            title="Team Lead"
+                          >
+                            L
+                          </div>
+                        )}
+                      </div>
+                    </td>
                     <td className="px-4 py-3 text-sm text-gray-300">{request.year}</td>
                     <td className="px-4 py-3 text-sm text-gray-300">{request.stayback_cnt || 0}</td>
                     <td className="px-4 py-3 text-sm text-gray-300">{request.meeting_cnt || 0}</td>
@@ -318,7 +338,7 @@ const ODRequestApproval = () => {
             {/* Pagination Controls */}
             <div className="flex justify-between items-center mt-4">
               <div>
-              Showing {(currentPage - 1) * recordsPerPage + 1} - {Math.min(currentPage * recordsPerPage, getFilteredRequests.length)} of {getFilteredRequests.length} results
+                Showing {(currentPage - 1) * recordsPerPage + 1} - {Math.min(currentPage * recordsPerPage, getFilteredRequests.length)} of {getFilteredRequests.length} results
               </div>
               <div className="flex gap-2">
                 <button
