@@ -148,8 +148,8 @@ const MeetingLog = ({ meetings, setMeetings, fetchMeetings }) => {
               alt="Company Logo" 
               class="logo"
             />
-            <h1>We deeply appreciate your dedication and valuable time for the meeting!</h1>
-<h2>Heartfelt thanks to all the participants for your active involvement and support.</h2>
+            <p>We deeply appreciate your dedication and valuable time for the meeting!</p>
+<p>Heartfelt thanks to all the participants for your active involvement and support.</p>
 
 
           </div>

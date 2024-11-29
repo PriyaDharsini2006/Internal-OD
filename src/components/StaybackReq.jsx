@@ -246,7 +246,7 @@ const StaybackRequest = () => {
   {/* Create Stayback Button */}
   <button 
     onClick={() => setIsModalOpen(true)}
-    className="bg-[#00f5d0] w-[170px] h-[50px] hover:opacity-90 text-black font-semibold py-1.5 px-3 rounded flex items-center text-m"
+    className="bg-[#00f5d0] w-[170px] h-[50px] hover:opacity-90 text-black font-grotesk py-1.5 px-3 rounded flex items-center text-m"
   >
     <Plus className="mr-2" size={16} />
     Create Stayback

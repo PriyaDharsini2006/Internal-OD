@@ -383,7 +383,7 @@ const MeetingRequest = () => {
                 <X size={24} />
               </button>
 
-              <h1 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-gray-400">
+              <h1 className="text-xl sm:text-2xl font-grotesk mb-4 sm:mb-6 text-gray-400">
                 Create Meeting
               </h1>
 

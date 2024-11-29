@@ -307,15 +307,15 @@ const StaybackLog = ({ staybacks, setStaybacks, fetchStaybacks }) => {
               alt="Company Logo" 
               class="logo"
             />
-            <h1>We deeply appreciate your dedication and valuable time for Hackerz!</h1>
-<h2>Heartfelt thanks to all the students who are part of this stayback journey.</h2>
+            <p>We deeply appreciate your dedication and valuable time for Hackerz!</p>
+<p>Heartfelt thanks to all the students who are part of this stayback journey.</p>
 
           </div>
           <br>
           <hr>
-          <h1>Stayback Details</h1>
-          <h2>${selectedStayback.title}</h2>
-          <h3>Team: ${selectedStayback.team} | Date: ${new Date(selectedStayback.dateGroup.date).toLocaleDateString()}</h3>
+          <h2>Stayback Details</h2>
+          <p>${selectedStayback.title}</p>
+          <p>Team: ${selectedStayback.team} | Date: ${new Date(selectedStayback.dateGroup.date).toLocaleDateString()}</p>
             <table>
               <thead>
                 <tr>
@@ -514,12 +514,12 @@ const StaybackLog = ({ staybacks, setStaybacks, fetchStaybacks }) => {
                     <thead className="bg-black sticky top-0">
                       <tr>
                         <th className="px-2 py-3 text-left text-xs font-medium text-[#00f5d0] uppercase tracking-wider">
-                          {/* <input 
+                          <input 
                             type="checkbox"
                             checked={selectedAvailableStudents.size === currentStudents.length}
                             onChange={selectAllAvailableStudents}
                             className="mr-2"
-                          /> */}
+                          />
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-[#00f5d0] uppercase tracking-wider">
                           Name
