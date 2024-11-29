@@ -164,7 +164,7 @@ const removeStudentFromMeeting = async (email) => {
       margin: 20px; 
       padding: 0; 
       position: relative;
-      border: 3px solid black;
+      border: 2px solid black;
     }
     .page {
       position: relative;
@@ -238,7 +238,7 @@ const removeStudentFromMeeting = async (email) => {
   </div>
 
   <br>
-  <hr>
+
   <h2>Meeting Details</h2>
   <p><strong>Meeting:</strong> ${selectedMeeting.title}</p>
   <p><strong>Date:</strong> ${new Date(selectedMeeting.date).toLocaleDateString()}</p>
