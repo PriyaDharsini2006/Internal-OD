@@ -1,110 +1,103 @@
-//api/meetings/[id]/students/route.js
+export const dynamic = 'force-dynamic';
+export const fetchCache = 'force-no-store';
+
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '../../../auth/[...nextauth]/route';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-export async function GET(req, { params }) {
+export async function PATCH(request, { params }) {
   try {
     const session = await getServerSession(authOptions);
     if (!session) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json(
+        { message: 'Unauthorized' },
+        { status: 401 }
+      );
     }
 
-    const meetingId = parseInt(params.id);
-    const meeting = await prisma.meeting.findUnique({
-      where: { id: meetingId }
+    const { id } = params;
+    const { action, students } = await request.json();
+
+    // Validate the request
+    if (!action || !Array.isArray(students)) {
+      return NextResponse.json(
+        { message: 'Invalid request body' },
+        { status: 400 }
+      );
+    }
+
+    // Update the meeting with new student list
+    const updatedMeeting = await prisma.meeting.update({
+      where: {
+        id: id
+      },
+      data: {
+        students: students
+      }
     });
 
-    // Here you might want to fetch present students logic based on your requirements
-    return NextResponse.json({ 
-      presentStudents: meeting.students || [] 
-    });
+    // If adding a student, increment their meeting count
+    if (action === 'add') {
+      // Get the difference between old and new students
+      const newStudents = students.filter(email => 
+        !updatedMeeting.students.includes(email)
+      );
+
+      // Update counts for new students
+      await Promise.all(newStudents.map(email =>
+        prisma.count.upsert({
+          where: { email },
+          update: {
+            meeting_cnt: {
+              increment: 1
+            }
+          },
+          create: {
+            email,
+            meeting_cnt: 1,
+            stayback_cnt: 0
+          }
+        })
+      ));
+    }
+
+    // If removing a student, decrement their meeting count
+    if (action === 'remove') {
+      const removedStudents = updatedMeeting.students.filter(email => 
+        !students.includes(email)
+      );
+    
+      console.log('Removed students:', removedStudents);
+    
+      if (removedStudents.length > 0) {
+        await Promise.all(removedStudents.map(async (email) => {
+          try {
+            await prisma.count.update({
+              where: { email },
+              data: {
+                meeting_cnt: {
+                  decrement: 1
+                }
+              }
+            });
+          } catch (updateError) {
+            console.error(`Failed to update count for ${email}:`, updateError);
+          }
+        }));
+      }
+    }
+
+    return NextResponse.json(updatedMeeting);
   } catch (error) {
+    console.error('Error in /api/meetings/[id]/students:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch meeting students' }, 
+      { message: 'Internal server error', error: error.message },
       { status: 500 }
     );
   } finally {
     await prisma.$disconnect();
   }
 }
-
-export async function POST(req, { params }) {
-    try {
-      const session = await getServerSession(authOptions);
-      if (!session) {
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-      }
-  
-      const meetingId = params.id; // Keep as string, don't use parseInt()
-      const { email } = await req.json();
-  
-      const meeting = await prisma.meeting.findUnique({
-        where: { id: meetingId } // Use original meetingId
-      });
-  
-      if (!meeting) {
-        return NextResponse.json({ error: 'Meeting not found' }, { status: 404 });
-      }
-  
-      // Check for duplicate before adding
-      const updatedStudents = meeting.students.includes(email) 
-        ? meeting.students 
-        : [...meeting.students, email];
-  
-      await prisma.meeting.update({
-        where: { id: meetingId },
-        data: { students: updatedStudents }
-      });
-  
-      return NextResponse.json({ students: updatedStudents });
-    } catch (error) {
-      console.error('Detailed error:', error);
-      return NextResponse.json(
-        { error: 'Failed to add student to meeting', details: error.message }, 
-        { status: 500 }
-      );
-    } finally {
-      await prisma.$disconnect();
-    }
-  }
-
-  export async function DELETE(req, { params }) {
-    try {
-      const session = await getServerSession(authOptions);
-      if (!session) {
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-      }
-  
-      const meetingId = params.id; // Keep as string
-      const { email } = await req.json();
-  
-      const meeting = await prisma.meeting.findUnique({
-        where: { id: meetingId }
-      });
-  
-      if (!meeting) {
-        return NextResponse.json({ error: 'Meeting not found' }, { status: 404 });
-      }
-  
-      const updatedStudents = meeting.students.filter(e => e !== email);
-  
-      await prisma.meeting.update({
-        where: { id: meetingId },
-        data: { students: updatedStudents }
-      });
-  
-      return NextResponse.json({ students: updatedStudents });
-    } catch (error) {
-      console.error('Detailed DELETE error:', error);
-      return NextResponse.json(
-        { error: 'Failed to remove student from meeting', details: error.message }, 
-        { status: 500 }
-      );
-    } finally {
-      await prisma.$disconnect();
-    }
-  }
