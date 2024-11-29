@@ -150,8 +150,7 @@ const removeStudentFromMeeting = async (email) => {
     margin: 0 !important; 
     padding: 0 !important; 
     height: 100% !important;
-    border: 2px solid black !important;
-    box-sizing: border-box !important;
+    
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
@@ -195,6 +194,8 @@ const removeStudentFromMeeting = async (email) => {
     }
     .logo-left {
       left: 20px;
+      height: 100px;
+      width:100px;
     }
     .logo-right {
       right: 20px;
