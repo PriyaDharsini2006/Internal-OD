@@ -76,13 +76,13 @@ export const Approved = () => {
         >
           {isMobileMenuOpen ? (
             <>
-              <X className="mr-2 w-5 h-5" />
-              Close Menu
+              <X className="mr-2 print:hidden w-5 h-5" />
+              <span className="print:hidden">Close Menu</span>
             </>
           ) : (
             <>
-              <Menu className="mr-2 w-5 h-5" />
-              Actions
+              <Menu className="mr-2 print:hidden w-5 h-5" />
+              <span className="print:hidden">Actions</span>
             </>
           )}
         </button>
@@ -104,7 +104,7 @@ export const Approved = () => {
       <div className="browser-view backdrop-blur-xl rounded-2xl border border-white/10">
         <div className="bg-white/5 shadow-sm rounded-lg overflow-hidden">
           {/* Desktop Print Button */}
-          <div className="hidden lg:block p-4 flex justify-end print:hidden">
+          <div className="hidden  lg:block p-4 flex justify-end print:hidden">
           <div className='flex flex-row space-x-96'>
         <div className="flex-shrink-0 ">
               <img 
@@ -212,19 +212,19 @@ export const Approved = () => {
               id="citLogo" 
               src="citlogo.png" 
               alt="Chennai Institute of Technology Logo" 
-              className="w-16 sm:w-24 h-auto"
+              className="w-24 sm:w-24 h-auto"
             />
             <img 
               id="hackerzLogo" 
               src="logo.png" 
               alt="Hackerz Logo" 
-              className="w-16 sm:w-24 h-auto"
+              className="w-20 sm:w-24 h-auto"
             />
           </div>
 
           <div className="address-from mb-4 sm:mb-6">
             <strong>From</strong>
-            <div className="text-sm sm:text-base">
+            <div className="text-sm text-black sm:text-base">
               Team Hackerz24,<br />
               Department of Computer Science,<br />
               Chennai Institute of Technology,<br />
@@ -233,9 +233,9 @@ export const Approved = () => {
             </div>
           </div>
 
-          <div className="address-to mb-4 sm:mb-6">
+          <div className="address-to text-black mb-4 sm:mb-6">
             <strong>To</strong>
-            <div className="text-sm sm:text-base">
+            <div className="text-sm text-black sm:text-base">
               The Head of Department,<br />
               Chennai Institute of Technology,<br />
               Sarathy Nagar, Nandambakkam Post,<br />
@@ -243,16 +243,16 @@ export const Approved = () => {
             </div>
           </div>
 
-          <div className="subject font-bold mb-4 sm:mb-6 text-sm sm:text-base">
+          <div className="subject font-bold text-black mb-4 sm:mb-6 text-sm sm:text-base">
             Subject: Requesting permission for OD regarding Hackerz24 symposium.
           </div>
 
-          <div className="content leading-relaxed mb-6 sm:mb-10 text-sm sm:text-base">
+          <div className="content leading-relaxed text-black mb-6 sm:mb-10 text-sm sm:text-base">
             <p>Respected Mam,</p>
             <p>We hereby request you to grant permission for the following list of students to pursue our work for Hackerz. We request you to kindly grant permission for the mentioned students on {currentDate}.</p>
           </div>
 
-          <div className="closing mb-4 sm:mb-7 text-sm sm:text-base">
+          <div className="closing mb-4 sm:mb-7 text-black text-sm sm:text-base">
             Regards,<br />
             Team Hackerz24
           </div>
@@ -265,8 +265,8 @@ export const Approved = () => {
       alt="Signature" 
     />
     <div className="text-sm md:text-base text-center">
-      <p className="m-0">Head of Department</p>
-      <p className="m-0">Computer Science and Engineering</p>
+      <p className="text-black m-0">Head of Department</p>
+      <p className="text-black m-0">Computer Science and Engineering</p>
     </div>
   </div>
 </div>
@@ -347,66 +347,74 @@ export const Approved = () => {
 
       {/* Print-specific styles */}
       <style jsx global>{`
-        @media print {
-          /* Hide the navbar during print */
-          nav, .mobile-actions {
-            display: none !important;
-          }
-            footer{
-            display:none !important}
+       @media print {
+  /* Existing print styles */
+  nav, .mobile-actions {
+    display: none !important;
+  }
 
-          /* Ensure the printed content starts from the top */
-          .print-container {
-            margin-top: 0 !important;
-            padding: 0 !important;
-          }
+  footer {
+    display: none !important;
+  }
 
-          body {
-            margin: 0;
-            padding: 0;
-          }
+  .print-container {
+    margin-top: 0 !important;
+    padding: 0 !important;
+  }
 
-          .print-page {
-            page-break-after: always;
-            margin: 0;
-            padding: 1rem sm:2rem;
-          }
+  body {
+    margin: 0;
+    padding: 0;
+  }
 
-          .print-page:last-child {
-            page-break-after: avoid;
-          }
+  .print-page {
+    page-break-after: always;
+    margin: 0;
+    padding: 1rem sm:2rem;
+    
+    /* New border styles */
+    border: 1px solid #000;
+    min-height: 90vh;
+    box-sizing: border-box;
+    margin: 5mm;
+    padding: 5mm;
+  }
 
-          .print:hidden {
-            display: none !important;
-          }
+  .print-page:last-child {
+    page-break-after: avoid;
+  }
 
-          .browser-view {
-            display: none !important;
-          }
+  .print:hidden {
+    display: none !important;
+  }
 
-          .print-view {
-            display: block !important;
-          }
-        }
+  .browser-view {
+    display: none !important;
+  }
 
-        @media screen {
-          .print-view {
-            display: none !important;
-          }
-        }
+  .print-view {
+    display: block !important;
+  }
+}
 
-        /* Mobile and Responsive Adjustments */
-        @media (max-width: 640px) {
-          .px-6 {
-            padding-left: 0.5rem;
-            padding-right: 0.5rem;
-          }
+@media screen {
+  .print-view {
+    display: none !important;
+  }
+}
 
-          .text-sm {
-            font-size: 0.75rem;
-            line-height: 1rem;
-          }
-        }
+/* Mobile and Responsive Adjustments */
+@media (max-width: 640px) {
+  .px-6 {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+
+  .text-sm {
+    font-size: 0.75rem;
+    line-height: 1rem;
+  }
+}
       `}</style>
     </div>
   );
