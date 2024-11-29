@@ -194,7 +194,7 @@ const ODRequestApproval = () => {
           </div>
           <div className="py-10 print:hidden">
             <h1 className="text-2xl px-36 py-6 md:text-3xl font-grotesk font-bold text-[#00f5d0]">
-              Approve or Reject On Duty Requests
+              On Duty Requests
             </h1>
 
           </div>
