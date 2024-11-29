@@ -291,8 +291,7 @@ const StaybackLog = ({ staybacks, setStaybacks, fetchStaybacks }) => {
     margin: 0 !important; 
     padding: 0 !important; 
     height: 100% !important;
-    border: 2px solid black !important;
-    box-sizing: border-box !important;
+    
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
@@ -301,7 +300,7 @@ const StaybackLog = ({ staybacks, setStaybacks, fetchStaybacks }) => {
        
          margin: 0 !important; 
     padding: 0 !important; 
-    border: 2px solid black !important; 
+    
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
       }
@@ -311,7 +310,7 @@ const StaybackLog = ({ staybacks, setStaybacks, fetchStaybacks }) => {
         display: flex;
         flex-direction: column;
         padding: 20px;
-        box-sizing: border-box;
+        
       }
     }
     body { 
@@ -320,7 +319,7 @@ const StaybackLog = ({ staybacks, setStaybacks, fetchStaybacks }) => {
       padding: 0; 
       position: relative;
        min-height: 100vh;
-      border: 2px solid black;
+     
     }
     .page {
       position: relative;
@@ -335,7 +334,9 @@ const StaybackLog = ({ staybacks, setStaybacks, fetchStaybacks }) => {
       padding: 10px;
     }
     .logo-left {
-      left: 20px;
+       left: 20px;
+      height: 100px;
+      width:500px;
     }
     .logo-right {
       right: 20px;
