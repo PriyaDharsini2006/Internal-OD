@@ -70,17 +70,25 @@ export async function PATCH(request, { params }) {
       const removedStudents = updatedStayback.students.filter(email => 
         !students.includes(email)
       );
-
-      await Promise.all(removedStudents.map(email =>
-        prisma.count.update({
-          where: { email },
-          data: {
-            stayback_cnt: {
-              decrement: 1
-            }
+    
+      console.log('Removed students:', removedStudents);
+    
+      if (removedStudents.length > 0) {
+        await Promise.all(removedStudents.map(async (email) => {
+          try {
+            await prisma.count.update({
+              where: { email },
+              data: {
+                stayback_cnt: {
+                  decrement: 1
+                }
+              }
+            });
+          } catch (updateError) {
+            console.error(`Failed to update count for ${email}:`, updateError);
           }
-        })
-      ));
+        }));
+      }
     }
 
     return NextResponse.json(updatedStayback);

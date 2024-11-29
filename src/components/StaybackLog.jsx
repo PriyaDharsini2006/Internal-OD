@@ -42,20 +42,55 @@ const StaybackLog = ({ staybacks, setStaybacks, fetchStaybacks }) => {
   };
 
   // Add multiple selected students to stayback
-  const addMultipleStudentsToStayback = () => {
-    const studentsToAdd = Array.from(selectedAvailableStudents);
-    studentsToAdd.forEach(email => addStudentToStayback(email));
-    setSelectedAvailableStudents(new Set());
+  const addMultipleStudentsToStayback = async () => {
+    if (!selectedStayback) return;
+  
+    try {
+      const studentsToAdd = Array.from(selectedAvailableStudents);
+      
+      const response = await fetch(`/api/staybacklogs/${selectedStayback.id}/students`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'add',
+          students: [...students, ...studentsToAdd]
+        })
+      });
+  
+      if (response.ok) {
+        setStudents(prev => [...new Set([...prev, ...studentsToAdd])]);
+        setSelectedAvailableStudents(new Set());
+        await fetchStaybacks();
+      }
+    } catch (error) {
+      console.error('Failed to add students', error);
+    }
   };
 
   // Remove multiple selected students from stayback
-  const removeMultipleStudentsFromStayback = () => {
-    const studentsToRemove = Array.from(selectedCurrentStudents);
-    studentsToRemove.forEach(email => {
-      // Assuming you have a method to remove students, replace with actual implementation
-      setStudents(prev => prev.filter(studentEmail => studentEmail !== email));
-    });
-    setSelectedCurrentStudents(new Set());
+  const removeMultipleStudentsFromStayback = async () => {
+    if (!selectedStayback) return;
+  
+    try {
+      const studentsToRemove = Array.from(selectedCurrentStudents);
+      
+      const response = await fetch(`/api/staybacklogs/${selectedStayback.id}/students`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'remove',
+          students: students.filter(email => !studentsToRemove.includes(email))
+        })
+      });
+  
+      if (response.ok) {
+        setStudents(prev => prev.filter(email => !studentsToRemove.includes(email)));
+        setSelectedCurrentStudents(new Set());
+        await fetchStaybacks();
+      }
+    } catch (error) {
+      console.error('Failed to remove students', error);
+    }
   };
 
   // Select all available students
