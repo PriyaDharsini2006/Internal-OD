@@ -193,7 +193,7 @@ const removeStudentFromMeeting = async (email) => {
     .logo-left {
       left: 20px;
       height: 100px;
-      width:500px;
+      width:700px;
     }
     .logo-right {
       right: 20px;

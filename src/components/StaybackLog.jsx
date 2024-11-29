@@ -336,7 +336,7 @@ const StaybackLog = ({ staybacks, setStaybacks, fetchStaybacks }) => {
     .logo-left {
        left: 20px;
       height: 100px;
-      width:500px;
+      width:700px;
     }
     .logo-right {
       right: 20px;
@@ -344,7 +344,7 @@ const StaybackLog = ({ staybacks, setStaybacks, fetchStaybacks }) => {
     .certificate-content {
       text-align: center;
       margin-top: 50px;
-      padding: 0 50px;
+      padding: 0 100px;
     }
     table { 
       
