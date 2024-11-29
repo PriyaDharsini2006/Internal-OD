@@ -40,8 +40,7 @@ export async function POST(req, { params }) {
       }
   
       const meetingId = params.id; // Keep as string, don't use parseInt()
-      const { email } = await req.json();
-  
+      const { students } = await req.json(); 
       const meeting = await prisma.meeting.findUnique({
         where: { id: meetingId } // Use original meetingId
       });
