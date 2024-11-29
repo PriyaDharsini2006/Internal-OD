@@ -203,7 +203,7 @@ const removeStudentFromMeeting = async (email) => {
               alt="Company Logo" 
               class="logo"
             />
-            <p>Thank you for attending today’s meeting and showing your enthusiasm for </p><h2>HACKERZ 2025</h2>!<p> Remember, this is more than just an event—it’s your chance to learn, grow, and shine. Only those who attend regularly, stay active, and contribute interactively will earn exclusive privileges like OD and exciting outreach opportunities. Don’t miss the chance to be part of something truly impactful—your journey to greatness starts here!</p>
+            <p>Thank you for attending today’s meeting and showing your enthusiasm for </p><h2>HACKERZ 2025!</h2><p> Remember, this is more than just an event it's your chance to learn, grow, and shine. Only those who attend regularly, stay active, and contribute interactively will earn exclusive privileges like OD and exciting outreach opportunities. Don't miss the chance to be part of something truly impactful your journey to greatness starts here!</p>
 
 
 
