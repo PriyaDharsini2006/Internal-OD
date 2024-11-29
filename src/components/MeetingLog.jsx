@@ -159,9 +159,7 @@ const removeStudentFromMeeting = async (email) => {
        
          margin: 0 !important; 
     padding: 0 !important; 
-    border: 2px solid black !important; 
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
+   
       }
       .certificate-page {
         page-break-after: always;
@@ -169,7 +167,7 @@ const removeStudentFromMeeting = async (email) => {
         display: flex;
         flex-direction: column;
         padding: 20px;
-        box-sizing: border-box;
+       
       }
     }
     body { 
@@ -178,7 +176,7 @@ const removeStudentFromMeeting = async (email) => {
       padding: 0; 
       position: relative;
        min-height: 100vh;
-      border: 2px solid black;
+      
     }
     .page {
       position: relative;
@@ -195,7 +193,7 @@ const removeStudentFromMeeting = async (email) => {
     .logo-left {
       left: 20px;
       height: 100px;
-      width:100px;
+      width:300px;
     }
     .logo-right {
       right: 20px;
