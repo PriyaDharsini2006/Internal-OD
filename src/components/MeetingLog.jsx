@@ -146,6 +146,15 @@ const removeStudentFromMeeting = async (email) => {
 <head>
   <style>
     @media print {
+    html, body { 
+    margin: 0 !important; 
+    padding: 0 !important; 
+    height: 100% !important;
+    border: 2px solid black !important;
+    box-sizing: border-box !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
       body { 
        
        
@@ -169,6 +178,7 @@ const removeStudentFromMeeting = async (email) => {
       margin: 20px; 
       padding: 0; 
       position: relative;
+       min-height: 100vh;
       border: 2px solid black;
     }
     .page {
@@ -219,56 +229,6 @@ const removeStudentFromMeeting = async (email) => {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
-    @media print {
-  html, body { 
-    margin: 0 !important; 
-    padding: 0 !important; 
-    height: 100% !important;
-    border: 2px solid black !important;
-    box-sizing: border-box !important;
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-  }
-  
-  .page {
-    border-bottom: 2px solid black !important;
-    page-break-after: always;
-  }
-  
-  table {
-    width: 100%; 
-    border-collapse: separate !important;
-    border-spacing: 0 !important;
-  }
-  
-  table, table th, table td {
-    border: 1px solid black !important;
-  }
-  
-  @page {
-    margin: 10mm !important; /* Ensures printable area includes border */
-    size: auto !important;
-  }
-}
-
-/* Base styles for screen and print */
-body { 
-  font-family: Arial, sans-serif; 
-  margin: 20px; 
-  padding: 0; 
-  position: relative;
-  border: 2px solid black;
-  min-height: 100vh;
-  box-sizing: border-box;
-}
-
-.page {
-  position: relative;
-  padding: 120px 20px 20px;
-  border-bottom: 2px solid black;
-}
-
-
     @media print {
       th {
         position: static;
