@@ -141,6 +141,7 @@ const removeStudentFromMeeting = async (email) => {
   
     const printContent = `
       <!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
   <style>
@@ -160,13 +161,15 @@ const removeStudentFromMeeting = async (email) => {
     }
     body { 
       font-family: Arial, sans-serif; 
-      margin: 0; 
+      margin: 20px; 
       padding: 0; 
       position: relative;
+      border: 3px solid black;
     }
     .page {
       position: relative;
       padding: 80px 20px 20px;
+      border-bottom: 2px solid black;
     }
     .logo-left, .logo-right {
       position: absolute;
@@ -188,9 +191,10 @@ const removeStudentFromMeeting = async (email) => {
       width: 100%; 
       border-collapse: collapse; 
       margin-top: 20px; 
+      border: 2px solid black;
     }
     th, td { 
-      border: 1px solid #ddd; 
+      border: 1px solid #333; 
       padding: 8px; 
       text-align: left; 
     }
@@ -199,10 +203,14 @@ const removeStudentFromMeeting = async (email) => {
       position: sticky;
       top: 0;
       background: white;
+      border-bottom: 2px solid black;
     }
     @media print {
       th {
         position: static;
+      }
+      body {
+        border: none;
       }
     }
   </style>
