@@ -147,8 +147,13 @@ const removeStudentFromMeeting = async (email) => {
   <style>
     @media print {
       body { 
-        margin: 0; 
-        padding: 0; 
+       
+       
+         margin: 0 !important; 
+    padding: 0 !important; 
+    border: 2px solid black !important; 
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
       }
       .certificate-page {
         page-break-after: always;
@@ -169,7 +174,7 @@ const removeStudentFromMeeting = async (email) => {
     .page {
       position: relative;
       padding: 120px 20px 20px;
-      border-bottom: 2px solid black;
+       border-bottom: 2px solid black !important;
     }
     .logo-left, .logo-right {
       position: absolute;
@@ -190,10 +195,13 @@ const removeStudentFromMeeting = async (email) => {
       padding: 0 50px;
     }
     table { 
-      width: 100%; 
-      border-collapse: collapse; 
+      
+      
       margin-top: 20px; 
       border: 2px solid black;
+       width: 100%; 
+    border-collapse: separate !important;
+    border-spacing: 0 !important;
     }
     th, td { 
       border: 1px solid #333; 
@@ -207,6 +215,10 @@ const removeStudentFromMeeting = async (email) => {
       background: white;
       border-bottom: 2px solid black;
     }
+       * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
     @media print {
       th {
         position: static;
