@@ -572,6 +572,9 @@ const MeetingLog = ({ meetings, setMeetings, fetchMeetings }) => {
                         <th className="px-6 py-3 text-left text-xs font-medium text-[#00f5d0] uppercase tracking-wider">
                           Year
                         </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-[#00f5d0] uppercase tracking-wider">
+                          Register
+                        </th>
                       </tr>
                     </thead>
                     <tbody className="bg-black divide-y divide-gray-200">
