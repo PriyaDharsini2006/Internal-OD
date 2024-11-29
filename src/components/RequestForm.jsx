@@ -22,7 +22,7 @@ const RequestForm = () => {
   const [timeError, setTimeError] = useState('');
   const [selectedTeamType, setSelectedTeamType] = useState('');
   const [selectedTeam, setSelectedTeam] = useState('');
-  
+
 
   const router = useRouter();
 
@@ -212,63 +212,37 @@ const RequestForm = () => {
     try {
       setLoading(true);
       setError('');
-
+  
       const params = new URLSearchParams({
         search: searchTerm,
         section: selectedSection,
         year: selectedYear
       });
-
-      let studentsData = [];
-      let countsData = [];
-
-      try {
-        const studentsResponse = await fetch(`/api/students?${params}`);
-        if (!studentsResponse.ok) {
-          throw new Error(`Students API Error: ${studentsResponse.status}`);
-        }
-        studentsData = await studentsResponse.json();
-        
-      } catch (studentError) {
-        console.error('Students fetch error:', studentError);
-        throw new Error('Failed to fetch students data');
+  
+      // Single fetch with error handling
+      const response = await fetch(`/api/students?${params}`);
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
       }
-
-      try {
-        const countsResponse = await fetch('/api/counts');
-        if (!countsResponse.ok) {
-          throw new Error(`Counts API Error: ${countsResponse.status}`);
-        }
-        countsData = await countsResponse.json();
-      } catch (countsError) {
-        console.error('Counts fetch error:', countsError);
-        countsData = [];
+  
+      const studentsData = await response.json();
+  
+      // If no students found, set an informative message
+      if (studentsData.length === 0) {
+        setError('No students found matching the current filters');
       }
-
-      const countsArray = Array.isArray(countsData) ? countsData : [];
-
-      const countsMap = new Map(
-        countsArray.map(count => [count.email, count])
-      );
-
-      const studentsWithCounts = studentsData.map(student => {
-        const studentCounts = countsMap.get(student.email);
-        return {
-          ...student,
-          counts: studentCounts || {
-            stayback_cnt: 0,
-            meeting_cnt: 0,
-            email: student.email
-          }
-        };
-      });
-
-      setStudents(studentsWithCounts);
+  
+      setStudents(studentsData);
     } catch (error) {
-      console.error('Fetch error:', error);
-      setError(error.message || 'Failed to fetch data');
-      if (error.message.includes('401') || error.message.includes('Unauthorized')) {
+      console.error('Fetch students error:', error);
+      
+      // More informative error handling
+      if (error.message.includes('401')) {
         router.push('/api/auth/signin');
+      } else {
+        setError(error.message || 'Failed to fetch students data');
       }
     } finally {
       setLoading(false);
@@ -287,16 +261,16 @@ const RequestForm = () => {
 
   const filteredStudents = students.filter(student => {
     const matchesSearch = student.name.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesRegisterNumber = 
-      registerNumberSearch === '' || 
+    const matchesRegisterNumber =
+      registerNumberSearch === '' ||
       student.register.toLowerCase().includes(registerNumberSearch.toLowerCase());
     const matchesSection = selectedSection === 'all' || student.sec === selectedSection;
     const matchesYear = selectedYear === 'all' || student.year === parseInt(selectedYear);
-    
-    return matchesSearch && 
-           matchesRegisterNumber && 
-           matchesSection && 
-           matchesYear;
+
+    return matchesSearch &&
+      matchesRegisterNumber &&
+      matchesSection &&
+      matchesYear;
   });
 
 
@@ -408,7 +382,27 @@ const RequestForm = () => {
                               className="w-4 h-4 text-[#00f5d0] bg-white/5 border-white/10 rounded focus:ring-[#00f5d0]"
                             />
                           </td>
-                          <td className="px-4 py-3 text-sm text-gray-300">{student.name}</td>
+                          <td className="px-4 py-3 text-sm text-gray-300 relative">
+                            {student.name}
+                            <div className="absolute top-0 right-0 flex space-x-1">
+                              {student.roles?.isCoreLead && (
+                                <div
+                                  className="w-4 h-4 rounded-full bg-red-500 ml-[-90px] mt-[15px] flex items-center justify-center text-white text-[8px] font-bold"
+                                  title="Core Lead"
+                                >
+                                  C
+                                </div>
+                              )}
+                              {student.roles?.isTeamLead && (
+                                <div
+                                  className="w-4 h-4 rounded-full ml-[-100px] mt-[15px] bg-green-500 flex items-center justify-center text-white text-[8px] font-bold"
+                                  title="Team Lead"
+                                >
+                                  L
+                                </div>
+                              )}
+                            </div>
+                          </td>
                           <td className="px-4 py-3 text-sm text-gray-400">{student.year}</td>
                           <td className="px-4 py-3 text-sm text-gray-400">{student.counts?.stayback_cnt || 0}</td>
                           <td className="px-4 py-3 text-sm text-gray-400">{student.counts?.meeting_cnt || 0}</td>
@@ -458,8 +452,8 @@ const RequestForm = () => {
                       key={pageNumber}
                       onClick={() => setCurrentPage(pageNumber)}
                       className={`px-3 py-1 border rounded-md text-sm font-medium ${currentPage === pageNumber
-                          ? 'bg-[#00f5d0] text-black border-[#00f5d0]'
-                          : 'border-white/10 text-gray-300 hover:bg-white/5'
+                        ? 'bg-[#00f5d0] text-black border-[#00f5d0]'
+                        : 'border-white/10 text-gray-300 hover:bg-white/5'
                         }`}
                     >
                       {pageNumber}
