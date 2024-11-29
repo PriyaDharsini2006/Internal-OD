@@ -15,6 +15,7 @@ const MeetingRequest = () => {
     'AR/VR',
     'AWS',
     'AI',
+    'All Workshop teams' 
   ];
 
   const nonTechnicalTeams = [
@@ -23,6 +24,7 @@ const MeetingRequest = () => {
     'Shortfilm',
     'Meme',
     'Photography',
+    'All Non technical teams',
   ];
 
   const technicalTeams = [
@@ -33,7 +35,8 @@ const MeetingRequest = () => {
     'Pair programming',
     'UI event',
     'Technical Quiz',
-    'Case Study'
+    'Case Study',
+    'All Technical Teams'
   ];
 
   const committee = [
@@ -47,7 +50,8 @@ const MeetingRequest = () => {
     'Media team',
     'Social media Team',
     'Sponsorship',
-    'Decoration Team'
+    'Decoration Team',
+    'All Committe teams'
   ]
 
 

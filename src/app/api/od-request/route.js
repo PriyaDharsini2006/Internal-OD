@@ -12,6 +12,17 @@ export async function GET(request) {
     const status = searchParams.get('status');
     const teamLeadId = searchParams.get('teamLeadId');
 
+    // Fetch CoreTeam and Team emails
+    const coreTeamEmails = await prisma.coreTeam.findMany({
+      select: { email: true }
+    });
+    const teamLeadEmails = await prisma.team.findMany({
+      select: { email: true }
+    });
+
+    const coreTeamSet = new Set(coreTeamEmails.map(item => item.email));
+    const teamLeadSet = new Set(teamLeadEmails.map(item => item.email));
+
     // Base query for fetching OD requests
     const whereCondition = {
       ...(status !== null && { status: parseInt(status) }),
@@ -66,7 +77,12 @@ export async function GET(request) {
         stayback_cnt: request.user.counts?.stayback_cnt || 0,
         meeting_cnt: request.user.counts?.meeting_cnt || 0,
         // Add TeamLead name from User table
-        requested_by: teamLeadUser?.name || request.request_by.email
+        requested_by: teamLeadUser?.name || request.request_by.email,
+        // Add role indicators
+        roles: {
+          isCoreLead: coreTeamSet.has(request.user.email),
+          isTeamLead: teamLeadSet.has(request.user.email)
+        }
       };
     }));
 
