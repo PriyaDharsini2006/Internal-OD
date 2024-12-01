@@ -23,11 +23,14 @@ const RequestForm = () => {
   const [selectedTeamType, setSelectedTeamType] = useState('');
   const [selectedTeam, setSelectedTeam] = useState('');
 
+  const inputClassName = "w-full px-4 py-2.5 bg-white/5 backdrop-blur-xl rounded-lg text-gray-300 placeholder-gray-500 border border-white/10 focus:ring-2 focus:ring-[#00f5d0] focus:border-[#00f5d0]";
+  const optionClassName = 'text-white bg-black';
+
 
   const router = useRouter();
 
   const ITEMS_PER_PAGE = 10;
-  const sectionsOptions = ['A', 'B', 'C', 'D'];
+  const sectionsOptions = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q'];
   const yearsOptions = [2027, 2026, 2025, 2024];
   const [loading, setLoading] = useState(true);
 
@@ -216,32 +219,32 @@ const RequestForm = () => {
     try {
       setLoading(true);
       setError('');
-  
+
       const params = new URLSearchParams({
         search: searchTerm,
         section: selectedSection,
         year: selectedYear
       });
-  
+
       // Single fetch with error handling
       const response = await fetch(`/api/students?${params}`);
-  
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
       }
-  
+
       const studentsData = await response.json();
-  
+
       // If no students found, set an informative message
       if (studentsData.length === 0) {
         setError('No students found matching the current filters');
       }
-  
+
       setStudents(studentsData);
     } catch (error) {
       console.error('Fetch students error:', error);
-      
+
       // More informative error handling
       if (error.message.includes('401')) {
         router.push('/api/auth/signin');
@@ -299,16 +302,16 @@ const RequestForm = () => {
     <div className="min-h-screen bg-black py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-5xl mx-auto bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10">
         {/* Header Section */}
-        <div className="border-b border-white/10 bg-black/30 rounded-t-2xl px-6 py-5">
-          <div className="flex flex-row">
-            <div className="flex-shrink-0 flex flex-row">
+        <div className="border-b border-white/10 bg-black/30 rounded-t-2xl px-4 py-3">
+          <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0">
+            <div className="flex-shrink-0 mr-4">
               <img
-                className="w-36 h-36 rounded object-contain"
+                className="w-24 h-24 sm:w-36 sm:h-36 rounded object-contain"
                 src="/logo1.png"
                 alt="Company Logo"
               />
             </div>
-            <h1 className="text-2xl px-36 py-10 md:text-3xl font-grotesk font-bold text-[#00f5d0]">
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-grotesk font-bold text-[#00f5d0] text-center sm:text-left">
               Send OD Request
             </h1>
           </div>
@@ -328,25 +331,53 @@ const RequestForm = () => {
           )}
 
           {/* Search and Filter Section */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Search students..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full px-4 py-2.5 bg-white/5 backdrop-blur-xl rounded-lg text-gray-300 placeholder-gray-500 border border-white/10 focus:ring-2 focus:ring-[#00f5d0] focus:border-[#00f5d0]"
-              />
-            </div>
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Search by Register Number..."
-                value={registerNumberSearch}
-                onChange={(e) => setRegisterNumberSearch(e.target.value)}
-                className="w-full px-4 py-2.5 bg-white/5 backdrop-blur-xl rounded-lg text-gray-300 placeholder-gray-500 border border-white/10 focus:ring-2 focus:ring-[#00f5d0] focus:border-[#00f5d0]"
-              />
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+            <input
+              type="text"
+              placeholder="Search students..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full px-3 py-2 bg-white/5 backdrop-blur-xl rounded-lg text-gray-300 placeholder-gray-500 border border-white/10 focus:ring-2 focus:ring-[#00f5d0] focus:border-[#00f5d0] text-sm"
+            />
+            <input
+              type="text"
+              placeholder="Register Number..."
+              value={registerNumberSearch}
+              onChange={(e) => setRegisterNumberSearch(e.target.value)}
+              className="w-full px-3 py-2 bg-white/5 backdrop-blur-xl rounded-lg text-gray-300 placeholder-gray-500 border border-white/10 focus:ring-2 focus:ring-[#00f5d0] focus:border-[#00f5d0] text-sm"
+            />
+            <select
+              value={selectedSection}
+              onChange={(e) => setSelectedSection(e.target.value)}
+              className="w-full px-3 py-2 bg-white/5 backdrop-blur-xl rounded-lg text-gray-300 border border-white/10 focus:ring-2 focus:ring-[#00f5d0] focus:border-[#00f5d0] text-sm"
+            >
+              <option className='text-white bg-black' value="all">All Sections</option>
+              {sectionsOptions.map(section => (
+                <option
+                  key={section}
+                  value={section}
+                  className='text-white bg-black'
+                >
+                  Section {section}
+                </option>
+              ))}
+            </select>
+            <select
+              value={selectedYear}
+              onChange={(e) => setSelectedYear(e.target.value)}
+              className="w-full px-3 py-2 bg-white/5 backdrop-blur-xl rounded-lg text-gray-300 border border-white/10 focus:ring-2 focus:ring-[#00f5d0] focus:border-[#00f5d0] text-sm"
+            >
+              <option className='text-white bg-black' value="all">All Years</option>
+              {yearsOptions.map(year => (
+                <option
+                  key={year}
+                  value={year}
+                  className='text-white bg-black'
+                >
+                  Year {year}
+                </option>
+              ))}
+            </select>
           </div>
 
 
