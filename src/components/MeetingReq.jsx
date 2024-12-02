@@ -292,12 +292,13 @@ const MeetingRequest = () => {
       [timeType]: time
     }));
 
-    const timeValidation = Time(
+    const timeValidation = validateTime(
       timeType === 'from_time' ? time : formData.from_time,
       timeType === 'from_time' ? formData.from_time_modifier : formData.to_time_modifier,
       timeType === 'to_time' ? time : formData.to_time,
       timeType === 'to_time' ? formData.to_time_modifier : formData.from_time_modifier
     );
+    
 
     setTimeError(timeValidation || '');
   };
