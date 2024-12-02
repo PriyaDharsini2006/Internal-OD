@@ -29,31 +29,36 @@ export async function PATCH(request, { params }) {
       );
     }
 
-    // Update the meeting with new student list
-    const updatedMeeting = await prisma.meeting.update({
-      where: {
-        id: id
-      },
-      data: {
-        students: students
-      }
+    // Retrieve the current meeting to get the existing students
+    const currentMeeting = await prisma.meeting.findUnique({
+      where: { id: id }
     });
 
-    // If adding a student, increment their meeting count
-    if (action === 'add') {
-      // Get the difference between old and new students
-      const newStudents = students.filter(email => 
-        !updatedMeeting.students.includes(email)
+    if (!currentMeeting) {
+      return NextResponse.json(
+        { message: 'Meeting not found' },
+        { status: 404 }
       );
+    }
 
-      // Update counts for new students
-      await Promise.all(newStudents.map(email =>
+    // Update the meeting with new student list
+    const updatedMeeting = await prisma.meeting.update({
+      where: { id: id },
+      data: { students: students }
+    });
+
+    // Determine added and removed students
+    const currentStudents = currentMeeting.students || [];
+    const addedStudents = students.filter(email => !currentStudents.includes(email));
+    const removedStudents = currentStudents.filter(email => !students.includes(email));
+
+    // Update counts for added students
+    if (addedStudents.length > 0) {
+      await Promise.all(addedStudents.map(email =>
         prisma.count.upsert({
           where: { email },
           update: {
-            meeting_cnt: {
-              increment: 1
-            }
+            meeting_cnt: { increment: 1 }
           },
           create: {
             email,
@@ -64,30 +69,22 @@ export async function PATCH(request, { params }) {
       ));
     }
 
-    // If removing a student, decrement their meeting count
-    if (action === 'remove') {
-      const removedStudents = updatedMeeting.students.filter(email => 
-        !students.includes(email)
-      );
-    
-      console.log('Removed students:', removedStudents);
-    
-      if (removedStudents.length > 0) {
-        await Promise.all(removedStudents.map(async (email) => {
-          try {
-            await prisma.count.update({
-              where: { email },
-              data: {
-                meeting_cnt: {
-                  decrement: 1
-                }
-              }
-            });
-          } catch (updateError) {
-            console.error(`Failed to update count for ${email}:`, updateError);
-          }
-        }));
-      }
+    // Update counts for removed students
+    if (removedStudents.length > 0) {
+      await Promise.all(removedStudents.map(async (email) => {
+        const existingCount = await prisma.count.findUnique({
+          where: { email }
+        });
+
+        if (existingCount && existingCount.meeting_cnt > 0) {
+          await prisma.count.update({
+            where: { email },
+            data: {
+              meeting_cnt: { decrement: 1 }
+            }
+          });
+        }
+      }));
     }
 
     return NextResponse.json(updatedMeeting);

@@ -4,54 +4,52 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 export async function GET(request) {
-    try {
-      // Add some detailed logging
-      console.log('Attempting to fetch stayback users');
-  
-      const staybackUsers = await prisma.user.findMany({
-        where: {
-          counts: {
-            stayback_cnt: {
-              gt: 0 
-            }
-          }
-        },
-        include: {
-          counts: true
-        },
-        orderBy: {
-          counts: {
-            stayback_cnt: 'desc'
+  try {
+    const meetingUsers = await prisma.user.findMany({
+      where: {
+        counts: {
+          meeting_cnt: {
+            gt: 0 
           }
         }
-      });
-  
-      // Add logging to see what's actually being returned
-      console.log('Raw staybackUsers:', JSON.stringify(staybackUsers, null, 2));
-  
-      // More flexible data transformation
-      const formattedUsers = staybackUsers.map(user => {
-        console.log('Individual user:', JSON.stringify(user, null, 2));
-        return {
-          name: user.name,
-          email: user.email,
-          section: user.sec || user.section || 'N/A',
-          year: user.year,
-          register: user.register || 'N/A',
-          stayback_cnt: user.counts?.stayback_cnt || 0
-        };
-      });
-  
-      console.log('Formatted users:', JSON.stringify(formattedUsers, null, 2));
-  
-      return NextResponse.json(formattedUsers);
-    } catch (error) {
-      console.error('Detailed error fetching stayback users:', error);
-      return NextResponse.json(
-        { error: 'Failed to fetch stayback users', details: error.message }, 
-        { status: 500 }
-      );
-    } finally {
-      await prisma.$disconnect();
-    }
+      },
+      select: {
+        name: true,
+        email: true,
+        sec: true,     // Section
+        year: true,    // Year
+        register: true, // Added register field
+        counts: {
+          select: {
+            meeting_cnt: true
+          }
+        }
+      },
+      orderBy: {
+        counts: {
+          meeting_cnt: 'desc'
+        }
+      }
+    });
+
+    // Transform the data to match the component's expected structure
+    const formattedUsers = meetingUsers.map(user => ({
+      name: user.name,
+      email: user.email,
+      section: user.sec,
+      year: user.year,
+      register: user.register, // Added register to the formatted output
+      meeting_cnt: user.counts?.meeting_cnt || 0
+    }));
+
+    return NextResponse.json(formattedUsers);
+  } catch (error) {
+    console.error('Error fetching meeting users:', error);
+    return NextResponse.json(
+      { error: 'Failed to fetch meeting users' }, 
+      { status: 500 }
+    );
+  } finally {
+    await prisma.$disconnect();
   }
+}

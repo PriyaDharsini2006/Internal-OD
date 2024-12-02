@@ -30,31 +30,36 @@ export async function PATCH(request, { params }) {
       );
     }
 
-    // Update the stayback with new student list
-    const updatedStayback = await prisma.stayback.update({
-      where: {
-        id: id
-      },
-      data: {
-        students: students
-      }
+    // Retrieve the current stayback to get the existing students
+    const currentStayback = await prisma.stayback.findUnique({
+      where: { id: id }
     });
 
-    // If adding a student, increment their stayback count
-    if (action === 'add') {
-      // Get the difference between old and new students
-      const newStudents = students.filter(email => 
-        !updatedStayback.students.includes(email)
+    if (!currentStayback) {
+      return NextResponse.json(
+        { message: 'Stayback not found' },
+        { status: 404 }
       );
+    }
 
-      // Update counts for new students
-      await Promise.all(newStudents.map(email =>
+    // Update the stayback with new student list
+    const updatedStayback = await prisma.stayback.update({
+      where: { id: id },
+      data: { students: students }
+    });
+
+    // Determine added and removed students
+    const currentStudents = currentStayback.students || [];
+    const addedStudents = students.filter(email => !currentStudents.includes(email));
+    const removedStudents = currentStudents.filter(email => !students.includes(email));
+
+    // Update counts for added students
+    if (addedStudents.length > 0) {
+      await Promise.all(addedStudents.map(email =>
         prisma.count.upsert({
           where: { email },
           update: {
-            stayback_cnt: {
-              increment: 1
-            }
+            stayback_cnt: { increment: 1 }
           },
           create: {
             email,
@@ -65,30 +70,22 @@ export async function PATCH(request, { params }) {
       ));
     }
 
-    // If removing a student, decrement their stayback count
-    if (action === 'remove') {
-      const removedStudents = updatedStayback.students.filter(email => 
-        !students.includes(email)
-      );
-    
-      console.log('Removed students:', removedStudents);
-    
-      if (removedStudents.length > 0) {
-        await Promise.all(removedStudents.map(async (email) => {
-          try {
-            await prisma.count.update({
-              where: { email },
-              data: {
-                stayback_cnt: {
-                  decrement: 1
-                }
-              }
-            });
-          } catch (updateError) {
-            console.error(`Failed to update count for ${email}:`, updateError);
-          }
-        }));
-      }
+    // Update counts for removed students
+    if (removedStudents.length > 0) {
+      await Promise.all(removedStudents.map(async (email) => {
+        const existingCount = await prisma.count.findUnique({
+          where: { email }
+        });
+
+        if (existingCount && existingCount.stayback_cnt > 0) {
+          await prisma.count.update({
+            where: { email },
+            data: {
+              stayback_cnt: { decrement: 1 }
+            }
+          });
+        }
+      }));
     }
 
     return NextResponse.json(updatedStayback);

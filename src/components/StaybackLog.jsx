@@ -615,12 +615,7 @@ const StaybackLog = ({ staybacks, setStaybacks, fetchStaybacks }) => {
                     <thead className="bg-black sticky top-0">
                       <tr>
                         <th className="px-2 py-3 text-left text-xs font-medium text-[#00f5d0] uppercase tracking-wider">
-                          <input 
-                            type="checkbox"
-                            checked={selectedAvailableStudents.size === currentStudents.length}
-                            onChange={selectAllAvailableStudents}
-                            className="mr-2"
-                          />
+                          Select
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-[#00f5d0] uppercase tracking-wider">
                           Name
@@ -725,12 +720,7 @@ const StaybackLog = ({ staybacks, setStaybacks, fetchStaybacks }) => {
                     <thead className="bg-black sticky top-0">
                       <tr>
                         <th className="px-2 py-3 text-left text-xs font-medium text-[#00f5d0] uppercase tracking-wider">
-                          <input 
-                            type="checkbox"
-                            checked={selectedCurrentStudents.size === students.length}
-                            onChange={selectAllCurrentStudents}
-                            className="mr-2"
-                          />
+                          Select
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-[#00f5d0] uppercase tracking-wider">
                           Name
