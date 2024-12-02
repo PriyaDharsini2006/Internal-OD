@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, Printer } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Printer, X } from 'lucide-react';
 
 const TeamStudentStaybackCountLeaderboard = () => {
     const [teamStudentCounts, setTeamStudentCounts] = useState([]);

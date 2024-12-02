@@ -8,8 +8,6 @@ import PendingRequestsTable from "@/components/requests/PendingRequestsTable";
 import RejectedRequestsTable from "@/components/requests/RejectedRequestsTable";
 import MeetingUpdateComponent from '@/components/MeetingReq';
 import StaybackRequest from '@/components/StaybackReq';
-import MeetingCount from '@/components/meetingcnt';
-import StaybackCount from '@/components/staybackcnt';
 import {
   Clock,
   CheckCircle,
@@ -32,9 +30,7 @@ const TeamLeadNavbar = ({ onNavItemClick, activeComponent }) => {
     { name: 'Approved Requests', icon: CheckCircle, component: 'approved-request' },
     { name: 'Rejected Requests', icon: XCircle, component: 'rejected' },
     { name: 'Meeting', icon: ArrowUp, component: 'Meeting' },
-    { name: 'Meeting Count', icon: Clock, component: 'meetingcnt' },
     { name: 'Stayback', icon: Home, component: 'Stayback' },
-    { name: 'Stayback Count', icon: Clock, component: 'staybackcnt' },
   ];
   const handleBack = () => {
     // Directly navigate to the external dashboard URL
@@ -154,14 +150,10 @@ export default function TeamLeadPage() {
         return <Approved />;
       case 'rejected':
         return <RejectedRequestsTable />;
-      case 'meetingcnt':
-        return <MeetingCount />;
       case 'Meeting':
         return <MeetingUpdateComponent />;
       case 'Stayback':
         return <StaybackRequest />;
-      case 'staybackcnt':
-        return <StaybackCount />;
       default:
         return <RequestForm />;
     }

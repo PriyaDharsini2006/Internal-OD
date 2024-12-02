@@ -3,10 +3,39 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { Search, X, Plus, ChevronDown, AlertTriangle } from 'lucide-react';
 import MeetingLog from './MeetingLog';
+import MeetingCnt from './meetingcnt';
+
+
+const FullPageMeetingCount = ({ onClose }) => {
+  return (
+    <div className="fixed inset-0 bg-black z-50 flex flex-col overflow-hidden">
+      <div className="flex justify-between items-center p-6 border-b border-[#00f5d0]">
+        <h1 className="text-3xl font-bold text-[#00f5d0]">Total Meeting Count Leaderboard</h1>
+        <button 
+          onClick={onClose} 
+          className="text-[#00f5d0] hover:opacity-90"
+        >
+          <X size={32} />
+        </button>
+      </div>
+
+      <div className="flex-grow overflow-auto">
+        <MeetingCnt />
+      </div>
+    </div>
+  );
+};
+
 
 const MeetingRequest = () => {
   const { data: session, status } = useSession();
   const router = useRouter();
+
+  const [showFullPageMeetingCount, setShowFullPageMeetingCount] = useState(false);
+
+  const handleButtonClick = () => {
+    setShowFullPageMeetingCount(true);
+  };
 
   const Workshops = [
     'Linux and Networking',
@@ -190,7 +219,7 @@ const MeetingRequest = () => {
         },
         body: JSON.stringify({
           ...formData,
-          team: selectedTeam, 
+          team: selectedTeam,
           date: new Date(formData.date),
           from_time: new Date(`${formData.date}T${fromTime24}`),
           to_time: new Date(`${formData.date}T${toTime24}`)
@@ -235,16 +264,16 @@ const MeetingRequest = () => {
     const searchLower = localSearch.toLowerCase();
     const registerLower = student.register.toLowerCase();
     const registerSearchLower = registerNumberSearch.toLowerCase();
-  
-    const matchesLocalSearch = 
+
+    const matchesLocalSearch =
       student.name.toLowerCase().includes(searchLower) ||
       student.email.toLowerCase().includes(searchLower) ||
       student.sec.toLowerCase().includes(searchLower) ||
       student.year.toString().includes(searchLower);
-  
-    const matchesRegisterNumber = 
+
+    const matchesRegisterNumber =
       registerNumberSearch === '' || registerLower.includes(registerSearchLower);
-  
+
     return matchesLocalSearch && matchesRegisterNumber;
   });
 
@@ -298,7 +327,7 @@ const MeetingRequest = () => {
       timeType === 'to_time' ? time : formData.to_time,
       timeType === 'to_time' ? formData.to_time_modifier : formData.from_time_modifier
     );
-    
+
 
     setTimeError(timeValidation || '');
   };
@@ -311,8 +340,8 @@ const MeetingRequest = () => {
       [modifierKey]: modifier
     }));
 
-    
-  
+
+
     const timeValidation = validateTime(
       formData.from_time,
       timeType === 'from_time' ? modifier : formData.from_time_modifier,
@@ -353,8 +382,17 @@ const MeetingRequest = () => {
           />
         </div>
         <h1 className="text-2xl sm:text-2xl py-12 px-36 font-bold mb-4 ml-10 sm:mb-6 text-gray-400">
-          Meeting
+          Meetings
         </h1>
+        <button
+            onClick={handleButtonClick} className="bg-[#00f5d0] font-grotesk mt-[50px] w-[189px] h-[40px] hover:opacity-90 text-black font-bold py-2 px-4 rounded flex items-center">
+            Total Meeting Count
+          </button>
+        {showFullPageMeetingCount && (
+          <FullPageMeetingCount
+            onClose={() => setShowFullPageMeetingCount(false)}
+          />
+        )}
       </div>
 
       {error && (
@@ -367,7 +405,7 @@ const MeetingRequest = () => {
         <div className="flex justify-end mb-4 mt-[30px]">
           <button
             onClick={() => setIsModalOpen(true)}
-            className="bg-[#00f5d0] hover:opacity-90 text-black font-bold py-2 px-4 rounded flex items-center"
+            className="bg-[#00f5d0] hover:opacity-90 font-grotesk text-black font-bold py-2 px-4 rounded flex items-center"
           >
             <Plus className="mr-2" size={20} />
             Create Meeting
@@ -398,58 +436,58 @@ const MeetingRequest = () => {
                 <div>
                   <label className="block mb-2 text-sm font-medium text-white">Team</label>
                   <div className="relative">
-                  <select
-                  value={selectedTeamType}
-                  onChange={(e) => {
-                    setSelectedTeamType(e.target.value);
-                    setSelectedTeam(''); // Reset specific team when type changes
-                  }}
-                  className="w-full px-4 py-2.5 bg-white/5 backdrop-blur-xl rounded-lg border border-white/10 focus:ring-2 focus:ring-[#00f5d0] focus:border-[#00f5d0]"
-                >
-                  <option className='text-white bg-black' value="">Select Team Type</option>
-                  <option className='text-white bg-black' value="technical">Technical Teams</option>
-                  <option className='text-white bg-black' value="non-technical">Non-Technical Teams</option>
-                  <option className='text-white bg-black' value="workshops">workshops</option>
-                  <option className='text-white bg-black' value="committee">Committee</option>
-                </select>
-                </div>
-              <div>
-                <select
-                  value={selectedTeam}
-                  onChange={(e) => setSelectedTeam(e.target.value)}
-                  disabled={!selectedTeamType}
-                  className="w-full px-4 py-2.5 bg-white/5 backdrop-blur-xl rounded-lg border border-white/10 focus:ring-2 focus:ring-[#00f5d0] focus:border-[#00f5d0] disabled:opacity-50"
-                >
-                  <option className='text-white bg-black' value="">Select Specific Team</option>
-                  {selectedTeamType === 'technical' &&
-                    technicalTeams.map((team) => (
-                      <option className='text-white bg-black' key={team} value={team}>
-                        {team}
-                      </option>
-                    ))
-                  }
-                  {selectedTeamType === 'workshops' &&
-                    Workshops.map((team) => (
-                      <option className='text-white bg-black' key={team} value={team}>
-                        {team}
-                      </option>
-                    ))
-                  }
-                  {selectedTeamType === 'committee' &&
-                    committee.map((team) => (
-                      <option className='text-white bg-black' key={team} value={team}>
-                        {team}
-                      </option>
-                    ))
-                  }
-                  {selectedTeamType === 'non-technical' &&
-                    nonTechnicalTeams.map((team) => (
-                      <option className='text-white bg-black' key={team} value={team}>
-                        {team}
-                      </option>
-                    ))
-                  }
-                </select>
+                    <select
+                      value={selectedTeamType}
+                      onChange={(e) => {
+                        setSelectedTeamType(e.target.value);
+                        setSelectedTeam(''); // Reset specific team when type changes
+                      }}
+                      className="w-full px-4 py-2.5 bg-white/5 backdrop-blur-xl rounded-lg border border-white/10 focus:ring-2 focus:ring-[#00f5d0] focus:border-[#00f5d0]"
+                    >
+                      <option className='text-white bg-black' value="">Select Team Type</option>
+                      <option className='text-white bg-black' value="technical">Technical Teams</option>
+                      <option className='text-white bg-black' value="non-technical">Non-Technical Teams</option>
+                      <option className='text-white bg-black' value="workshops">workshops</option>
+                      <option className='text-white bg-black' value="committee">Committee</option>
+                    </select>
+                  </div>
+                  <div>
+                    <select
+                      value={selectedTeam}
+                      onChange={(e) => setSelectedTeam(e.target.value)}
+                      disabled={!selectedTeamType}
+                      className="w-full px-4 py-2.5 bg-white/5 backdrop-blur-xl rounded-lg border border-white/10 focus:ring-2 focus:ring-[#00f5d0] focus:border-[#00f5d0] disabled:opacity-50"
+                    >
+                      <option className='text-white bg-black' value="">Select Specific Team</option>
+                      {selectedTeamType === 'technical' &&
+                        technicalTeams.map((team) => (
+                          <option className='text-white bg-black' key={team} value={team}>
+                            {team}
+                          </option>
+                        ))
+                      }
+                      {selectedTeamType === 'workshops' &&
+                        Workshops.map((team) => (
+                          <option className='text-white bg-black' key={team} value={team}>
+                            {team}
+                          </option>
+                        ))
+                      }
+                      {selectedTeamType === 'committee' &&
+                        committee.map((team) => (
+                          <option className='text-white bg-black' key={team} value={team}>
+                            {team}
+                          </option>
+                        ))
+                      }
+                      {selectedTeamType === 'non-technical' &&
+                        nonTechnicalTeams.map((team) => (
+                          <option className='text-white bg-black' key={team} value={team}>
+                            {team}
+                          </option>
+                        ))
+                      }
+                    </select>
                   </div>
                 </div>
 
@@ -481,84 +519,83 @@ const MeetingRequest = () => {
                 </div>
 
                 <div>
-                <label className="block mb-2 text-sm font-medium text-[#00f5d0]">Select Students</label>
-                
-                <div className="mb-4 relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#00f5d0]" size={20} />
-                  <input
-                    type="text"
-                    placeholder="Search students..."
-                    value={localSearch}
-                    onChange={(e) => setLocalSearch(e.target.value)}
-                    className="w-full pl-10 pr-3 py-2 border border-white rounded-md bg-black text-white focus:ring-2 focus:ring-[#00f5d0]"
-                  />
-                </div>
+                  <label className="block mb-2 text-sm font-medium text-[#00f5d0]">Select Students</label>
 
-                <div>
-                <label className="block mb-2 text-sm font-medium text-[#00f5d0]">Select Students</label>
-                
-                <div className="mb-4 relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#00f5d0]" size={20} />
-                  <input
-                    type="text"
-                    placeholder="Search Register Number..."
-                    value={registerNumberSearch}
-                    onChange={(e) => setRegisterNumberSearch(e.target.value)}
-                    className="w-full pl-10 pr-3 py-2 border border-white rounded-md bg-black text-white focus:ring-2 focus:ring-[#00f5d0]"
-                  />
-                </div>
-            </div>
-  
-                <div className="max-h-96 overflow-y-auto border border-white rounded-md">
-                  <table className="min-w-full divide-y divide-[#00f5d0]">
-                    <thead className="bg-black sticky top-0">
-                      <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-[#00f5d0] uppercase tracking-wider">
-                          Select
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-[#00f5d0] uppercase tracking-wider">
-                          Name
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-[#00f5d0] uppercase tracking-wider">
-                          Year
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-[#00f5d0] uppercase tracking-wider">
-                          Register
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="bg-black divide-y divide-[#00f5d0]">
-                      {filteredStudents.map((student) => (
-                        <tr 
-                          key={student.email}
-                          className={`hover:bg-[#00f5d010] cursor-pointer ${
-                            formData.students.includes(student.email) ? 'bg-[#00f5d020]' : ''
-                          }`}
-                          onClick={() => handleStudentSelect(student.email)}
-                        >
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <input
-                              type="checkbox"
-                              checked={formData.students.includes(student.email)}
-                              onChange={() => handleStudentSelect(student.email)}
-                              className="h-4 w-4 text-[#00f5d0] focus:ring-[#00f5d0] border-[#00f5d0] rounded"
-                            />
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm font-medium text-white">{student.name}</div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
-                            {student.year}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
-                            {student.register}
-                          </td>
+                  <div className="mb-4 relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#00f5d0]" size={20} />
+                    <input
+                      type="text"
+                      placeholder="Search students..."
+                      value={localSearch}
+                      onChange={(e) => setLocalSearch(e.target.value)}
+                      className="w-full pl-10 pr-3 py-2 border border-white rounded-md bg-black text-white focus:ring-2 focus:ring-[#00f5d0]"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block mb-2 text-sm font-medium text-[#00f5d0]">Select Students</label>
+
+                    <div className="mb-4 relative">
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#00f5d0]" size={20} />
+                      <input
+                        type="text"
+                        placeholder="Search Register Number..."
+                        value={registerNumberSearch}
+                        onChange={(e) => setRegisterNumberSearch(e.target.value)}
+                        className="w-full pl-10 pr-3 py-2 border border-white rounded-md bg-black text-white focus:ring-2 focus:ring-[#00f5d0]"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="max-h-96 overflow-y-auto border border-white rounded-md">
+                    <table className="min-w-full divide-y divide-[#00f5d0]">
+                      <thead className="bg-black sticky top-0">
+                        <tr>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-[#00f5d0] uppercase tracking-wider">
+                            Select
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-[#00f5d0] uppercase tracking-wider">
+                            Name
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-[#00f5d0] uppercase tracking-wider">
+                            Year
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-[#00f5d0] uppercase tracking-wider">
+                            Register
+                          </th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody className="bg-black divide-y divide-[#00f5d0]">
+                        {filteredStudents.map((student) => (
+                          <tr
+                            key={student.email}
+                            className={`hover:bg-[#00f5d010] cursor-pointer ${formData.students.includes(student.email) ? 'bg-[#00f5d020]' : ''
+                              }`}
+                            onClick={() => handleStudentSelect(student.email)}
+                          >
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <input
+                                type="checkbox"
+                                checked={formData.students.includes(student.email)}
+                                onChange={() => handleStudentSelect(student.email)}
+                                className="h-4 w-4 text-[#00f5d0] focus:ring-[#00f5d0] border-[#00f5d0] rounded"
+                              />
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="text-sm font-medium text-white">{student.name}</div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
+                              {student.year}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
+                              {student.register}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
-              </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
@@ -649,8 +686,8 @@ const MeetingRequest = () => {
                     type="submit"
                     disabled={loading}
                     className={`w-full py-2 sm:py-3 rounded-md text-black font-bold transition duration-200 ${loading
-                        ? 'bg-gray-400 cursor-not-allowed'
-                        : 'bg-[#00f5d0] hover:opacity-90'
+                      ? 'bg-gray-400 cursor-not-allowed'
+                      : 'bg-[#00f5d0] hover:opacity-90'
                       }`}
                   >
                     {loading ? 'Submitting...' : 'Create Meeting'}
