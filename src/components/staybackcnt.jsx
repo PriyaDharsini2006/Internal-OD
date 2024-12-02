@@ -249,6 +249,9 @@ const TeamStudentStaybackCountLeaderboard = () => {
                                     <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300 uppercase tracking-wider">
                                         Section
                                     </th>
+                                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300 uppercase tracking-wider">
+                                        Year
+                                    </th>
                                     <th className="px-4 py-3 text-right text-sm font-semibold text-gray-300 uppercase tracking-wider">
                                         Stayback Count
                                     </th>
@@ -271,6 +274,9 @@ const TeamStudentStaybackCountLeaderboard = () => {
                                         </td>
                                         <td className="px-4 py-4 whitespace-nowrap text-sm text-white">
                                             {student.section}
+                                        </td>
+                                        <td className="px-4 py-4 whitespace-nowrap text-sm text-right text-white">
+                                            {student.year}
                                         </td>
                                         <td className="px-4 py-4 whitespace-nowrap text-sm text-right text-white">
                                             {student.stayback_count}

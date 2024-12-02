@@ -41,6 +41,7 @@ export async function GET(request) {
             name: true,
             email: true,
             register: true,
+            year: true,
             sec: true
           }
         });

@@ -253,6 +253,9 @@ const TeamStudentMeetingCountLeaderboard = () => {
                                     <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300 uppercase tracking-wider  md:table-cell">
                                         Section
                                     </th>
+                                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300 uppercase tracking-wider  md:table-cell">
+                                        Year
+                                    </th>
                                     <th className="px-4 py-3 text-right text-sm font-semibold text-gray-300 uppercase tracking-wider">
                                         Meeting Count
                                     </th>
@@ -275,6 +278,9 @@ const TeamStudentMeetingCountLeaderboard = () => {
                                         </td>
                                         <td className="px-4 py-4 whitespace-nowrap text-sm text-white  md:table-cell">
                                             {student.section}
+                                        </td>
+                                        <td className="px-4 py-4 whitespace-nowrap text-sm text-white  md:table-cell">
+                                            {student.year}
                                         </td>
                                         <td className="px-4 py-4 whitespace-nowrap text-sm text-right text-white">
                                             {student.meeting_count}
