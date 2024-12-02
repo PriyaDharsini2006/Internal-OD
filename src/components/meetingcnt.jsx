@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Printer } from 'lucide-react';
 
 const TeamStudentMeetingCountLeaderboard = () => {
     const [teamStudentCounts, setTeamStudentCounts] = useState([]);
@@ -10,7 +10,7 @@ const TeamStudentMeetingCountLeaderboard = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 15;
 
-    // Define teams
+    // Define teams (same as previous code)
     const Workshops = [
         'Linux and Networking',
         'Github',
@@ -51,7 +51,7 @@ const TeamStudentMeetingCountLeaderboard = () => {
         'Social media Team',
         'Sponsorship',
         'Decoration Team'
-    ]
+    ];
 
     useEffect(() => {
         const fetchTeamStudentMeetingCounts = async () => {
@@ -87,6 +87,10 @@ const TeamStudentMeetingCountLeaderboard = () => {
         setCurrentPage(pageNumber);
     };
 
+    const handlePrint = () => {
+        window.print();
+    };
+
     if (isLoading) {
         return (
             <div className="print-container container mx-auto px-4 sm:px-6 lg:px-8">
@@ -119,6 +123,25 @@ const TeamStudentMeetingCountLeaderboard = () => {
 
     return (
         <div className="print-container container mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="print-view hidden print:block">
+                {/* First Page Content */}
+                <div className="first-page print-page">
+                    <div className="header flex justify-between items-center mb-8">
+                        <img 
+                            id="citLogo" 
+                            src="citlogo.png" 
+                            alt="Chennai Institute of Technology Logo" 
+                            className="w-44 h-48 rounded object-contain"
+                        />
+                        <img 
+                            id="hackerzLogo" 
+                            src="logo.png" 
+                            alt="Hackerz Logo" 
+                            className="w-36 h-36 rounded object-contain"
+                        />
+                    </div>
+                </div>
+            </div>
             <div className="flex flex-row items-center mb-6">
                 <img
                     className="w-36 h-36 rounded object-contain"
@@ -148,13 +171,13 @@ const TeamStudentMeetingCountLeaderboard = () => {
 
                     {/* Specific Team Selection */}
                     <div className="flex items-center space-x-2">
-                        <label htmlFor="team-select" className="text-white mr-2">Select Team:</label>
+                        <label htmlFor="team-select" className="text-white print-hidden mr-2">Select Team:</label>
                         <select
                             id="team-select"
                             value={selectedTeam}
                             onChange={(e) => setSelectedTeam(e.target.value)}
                             disabled={!selectedTeamType}
-                            className="w-full px-4 py-2.5 bg-white/5 backdrop-blur-xl rounded-lg border border-white/10 focus:ring-2 focus:ring-[#00f5d0] focus:border-[#00f5d0] disabled:opacity-50"
+                            className="w-full print-hidden px-4 py-2.5 bg-white/5 backdrop-blur-xl rounded-lg border border-white/10 focus:ring-2 focus:ring-[#00f5d0] focus:border-[#00f5d0] disabled:opacity-50"
                         >
                             <option className='text-white bg-black' value="">Select Specific Team</option>
                             {selectedTeamType === 'technical' &&
@@ -192,6 +215,28 @@ const TeamStudentMeetingCountLeaderboard = () => {
             
             <div className="browser-view backdrop-blur-xl rounded-2xl border border-white/10">
                 <div className="bg-white/5 shadow-sm rounded-lg overflow-hidden">
+                    {/* Print Header - Only visible when printing */}
+                    <div className="hidden print:block print-header mb-4 text-center">
+                        <h1 className="text-2xl font-bold mb-2">Team Student Meeting Counts</h1>
+                        <p className="text-lg">
+                            Team Type: {selectedTeamType ? selectedTeamType.charAt(0).toUpperCase() + selectedTeamType.slice(1) : 'N/A'}
+                        </p>
+                        <p className="text-lg mb-4">
+                            Team: {selectedTeam || 'N/A'}
+                        </p>
+                    </div>
+
+                    {/* Print Button for web view */}
+                    <div className="browser-only flex justify-end p-2 print:hidden">
+                        <button 
+                            onClick={handlePrint}
+                            className="flex items-center space-x-2 px-4 py-2 bg-[#00f5d0] text-black rounded hover:bg-white/10 hover:text-white transition"
+                        >
+                            <Printer className="w-5 h-5" />
+                            <span>Print Report</span>
+                        </button>
+                    </div>
+
                     <div className="overflow-x-auto">
                         <table className="min-w-full divide-y divide-gray-700">
                             <thead className="bg-gray-900">
@@ -202,10 +247,10 @@ const TeamStudentMeetingCountLeaderboard = () => {
                                     <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300 uppercase tracking-wider">
                                         Name
                                     </th>
-                                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300 uppercase tracking-wider hidden md:table-cell">
+                                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300 uppercase tracking-wider  md:table-cell">
                                         Register
                                     </th>
-                                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300 uppercase tracking-wider hidden md:table-cell">
+                                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300 uppercase tracking-wider  md:table-cell">
                                         Section
                                     </th>
                                     <th className="px-4 py-3 text-right text-sm font-semibold text-gray-300 uppercase tracking-wider">
@@ -225,10 +270,10 @@ const TeamStudentMeetingCountLeaderboard = () => {
                                         <td className="px-4 py-4 whitespace-nowrap text-sm text-white">
                                             {student.name}
                                         </td>
-                                        <td className="px-4 py-4 whitespace-nowrap text-sm text-white hidden md:table-cell">
+                                        <td className="px-4 py-4 whitespace-nowrap text-sm text-white  md:table-cell">
                                             {student.register}
                                         </td>
-                                        <td className="px-4 py-4 whitespace-nowrap text-sm text-white hidden md:table-cell">
+                                        <td className="px-4 py-4 whitespace-nowrap text-sm text-white  md:table-cell">
                                             {student.section}
                                         </td>
                                         <td className="px-4 py-4 whitespace-nowrap text-sm text-right text-white">
@@ -241,7 +286,7 @@ const TeamStudentMeetingCountLeaderboard = () => {
                     </div>
 
                     {/* Pagination Controls */}
-                    <div className="flex justify-center items-center space-x-2 py-4">
+                    <div className="flex justify-center items-center space-x-2 py-4 print:hidden">
                         <button
                             onClick={() => handlePageChange(currentPage - 1)}
                             disabled={currentPage === 1}
@@ -262,6 +307,39 @@ const TeamStudentMeetingCountLeaderboard = () => {
                     </div>
                 </div>
             </div>
+
+            {/* Additional print-specific styles */}
+            <style jsx global>{`
+                @media print {
+                    body * {
+                        visibility: hidden;
+                    }
+                    .print-container, 
+                    .print-container * {
+                        visibility: visible;
+                    }
+                    .print-container {
+                        position: absolute;
+                        left: 0;
+                        top: 0;
+                        width: 100%;
+                    }
+                    .browser-only {
+                        display: none !important;
+                    }
+                    table {
+                        width: 100%;
+                        border-collapse: collapse;
+                    }
+                    table, th, td {
+                        border: 1px solid #000;
+                    }
+                    th, td {
+                        padding: 8px;
+                        text-align: left;
+                    }
+                }
+            `}</style>
         </div>
     );
 };
