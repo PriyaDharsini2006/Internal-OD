@@ -1,41 +1,60 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
-const TeamStudentMeetingCountLeaderboard = () => {
+const TeamStudentStaybackCountLeaderboard = () => {
     const [teamStudentCounts, setTeamStudentCounts] = useState([]);
     const [selectedTeam, setSelectedTeam] = useState('All Workshop teams');
+    const [selectedTeamType, setSelectedTeamType] = useState('');
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 15;
 
-    // Define teams
-    const teams = [
+    // Define teams by category
+    const Workshops = [
         'Linux and Networking',
         'Github',
         'UI/UX',
         'AR/VR',
         'AWS',
         'AI',
-        'All Workshop teams',
+    ];
+    
+    const nonTechnicalTeams = [
         'Treasure Hunt',
         'Mobile Gaming',
         'Shortfilm',
         'Meme',
         'Photography',
-        'All Non technical teams',
+    ];
+    
+    const technicalTeams = [
         'Ideathon',
-        'Marketing Team',
         'Paper presentation',
+        'Code-a-thon',
+        'Debugging event',
+        'Pair programming',
+        'UI event',
+        'Technical Quiz',
+        'Case Study'
+    ];
+    
+    const committee = [
+        'Marketing Team',
+        'Development Team',
+        'Design Team',
+        'Documentation Team',
+        'Hosting Team',
+        'Logistics Team'
     ];
 
     useEffect(() => {
-        const fetchTeamStudentMeetingCounts = async () => {
+        const fetchTeamStudentStaybackCounts = async () => {
             try {
                 setIsLoading(true);
                 const response = await fetch(`/api/staybackcnt?team=${encodeURIComponent(selectedTeam)}`);
                 if (!response.ok) {
-                    throw new Error('Failed to fetch team student meeting counts');
+                    throw new Error('Failed to fetch team student stayback counts');
                 }
                 const data = await response.json();
                 setTeamStudentCounts(data);
@@ -47,7 +66,9 @@ const TeamStudentMeetingCountLeaderboard = () => {
             }
         };
 
-        fetchTeamStudentMeetingCounts();
+        if (selectedTeam) {
+            fetchTeamStudentStaybackCounts();
+        }
     }, [selectedTeam]);
 
     // Pagination logic
@@ -82,7 +103,7 @@ const TeamStudentMeetingCountLeaderboard = () => {
                 <div className="browser-view backdrop-blur-xl rounded-2xl border border-white/10">
                     <div className="bg-white/5 shadow-sm rounded-lg overflow-hidden p-6">
                         <h2 className="text-2xl font-bold text-center text-white mb-4">
-                            Team Student Meeting Counts
+                            Team Student Stayback Counts
                         </h2>
                         <p className="text-center text-red-500">{error}</p>
                     </div>
@@ -99,21 +120,72 @@ const TeamStudentMeetingCountLeaderboard = () => {
                     src="/logo1.png"
                     alt="Company Logo"
                 />
-                <div className="ml-auto flex items-center space-x-4">
-                    <label htmlFor="team-select" className="text-white mr-2">Select Team:</label>
-                    <select
-                        id="team-select"
-                        value={selectedTeam}
-                        onChange={(e) => setSelectedTeam(e.target.value)}
-                        className="bg-gray-800 text-white p-2 rounded"
-                    >
-                        {teams.map(team => (
-                            <option key={team} value={team}>{team}</option>
-                        ))}
-                    </select>
+                <div className="ml-auto flex flex-col space-y-4">
+                    {/* Team Type Selection */}
+                    <div className="flex items-center space-x-2">
+                        <label htmlFor="team-type-select" className="text-white mr-2">Team Type:</label>
+                        <select
+                            id="team-type-select"
+                            value={selectedTeamType}
+                            onChange={(e) => {
+                                setSelectedTeamType(e.target.value);
+                                setSelectedTeam(''); // Reset specific team selection
+                            }}
+                            className="w-full px-4 py-2.5 bg-white/5 backdrop-blur-xl rounded-lg border border-white/10 focus:ring-2 focus:ring-[#00f5d0] focus:border-[#00f5d0]"
+                        >
+                            <option className='text-white bg-black' value="">Select Team Type</option>
+                            <option className='text-white bg-black' value="workshops">Workshops</option>
+                            <option className='text-white bg-black' value="technical">Technical Teams</option>
+                            <option className='text-white bg-black' value="non-technical">Non-Technical Teams</option>
+                            <option className='text-white bg-black' value="committee">Committee Teams</option>
+                        </select>
+                    </div>
+
+                    {/* Specific Team Selection */}
+                    <div className="flex items-center space-x-2">
+                        <label htmlFor="team-select" className="text-white mr-2">Select Team:</label>
+                        <select
+                            id="team-select"
+                            value={selectedTeam}
+                            onChange={(e) => setSelectedTeam(e.target.value)}
+                            disabled={!selectedTeamType}
+                            className="w-full px-4 py-2.5 bg-white/5 backdrop-blur-xl rounded-lg border border-white/10 focus:ring-2 focus:ring-[#00f5d0] focus:border-[#00f5d0] disabled:opacity-50"
+                        >
+                            <option className='text-white bg-black' value="">Select Specific Team</option>
+                            {selectedTeamType === 'technical' &&
+                                technicalTeams.map((team) => (
+                                    <option className='text-white bg-black' key={team} value={team}>
+                                        {team}
+                                    </option>
+                                ))
+                            }
+                            {selectedTeamType === 'workshops' &&
+                                Workshops.map((team) => (
+                                    <option className='text-white bg-black' key={team} value={team}>
+                                        {team}
+                                    </option>
+                                ))
+                            }
+                            {selectedTeamType === 'committee' &&
+                                committee.map((team) => (
+                                    <option className='text-white bg-black' key={team} value={team}>
+                                        {team}
+                                    </option>
+                                ))
+                            }
+                            {selectedTeamType === 'non-technical' &&
+                                nonTechnicalTeams.map((team) => (
+                                    <option className='text-white bg-black' key={team} value={team}>
+                                        {team}
+                                    </option>
+                                ))
+                            }
+                        </select>
+                    </div>
                 </div>
             </div>
             
+            {/* Rest of the component remains the same */}
             <div className="browser-view backdrop-blur-xl rounded-2xl border border-white/10">
                 <div className="bg-white/5 shadow-sm rounded-lg overflow-hidden">
                     <div className="overflow-x-auto">
@@ -190,4 +262,4 @@ const TeamStudentMeetingCountLeaderboard = () => {
     );
 };
 
-export default TeamStudentMeetingCountLeaderboard;
+export default TeamStudentStaybackCountLeaderboard;

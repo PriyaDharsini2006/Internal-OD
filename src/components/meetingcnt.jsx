@@ -4,30 +4,54 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 const TeamStudentMeetingCountLeaderboard = () => {
     const [teamStudentCounts, setTeamStudentCounts] = useState([]);
     const [selectedTeam, setSelectedTeam] = useState('All Workshop teams');
+    const [selectedTeamType, setSelectedTeamType] = useState('');
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 15;
 
     // Define teams
-    const teams = [
+    const Workshops = [
         'Linux and Networking',
         'Github',
         'UI/UX',
         'AR/VR',
         'AWS',
         'AI',
-        'All Workshop teams',
+    ];
+    
+    const nonTechnicalTeams = [
         'Treasure Hunt',
         'Mobile Gaming',
         'Shortfilm',
         'Meme',
         'Photography',
-        'All Non technical teams',
-        'Ideathon',
-        'Marketing Team',
-        'Paper presentation',
     ];
+    
+    const technicalTeams = [
+        'Ideathon',
+        'Paper presentation',
+        'Code-a-thon',
+        'Debuggin event',
+        'Pair programming',
+        'UI event',
+        'Technical Quiz',
+        'Case Study'
+    ];
+    
+    const committee = [
+        'Development Team',
+        'Design Team',
+        'Documentation Team',
+        'Helpdesk and Registration',
+        'Hosting Team',
+        'Marketing Team',
+        'Logistics and Requirements',
+        'Media team',
+        'Social media Team',
+        'Sponsorship',
+        'Decoration Team'
+    ]
 
     useEffect(() => {
         const fetchTeamStudentMeetingCounts = async () => {
@@ -47,7 +71,9 @@ const TeamStudentMeetingCountLeaderboard = () => {
             }
         };
 
-        fetchTeamStudentMeetingCounts();
+        if (selectedTeam) {
+            fetchTeamStudentMeetingCounts();
+        }
     }, [selectedTeam]);
 
     // Pagination logic
@@ -99,18 +125,68 @@ const TeamStudentMeetingCountLeaderboard = () => {
                     src="/logo1.png"
                     alt="Company Logo"
                 />
-                <div className="ml-auto flex items-center space-x-4">
-                    <label htmlFor="team-select" className="text-white mr-2">Select Team:</label>
-                    <select
-                        id="team-select"
-                        value={selectedTeam}
-                        onChange={(e) => setSelectedTeam(e.target.value)}
-                        className="bg-gray-800 text-white p-2 rounded"
-                    >
-                        {teams.map(team => (
-                            <option key={team} value={team}>{team}</option>
-                        ))}
-                    </select>
+                <div className="ml-auto flex flex-col space-y-4">
+                    {/* Team Type Selection */}
+                    <div className="flex items-center space-x-2">
+                        <label htmlFor="team-type-select" className="text-white mr-2">Team Type:</label>
+                        <select
+                            id="team-type-select"
+                            value={selectedTeamType}
+                            onChange={(e) => {
+                                setSelectedTeamType(e.target.value);
+                                setSelectedTeam(''); // Reset specific team selection
+                            }}
+                            className="w-full px-4 py-2.5 bg-white/5 backdrop-blur-xl rounded-lg border border-white/10 focus:ring-2 focus:ring-[#00f5d0] focus:border-[#00f5d0]"
+                        >
+                            <option className='text-white bg-black' value="">Select Team Type</option>
+                            <option className='text-white bg-black' value="workshops">Workshops</option>
+                            <option className='text-white bg-black' value="technical">Technical Teams</option>
+                            <option className='text-white bg-black' value="non-technical">Non-Technical Teams</option>
+                            <option className='text-white bg-black' value="committee">Committee Teams</option>
+                        </select>
+                    </div>
+
+                    {/* Specific Team Selection */}
+                    <div className="flex items-center space-x-2">
+                        <label htmlFor="team-select" className="text-white mr-2">Select Team:</label>
+                        <select
+                            id="team-select"
+                            value={selectedTeam}
+                            onChange={(e) => setSelectedTeam(e.target.value)}
+                            disabled={!selectedTeamType}
+                            className="w-full px-4 py-2.5 bg-white/5 backdrop-blur-xl rounded-lg border border-white/10 focus:ring-2 focus:ring-[#00f5d0] focus:border-[#00f5d0] disabled:opacity-50"
+                        >
+                            <option className='text-white bg-black' value="">Select Specific Team</option>
+                            {selectedTeamType === 'technical' &&
+                                technicalTeams.map((team) => (
+                                    <option className='text-white bg-black' key={team} value={team}>
+                                        {team}
+                                    </option>
+                                ))
+                            }
+                            {selectedTeamType === 'workshops' &&
+                                Workshops.map((team) => (
+                                    <option className='text-white bg-black' key={team} value={team}>
+                                        {team}
+                                    </option>
+                                ))
+                            }
+                            {selectedTeamType === 'committee' &&
+                                committee.map((team) => (
+                                    <option className='text-white bg-black' key={team} value={team}>
+                                        {team}
+                                    </option>
+                                ))
+                            }
+                            {selectedTeamType === 'non-technical' &&
+                                nonTechnicalTeams.map((team) => (
+                                    <option className='text-white bg-black' key={team} value={team}>
+                                        {team}
+                                    </option>
+                                ))
+                            }
+                        </select>
+                    </div>
                 </div>
             </div>
             
