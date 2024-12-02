@@ -6,12 +6,11 @@ const prisma = new PrismaClient();
 
 export async function GET(request) {
   try {
-    // Fetch users with their meeting count, sorted by count in descending order
     const meetingUsers = await prisma.user.findMany({
       where: {
         counts: {
           meeting_cnt: {
-            gt: 0 // Only users with meeting count > 0
+            gt: 0 
           }
         }
       },
