@@ -1,23 +1,45 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
-const MeetingCountLeaderboard = () => {
-    const [users, setUsers] = useState([]);
+const TeamStudentMeetingCountLeaderboard = () => {
+    const [teamStudentCounts, setTeamStudentCounts] = useState([]);
+    const [selectedTeam, setSelectedTeam] = useState('All Workshop teams');
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 15;
 
+    // Define teams
+    const teams = [
+        'Linux and Networking',
+        'Github',
+        'UI/UX',
+        'AR/VR',
+        'AWS',
+        'AI',
+        'All Workshop teams',
+        'Treasure Hunt',
+        'Mobile Gaming',
+        'Shortfilm',
+        'Meme',
+        'Photography',
+        'All Non technical teams',
+        'Ideathon',
+        'Marketing Team',
+        'Paper presentation',
+    ];
+
     useEffect(() => {
-        const fetchMeetingUsers = async () => {
+        const fetchTeamStudentMeetingCounts = async () => {
             try {
-                const response = await fetch('/api/staybackcnt');
+                setIsLoading(true);
+                const response = await fetch(`/api/staybackcnt?team=${encodeURIComponent(selectedTeam)}`);
                 if (!response.ok) {
-                    throw new Error('Failed to fetch stayback users');
+                    throw new Error('Failed to fetch team student meeting counts');
                 }
                 const data = await response.json();
-                setUsers(data);
-                console.log('Fetched users:', data);
+                setTeamStudentCounts(data);
+                setCurrentPage(1);
                 setIsLoading(false);
             } catch (err) {
                 setError(err.message || 'An unknown error occurred');
@@ -25,15 +47,15 @@ const MeetingCountLeaderboard = () => {
             }
         };
 
-        fetchMeetingUsers();
-    }, []);
+        fetchTeamStudentMeetingCounts();
+    }, [selectedTeam]);
 
     // Pagination logic
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentUsers = users.slice(indexOfFirstItem, indexOfLastItem);
+    const currentStudentCounts = teamStudentCounts.slice(indexOfFirstItem, indexOfLastItem);
 
-    const totalPages = Math.ceil(users.length / itemsPerPage);
+    const totalPages = Math.ceil(teamStudentCounts.length / itemsPerPage);
 
     const handlePageChange = (pageNumber) => {
         setCurrentPage(pageNumber);
@@ -45,7 +67,7 @@ const MeetingCountLeaderboard = () => {
                 <div className="browser-view backdrop-blur-xl rounded-2xl border border-white/10">
                     <div className="bg-white/5 shadow-sm rounded-lg overflow-hidden p-6">
                         <h2 className="text-2xl font-bold text-center text-white mb-4">
-                            Meeting Count Leaderboard
+                            Team Student Stayback Counts
                         </h2>
                         <p className="text-center text-gray-500">Loading...</p>
                     </div>
@@ -60,7 +82,7 @@ const MeetingCountLeaderboard = () => {
                 <div className="browser-view backdrop-blur-xl rounded-2xl border border-white/10">
                     <div className="bg-white/5 shadow-sm rounded-lg overflow-hidden p-6">
                         <h2 className="text-2xl font-bold text-center text-white mb-4">
-                            Stayback Count Leaderboard
+                            Team Student Meeting Counts
                         </h2>
                         <p className="text-center text-red-500">{error}</p>
                     </div>
@@ -71,14 +93,27 @@ const MeetingCountLeaderboard = () => {
 
     return (
         <div className="print-container container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex flex-row  text-center">
+            <div className="flex flex-row items-center mb-6">
                 <img
                     className="w-36 h-36 rounded object-contain"
                     src="/logo1.png"
                     alt="Company Logo"
                 />
-                <p className='font-grotesk text-3xl mt-[50px] ml-[350px] justify-center text-[#00f5d0]'>Stayback Counts</p>
+                <div className="ml-auto flex items-center space-x-4">
+                    <label htmlFor="team-select" className="text-white mr-2">Select Team:</label>
+                    <select
+                        id="team-select"
+                        value={selectedTeam}
+                        onChange={(e) => setSelectedTeam(e.target.value)}
+                        className="bg-gray-800 text-white p-2 rounded"
+                    >
+                        {teams.map(team => (
+                            <option key={team} value={team}>{team}</option>
+                        ))}
+                    </select>
+                </div>
             </div>
+            
             <div className="browser-view backdrop-blur-xl rounded-2xl border border-white/10">
                 <div className="bg-white/5 shadow-sm rounded-lg overflow-hidden">
                     <div className="overflow-x-auto">
@@ -97,34 +132,31 @@ const MeetingCountLeaderboard = () => {
                                     <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300 uppercase tracking-wider hidden md:table-cell">
                                         Section
                                     </th>
-                                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300 uppercase tracking-wider hidden md:table-cell">
-                                        Year
-                                    </th>
                                     <th className="px-4 py-3 text-right text-sm font-semibold text-gray-300 uppercase tracking-wider">
-                                        Staybacks
+                                        Stayback Count
                                     </th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-200">
-                                {currentUsers.map((user, index) => (
-                                    <tr key={user.email} className="hover:bg-gray-800/50 transition duration-200">
+                                {currentStudentCounts.map((student, index) => (
+                                    <tr 
+                                        key={student.email} 
+                                        className="hover:bg-gray-800/50 transition duration-200"
+                                    >
                                         <td className="px-4 py-4 whitespace-nowrap text-sm text-white">
                                             {indexOfFirstItem + index + 1}
                                         </td>
                                         <td className="px-4 py-4 whitespace-nowrap text-sm text-white">
-                                            {user.name}
+                                            {student.name}
                                         </td>
                                         <td className="px-4 py-4 whitespace-nowrap text-sm text-white hidden md:table-cell">
-                                            {user.register}
+                                            {student.register}
                                         </td>
                                         <td className="px-4 py-4 whitespace-nowrap text-sm text-white hidden md:table-cell">
-                                            {user.section}
-                                        </td>
-                                        <td className="px-4 py-4 whitespace-nowrap text-sm text-white hidden md:table-cell">
-                                            {user.year}
+                                            {student.section}
                                         </td>
                                         <td className="px-4 py-4 whitespace-nowrap text-sm text-right text-white">
-                                            {user.stayback_cnt}
+                                            {student.stayback_count}
                                         </td>
                                     </tr>
                                 ))}
@@ -158,4 +190,4 @@ const MeetingCountLeaderboard = () => {
     );
 };
 
-export default MeetingCountLeaderboard;
+export default TeamStudentMeetingCountLeaderboard;
