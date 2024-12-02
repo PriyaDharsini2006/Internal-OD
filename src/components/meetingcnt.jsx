@@ -126,7 +126,7 @@ const TeamStudentMeetingCountLeaderboard = () => {
             <div className="print-view hidden print:block">
                 {/* First Page Content */}
                 <div className="first-page print-page">
-                    <div className="header flex justify-between items-center mb-8">
+                    <div className="header flex justify-between items-center">
                         <img 
                             id="citLogo" 
                             src="citlogo.png" 
@@ -151,7 +151,7 @@ const TeamStudentMeetingCountLeaderboard = () => {
                 <div className="ml-auto flex flex-col space-y-4">
                     {/* Team Type Selection */}
                     <div className="flex items-center space-x-2">
-                        <label htmlFor="team-type-select" className="text-white mr-2">Team Type:</label>
+                        <label htmlFor="team-type-select" className="text-white print:hidden mr-2">Team Type:</label>
                         <select
                             id="team-type-select"
                             value={selectedTeamType}
@@ -171,7 +171,7 @@ const TeamStudentMeetingCountLeaderboard = () => {
 
                     {/* Specific Team Selection */}
                     <div className="flex items-center space-x-2">
-                        <label htmlFor="team-select" className="text-white print-hidden mr-2">Select Team:</label>
+                        <label htmlFor="team-select" className="text-white print:hidden mr-2">Select Team:</label>
                         <select
                             id="team-select"
                             value={selectedTeam}
@@ -216,7 +216,7 @@ const TeamStudentMeetingCountLeaderboard = () => {
             <div className="browser-view backdrop-blur-xl rounded-2xl border border-white/10">
                 <div className="bg-white/5 shadow-sm rounded-lg overflow-hidden">
                     {/* Print Header - Only visible when printing */}
-                    <div className="hidden print:block print-header mb-4 text-center">
+                    <div className="hidden print:block print-header mb-2 text-center">
                         <h1 className="text-2xl font-bold mb-2">Team Student Meeting Counts</h1>
                         <p className="text-lg">
                             Team Type: {selectedTeamType ? selectedTeamType.charAt(0).toUpperCase() + selectedTeamType.slice(1) : 'N/A'}
@@ -239,7 +239,7 @@ const TeamStudentMeetingCountLeaderboard = () => {
 
                     <div className="overflow-x-auto">
                         <table className="min-w-full divide-y divide-gray-700">
-                            <thead className="bg-gray-900">
+                            <thead className="bg-white-900">
                                 <tr>
                                     <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300 uppercase tracking-wider">
                                         Rank
@@ -330,7 +330,8 @@ const TeamStudentMeetingCountLeaderboard = () => {
                         top: 0;
                         width: 100%;
                     }
-                    .browser-only {
+                    .browser-only, 
+                    .print-hidden {
                         display: none !important;
                     }
                     table {
@@ -343,6 +344,13 @@ const TeamStudentMeetingCountLeaderboard = () => {
                     th, td {
                         padding: 8px;
                         text-align: left;
+                    }
+                    * {
+                        color: black !important;
+                        print-color-adjust: exact;
+                    }
+                    select {
+                        display: none;
                     }
                 }
             `}</style>
