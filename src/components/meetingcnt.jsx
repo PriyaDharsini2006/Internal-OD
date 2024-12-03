@@ -318,6 +318,94 @@ const TeamStudentMeetingCountLeaderboard = () => {
                     </div>
                 </div>
             </div>
+            <div className="hidden print:block print-layout">
+                {/* First Page: Cover Page */}
+                <div className="first-page print-page">
+                    <div className="print-header flex flex-col items-center justify-center h-full">
+                        <div className="header flex justify-between items-center w-full mb-12">
+                            <img
+                                id="citLogo"
+                                src="citlogo.png"
+                                alt="Chennai Institute of Technology Logo"
+                                className="w-44 h-48 rounded object-contain"
+                            />
+                            <img
+                                id="hackerzLogo"
+                                src="logo.png"
+                                alt="Hackerz Logo"
+                                className="w-36 h-36 rounded object-contain"
+                            />
+                        </div>
+                        
+                        <div className="text-center">
+                            <h1 className="text-3xl font-bold mb-4">Team Student Meeting Counts</h1>
+                            <p className="text-xl mb-2">
+                                Team Type: {selectedTeamType ? selectedTeamType.charAt(0).toUpperCase() + selectedTeamType.slice(1) : 'N/A'}
+                            </p>
+                            <p className="text-xl">
+                                Team: {selectedTeam || 'N/A'}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Second Page: Table Content */}
+                <div className="second-page print-page">
+                    <div className="overflow-x-auto">
+                        <table className="min-w-full divide-y divide-gray-700">
+                            <thead className="bg-white-900">
+                                <tr>
+                                    <th className="px-4 py-3 text-left text-sm font-semibold text-black uppercase tracking-wider">
+                                        Rank
+                                    </th>
+                                    <th className="px-4 py-3 text-left text-sm font-semibold text-black uppercase tracking-wider">
+                                        Name
+                                    </th>
+                                    <th className="px-4 py-3 text-left text-sm font-semibold text-black uppercase tracking-wider">
+                                        Register
+                                    </th>
+                                    <th className="px-4 py-3 text-left text-sm font-semibold text-black uppercase tracking-wider">
+                                        Section
+                                    </th>
+                                    <th className="px-4 py-3 text-left text-sm font-semibold text-black uppercase tracking-wider">
+                                        Year
+                                    </th>
+                                    <th className="px-4 py-3 text-right text-sm font-semibold text-black uppercase tracking-wider">
+                                        Meeting Count
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-gray-200">
+                                {teamStudentCounts.map((student, index) => (
+                                    <tr
+                                        key={student.email}
+                                        className="hover:bg-gray-100 transition duration-200"
+                                    >
+                                        <td className="px-4 py-4 whitespace-nowrap text-sm text-black">
+                                            {index + 1}
+                                        </td>
+                                        <td className="px-4 py-4 whitespace-nowrap text-sm text-black">
+                                            {student.name}
+                                        </td>
+                                        <td className="px-4 py-4 whitespace-nowrap text-sm text-black">
+                                            {student.register}
+                                        </td>
+                                        <td className="px-4 py-4 whitespace-nowrap text-sm text-black">
+                                            {student.section}
+                                        </td>
+                                        <td className="px-4 py-4 whitespace-nowrap text-sm text-black">
+                                            {student.year}
+                                        </td>
+                                        <td className="px-4 py-4 whitespace-nowrap text-sm text-right text-black">
+                                            {student.meeting_count}
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
 
             {/* Additional print-specific styles */}
             <style jsx global>{`
@@ -348,9 +436,14 @@ const TeamStudentMeetingCountLeaderboard = () => {
                         display: none !important;
                     }
                     
-                    .first-page {
+                    .first-page, 
+                    .second-page {
                         page-break-after: always;
                         height: 100vh;
+                        width: 100%;
+                    }
+                    
+                    .first-page {
                         display: flex;
                         flex-direction: column;
                         justify-content: center;
@@ -382,12 +475,6 @@ const TeamStudentMeetingCountLeaderboard = () => {
                     @page {
                         size: A4;
                         margin: 10mm;
-                    }
-                    
-                    /* Ensure all rows print across pages */
-                    .print-table-container {
-                        display: block;
-                        page-break-inside: avoid;
                     }
                     
                     tbody tr {
