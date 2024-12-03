@@ -321,90 +321,75 @@ const TeamStudentMeetingCountLeaderboard = () => {
 
             {/* Additional print-specific styles */}
             <style jsx global>{`
-                @media print {
-                    html, body {
-                        height: 100%;
-                        margin: 0;
-                        padding: 0;
-                    }
-                    
-                    body * {
-                        visibility: hidden;
-                        margin: 0;
-                        padding: 0;
-                    }
-                    
-                    .print-container, 
-                    .print-container * {
-                        visibility: visible;
-                    }
-                    
-                    .print-container {
-                        position: absolute;
-                        left: 0;
-                        top: 0;
-                        width: 100%;
-                        height: 100%;
-                        margin: 0;
-                        padding: 0;
-                        font-size: 10pt;
-                    }
-                    
-                    .browser-only, 
-                    .print-hidden {
-                        display: none !important;
-                    }
-                    
-                    .first-page {
-                        page-break-after: always;
-                        height: 100%;
-                        display: flex;
-                        flex-direction: column;
-                        justify-content: center;
-                        align-items: center;
-                    }
-                    
-                    table {
-                        width: 100%;
-                        border-collapse: collapse;
-                        font-size: 8pt;
-                        margin-top: 20px;
-                    }
-                    
-                    table, th, td {
-                        border: 1px solid #000;
-                    }
-                    
-                    th, td {
-                        padding: 4px;
-                        text-align: left;
-                        vertical-align: middle;
-                    }
-                    
-                    th {
-                        background-color: #f0f0f0;
-                        font-weight: bold;
-                    }
-                    
-                    .print-header {
-                        margin-bottom: 10px;
-                    }
-                    
-                    * {
-                        color: black !important;
-                        print-color-adjust: exact;
-                    }
-                    
-                    select {
-                        display: none;
-                    }
-                    
-                    @page {
-                        size: A4;
-                        margin: 10mm;
-                    }
-                }
-            `}</style>
+       @media print {
+  /* Existing print styles */
+  nav, .mobile-actions {
+    display: none !important;
+  }
+
+  footer {
+    display: none !important;
+  }
+
+  .print-container {
+    margin-top: 0 !important;
+    padding: 0 !important;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+  }
+
+  .print-page {
+    page-break-after: always;
+    margin: 0;
+    padding: 1rem sm:2rem;
+    
+    /* New border styles */
+    border: 1px solid #000;
+    min-height: 90vh;
+    box-sizing: border-box;
+    margin: 5mm;
+    padding: 5mm;
+  }
+
+  .print-page:last-child {
+    page-break-after: avoid;
+  }
+
+  .print:hidden {
+    display: none !important;
+  }
+
+  .browser-view {
+    display: none !important;
+  }
+
+  .print-view {
+    display: block !important;
+  }
+}
+
+@media screen {
+  .print-view {
+    display: none !important;
+  }
+}
+
+/* Mobile and Responsive Adjustments */
+@media (max-width: 640px) {
+  .px-6 {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+
+  .text-sm {
+    font-size: 0.75rem;
+    line-height: 1rem;
+  }
+}
+      `}</style>
         </div>
     );
 };
