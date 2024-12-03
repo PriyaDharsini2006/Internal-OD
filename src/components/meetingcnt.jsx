@@ -18,16 +18,18 @@ const TeamStudentMeetingCountLeaderboard = () => {
         'AR/VR',
         'AWS',
         'AI',
+        'All Workshop Teams'
     ];
-    
+
     const nonTechnicalTeams = [
         'Treasure Hunt',
         'Mobile Gaming',
         'Shortfilm',
         'Meme',
         'Photography',
+        'All Non-Technical Teams'
     ];
-    
+
     const technicalTeams = [
         'Ideathon',
         'Paper presentation',
@@ -36,9 +38,10 @@ const TeamStudentMeetingCountLeaderboard = () => {
         'Pair programming',
         'UI event',
         'Technical Quiz',
-        'Case Study'
+        'Case Study',
+        'All Technical Teams'
     ];
-    
+
     const committee = [
         'Development Team',
         'Design Team',
@@ -50,8 +53,10 @@ const TeamStudentMeetingCountLeaderboard = () => {
         'Media team',
         'Social media Team',
         'Sponsorship',
-        'Decoration Team'
-    ];
+        'Decoration Team',
+        'Video Editing',
+        'All Committe Teams'
+    ]
 
     useEffect(() => {
         const fetchTeamStudentMeetingCounts = async () => {
@@ -127,16 +132,16 @@ const TeamStudentMeetingCountLeaderboard = () => {
                 {/* First Page Content */}
                 <div className="first-page print-page">
                     <div className="header flex justify-between items-center">
-                        <img 
-                            id="citLogo" 
-                            src="citlogo.png" 
-                            alt="Chennai Institute of Technology Logo" 
+                        <img
+                            id="citLogo"
+                            src="citlogo.png"
+                            alt="Chennai Institute of Technology Logo"
                             className="w-44 h-48 rounded object-contain"
                         />
-                        <img 
-                            id="hackerzLogo" 
-                            src="logo.png" 
-                            alt="Hackerz Logo" 
+                        <img
+                            id="hackerzLogo"
+                            src="logo.png"
+                            alt="Hackerz Logo"
                             className="w-36 h-36 rounded object-contain"
                         />
                     </div>
@@ -212,7 +217,7 @@ const TeamStudentMeetingCountLeaderboard = () => {
                     </div>
                 </div>
             </div>
-            
+
             <div className="browser-view backdrop-blur-xl rounded-2xl border border-white/10">
                 <div className="bg-white/5 shadow-sm rounded-lg overflow-hidden">
                     {/* Print Header - Only visible when printing */}
@@ -228,7 +233,7 @@ const TeamStudentMeetingCountLeaderboard = () => {
 
                     {/* Print Button for web view */}
                     <div className="browser-only flex justify-end p-2 print:hidden">
-                        <button 
+                        <button
                             onClick={handlePrint}
                             className="flex items-center space-x-2 px-4 py-2 bg-[#00f5d0] text-black rounded hover:bg-white/10 hover:text-white transition"
                         >
@@ -263,8 +268,8 @@ const TeamStudentMeetingCountLeaderboard = () => {
                             </thead>
                             <tbody className="divide-y divide-gray-200">
                                 {currentStudentCounts.map((student, index) => (
-                                    <tr 
-                                        key={student.email} 
+                                    <tr
+                                        key={student.email}
                                         className="hover:bg-gray-800/50 transition duration-200"
                                     >
                                         <td className="px-4 py-4 whitespace-nowrap text-sm text-white">

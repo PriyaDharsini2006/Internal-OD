@@ -162,7 +162,7 @@ const RequestForm = () => {
     'AR/VR',
     'AWS',
     'AI',
-    'All workshop teams'
+    'All Workshop Teams'
   ];
 
   const nonTechnicalTeams = [
@@ -171,7 +171,7 @@ const RequestForm = () => {
     'Shortfilm',
     'Meme',
     'Photography',
-    'All Non technical teams'
+    'All Non-Technical Teams'
   ];
 
   const technicalTeams = [
@@ -183,7 +183,7 @@ const RequestForm = () => {
     'UI event',
     'Technical Quiz',
     'Case Study',
-    'All Technical teams'
+    'All Technical Teams'
   ];
 
   const committee = [
@@ -198,7 +198,8 @@ const RequestForm = () => {
     'Social media Team',
     'Sponsorship',
     'Decoration Team',
-    'All Committe teams'
+    'Video Editing',
+    'All Committe Teams'
   ]
 
   useEffect(() => {

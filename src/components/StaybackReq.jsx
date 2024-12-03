@@ -44,7 +44,7 @@ const StaybackRequest = () => {
     'AR/VR',
     'AWS',
     'AI',
-    'All Workshop teams'
+    'All Workshop Teams'
   ];
 
   const nonTechnicalTeams = [
@@ -53,7 +53,7 @@ const StaybackRequest = () => {
     'Shortfilm',
     'Meme',
     'Photography',
-    'All Non technical teams'
+    'All Non-Technical Teams'
   ];
 
   const technicalTeams = [
@@ -65,7 +65,7 @@ const StaybackRequest = () => {
     'UI event',
     'Technical Quiz',
     'Case Study',
-    ' All Technical teams'
+    'All Technical Teams'
   ];
 
   const committee = [
@@ -80,7 +80,8 @@ const StaybackRequest = () => {
     'Social media Team',
     'Sponsorship',
     'Decoration Team',
-    'All Committe teams'
+    'Video Editing',
+    'All Committe Teams'
   ]
 
 
