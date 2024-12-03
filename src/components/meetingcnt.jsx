@@ -322,16 +322,13 @@ const TeamStudentMeetingCountLeaderboard = () => {
             {/* Additional print-specific styles */}
             <style jsx global>{`
                 @media print {
-                    html, body {
-                        height: 100%;
+                    body {
                         margin: 0;
                         padding: 0;
                     }
                     
                     body * {
                         visibility: hidden;
-                        margin: 0;
-                        padding: 0;
                     }
                     
                     .print-container, 
@@ -344,10 +341,6 @@ const TeamStudentMeetingCountLeaderboard = () => {
                         left: 0;
                         top: 0;
                         width: 100%;
-                        height: 100%;
-                        margin: 0;
-                        padding: 0;
-                        font-size: 10pt;
                     }
                     
                     .browser-only, 
@@ -357,7 +350,7 @@ const TeamStudentMeetingCountLeaderboard = () => {
                     
                     .first-page {
                         page-break-after: always;
-                        height: 100%;
+                        height: 100vh;
                         display: flex;
                         flex-direction: column;
                         justify-content: center;
@@ -367,7 +360,7 @@ const TeamStudentMeetingCountLeaderboard = () => {
                     table {
                         width: 100%;
                         border-collapse: collapse;
-                        font-size: 8pt;
+                        font-size: 10pt;
                         margin-top: 20px;
                     }
                     
@@ -386,22 +379,19 @@ const TeamStudentMeetingCountLeaderboard = () => {
                         font-weight: bold;
                     }
                     
-                    .print-header {
-                        margin-bottom: 10px;
-                    }
-                    
-                    * {
-                        color: black !important;
-                        print-color-adjust: exact;
-                    }
-                    
-                    select {
-                        display: none;
-                    }
-                    
                     @page {
                         size: A4;
                         margin: 10mm;
+                    }
+                    
+                    /* Ensure all rows print across pages */
+                    .print-table-container {
+                        display: block;
+                        page-break-inside: avoid;
+                    }
+                    
+                    tbody tr {
+                        page-break-inside: avoid;
                     }
                 }
             `}</style>
