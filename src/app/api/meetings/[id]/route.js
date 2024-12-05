@@ -39,6 +39,7 @@ export async function DELETE(req, { params }) {
         });
       }));
     }
+    
 
     // Delete the meeting
     const deletedMeeting = await prisma.meeting.delete({
@@ -50,6 +51,43 @@ export async function DELETE(req, { params }) {
     console.error('Meeting deletion error:', error);
     return NextResponse.json(
       { error: 'Failed to delete meeting', details: error.message },
+      { status: 500 }
+    );
+  } finally {
+    await prisma.$disconnect();
+  }
+}
+
+
+export async function PATCH(req, { params }) {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const meetingId = params.id;
+    
+    // Parse the request body
+    const body = await req.json();
+    const { title } = body;
+
+    // Validate input
+    if (!title || title.trim() === '') {
+      return NextResponse.json({ error: 'Title cannot be empty' }, { status: 400 });
+    }
+
+    // Update the meeting title
+    const updatedMeeting = await prisma.meeting.update({
+      where: { id: meetingId },
+      data: { title: title.trim() }
+    });
+
+    return NextResponse.json(updatedMeeting, { status: 200 });
+  } catch (error) {
+    console.error('Meeting update error:', error);
+    return NextResponse.json(
+      { error: 'Failed to update meeting', details: error.message },
       { status: 500 }
     );
   } finally {
