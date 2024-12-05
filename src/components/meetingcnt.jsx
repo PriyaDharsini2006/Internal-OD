@@ -171,7 +171,6 @@ const TeamStudentMeetingCountLeaderboard = () => {
         'AR/VR',
         'AWS',
         'AI',
-        'All Workshop Teams'
     ];
 
     const nonTechnicalTeams = [
@@ -180,7 +179,6 @@ const TeamStudentMeetingCountLeaderboard = () => {
         'Shortfilm',
         'Meme',
         'Photography',
-        'All Non-Technical Teams'
     ];
 
     const technicalTeams = [
@@ -192,7 +190,6 @@ const TeamStudentMeetingCountLeaderboard = () => {
         'UI event',
         'Technical Quiz',
         'Case Study',
-        'All Technical Teams'
     ];
 
     const committee = [
@@ -208,7 +205,13 @@ const TeamStudentMeetingCountLeaderboard = () => {
         'Sponsorship',
         'Decoration Team',
         'Video Editing',
-        'All Committe Teams'
+    ]
+
+    const allTeams = [
+        'All Technical Teams',
+        'All Non-Technical Teams',
+        'All Workshop Teams',
+        'All Committee Teams',
     ]
 
     useEffect(() => {

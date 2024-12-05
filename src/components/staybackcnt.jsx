@@ -172,7 +172,6 @@ const TeamStudentStaybackCountLeaderboard = () => {
         'AR/VR',
         'AWS',
         'AI',
-        'All Workshop Teams'
     ];
 
     const nonTechnicalTeams = [
@@ -181,7 +180,6 @@ const TeamStudentStaybackCountLeaderboard = () => {
         'Shortfilm',
         'Meme',
         'Photography',
-        'All Non-Technical Teams'
     ];
 
     const technicalTeams = [
@@ -193,7 +191,6 @@ const TeamStudentStaybackCountLeaderboard = () => {
         'UI event',
         'Technical Quiz',
         'Case Study',
-        'All Technical Teams'
     ];
 
     const committee = [
@@ -209,7 +206,6 @@ const TeamStudentStaybackCountLeaderboard = () => {
         'Sponsorship',
         'Decoration Team',
         'Video Editing',
-        'All Committe Teams'
     ];
 
     const allTeams = [
