@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight,Printer } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Printer } from 'lucide-react';
 
 const TeamStudentStaybackCountLeaderboard = () => {
     const [teamStudentCounts, setTeamStudentCounts] = useState([]);
@@ -155,10 +155,10 @@ const TeamStudentStaybackCountLeaderboard = () => {
         </body>
         </html>
         `;
-    
+
         printWindow.document.write(printContent);
         printWindow.document.close();
-    
+
         setTimeout(() => {
             printWindow.print();
         }, 100);
@@ -211,6 +211,13 @@ const TeamStudentStaybackCountLeaderboard = () => {
         'Video Editing',
         'All Committe Teams'
     ];
+
+    const allTeams = [
+        'All Technical Teams',
+        'All Non-Technical Teams',
+        'All Workshop Teams',
+        'All Committe Teams'
+    ]
 
     useEffect(() => {
         const fetchTeamStudentStaybackCounts = async () => {
@@ -285,12 +292,12 @@ const TeamStudentStaybackCountLeaderboard = () => {
                     alt="Company Logo"
                 />
                 <button
-                onClick={printStudents}
-                className="bg-[#00f5d0] hover:bg-green-600 text-black px-4 py-2 rounded flex items-center"
-              >
-                <Printer className="mr-2" size={20} />
-                Print
-              </button>
+                    onClick={printStudents}
+                    className="bg-[#00f5d0] hover:bg-green-600 text-black px-4 py-2 rounded flex items-center"
+                >
+                    <Printer className="mr-2" size={20} />
+                    Print
+                </button>
                 <div className="ml-auto flex flex-col space-y-4">
                     {/* Team Type Selection */}
                     <div className="flex items-center space-x-2">
@@ -309,6 +316,7 @@ const TeamStudentStaybackCountLeaderboard = () => {
                             <option className='text-white bg-black' value="technical">Technical Teams</option>
                             <option className='text-white bg-black' value="non-technical">Non-Technical Teams</option>
                             <option className='text-white bg-black' value="committee">Committee Teams</option>
+                            <option className='text-white bg-black' value="allTeams">All Teams</option>
                         </select>
                     </div>
 
@@ -346,6 +354,13 @@ const TeamStudentStaybackCountLeaderboard = () => {
                             }
                             {selectedTeamType === 'non-technical' &&
                                 nonTechnicalTeams.map((team) => (
+                                    <option className='text-white bg-black' key={team} value={team}>
+                                        {team}
+                                    </option>
+                                ))
+                            }
+                            {selectedTeamType === 'allTeams' &&
+                                allTeams.map((team) => (
                                     <option className='text-white bg-black' key={team} value={team}>
                                         {team}
                                     </option>

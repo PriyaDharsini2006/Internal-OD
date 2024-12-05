@@ -162,7 +162,6 @@ const RequestForm = () => {
     'AR/VR',
     'AWS',
     'AI',
-    'All Workshop Teams'
   ];
 
   const nonTechnicalTeams = [
@@ -171,7 +170,6 @@ const RequestForm = () => {
     'Shortfilm',
     'Meme',
     'Photography',
-    'All Non-Technical Teams'
   ];
 
   const technicalTeams = [
@@ -183,7 +181,6 @@ const RequestForm = () => {
     'UI event',
     'Technical Quiz',
     'Case Study',
-    'All Technical Teams'
   ];
 
   const committee = [
@@ -199,7 +196,13 @@ const RequestForm = () => {
     'Sponsorship',
     'Decoration Team',
     'Video Editing',
-    'All Committe Teams'
+  ]
+
+  const allTeams = [
+    'All Teachnical Teams',
+    'All Non-Technical Teams',
+    'All Workshop Teams',
+    'All Committee Teams'
   ]
 
   useEffect(() => {
@@ -540,6 +543,7 @@ const RequestForm = () => {
                   <option className='text-white bg-black' value="non-technical">Non-Technical Teams</option>
                   <option className='text-white bg-black' value="workshops">workshops</option>
                   <option className='text-white bg-black' value="committee">Committee</option>
+                  <option className='text-white bg-black' value="allTeams">All Teams</option>
                 </select>
               </div>
               <div>
@@ -573,6 +577,13 @@ const RequestForm = () => {
                   }
                   {selectedTeamType === 'committee' &&
                     committee.map((team) => (
+                      <option className='text-white bg-black' key={team} value={team}>
+                        {team}
+                      </option>
+                    ))
+                  }
+                  {selectedTeamType === 'allTeams' &&
+                    allTeams.map((team) => (
                       <option className='text-white bg-black' key={team} value={team}>
                         {team}
                       </option>

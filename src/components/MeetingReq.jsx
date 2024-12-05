@@ -11,8 +11,8 @@ const FullPageMeetingCount = ({ onClose }) => {
     <div className="fixed inset-0 bg-black z-50 flex flex-col overflow-hidden">
       <div className="flex justify-between items-center p-6 border-b border-[#00f5d0]">
         <h1 className="text-3xl font-bold text-[#00f5d0]">Total Meeting Count Leaderboard</h1>
-        <button 
-          onClick={onClose} 
+        <button
+          onClick={onClose}
           className="text-[#00f5d0] hover:opacity-90"
         >
           <X size={32} />
@@ -44,7 +44,6 @@ const MeetingRequest = () => {
     'AR/VR',
     'AWS',
     'AI',
-    'All Workshop Teams'
   ];
 
   const nonTechnicalTeams = [
@@ -53,7 +52,6 @@ const MeetingRequest = () => {
     'Shortfilm',
     'Meme',
     'Photography',
-    'All Non-Technical Teams'
   ];
 
   const technicalTeams = [
@@ -65,7 +63,6 @@ const MeetingRequest = () => {
     'UI event',
     'Technical Quiz',
     'Case Study',
-    'All Technical Teams'
   ];
 
   const committee = [
@@ -81,7 +78,13 @@ const MeetingRequest = () => {
     'Sponsorship',
     'Decoration Team',
     'Video Editing',
-    'All Committe Teams'
+  ]
+
+  const allTeams = [
+    'All Teachnical Teams',
+    'All Non-Technical Teams',
+    'All Workshop Teams',
+    'All Committee Teams'
   ]
 
 
@@ -390,9 +393,9 @@ const MeetingRequest = () => {
           Meetings
         </h1>
         <button
-            onClick={handleButtonClick} className="bg-[#00f5d0] font-grotesk mt-[50px] w-[189px] h-[40px] hover:opacity-90 text-black font-bold py-2 px-4 rounded flex items-center">
-            Total Meeting Count
-          </button>
+          onClick={handleButtonClick} className="bg-[#00f5d0] font-grotesk mt-[50px] w-[189px] h-[40px] hover:opacity-90 text-black font-bold py-2 px-4 rounded flex items-center">
+          Total Meeting Count
+        </button>
         {showFullPageMeetingCount && (
           <FullPageMeetingCount
             onClose={() => setShowFullPageMeetingCount(false)}
@@ -454,6 +457,7 @@ const MeetingRequest = () => {
                       <option className='text-white bg-black' value="non-technical">Non-Technical Teams</option>
                       <option className='text-white bg-black' value="workshops">workshops</option>
                       <option className='text-white bg-black' value="committee">Committee</option>
+                      <option className='text-white bg-black' value="allTeams">All Teams</option>
                     </select>
                   </div>
                   <div>
@@ -487,6 +491,13 @@ const MeetingRequest = () => {
                       }
                       {selectedTeamType === 'non-technical' &&
                         nonTechnicalTeams.map((team) => (
+                          <option className='text-white bg-black' key={team} value={team}>
+                            {team}
+                          </option>
+                        ))
+                      }
+                      {selectedTeamType === 'allTeams' &&
+                        allTeams.map((team) => (
                           <option className='text-white bg-black' key={team} value={team}>
                             {team}
                           </option>

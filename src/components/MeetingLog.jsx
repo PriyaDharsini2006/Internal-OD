@@ -7,13 +7,11 @@ const MeetingLog = ({ meetings, setMeetings, fetchMeetings }) => {
   const [selectedMeeting, setSelectedMeeting] = useState(null);
   const [students, setStudents] = useState([]);
   const [allStudents, setAllStudents] = useState([]);
-  const [searchTerm, setSearchTerm] = useState('');
   const [nameSearchTerm, setNameSearchTerm] = useState('');
   const [registerSearchTerm, setRegisterSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
   const [meetingToDelete, setMeetingToDelete] = useState(null);
-  const printRef = useRef(null);
   const recordsPerPage = 15;
   const [selectedAvailableStudents, setSelectedAvailableStudents] = useState(new Set());
   const [selectedCurrentStudents, setSelectedCurrentStudents] = useState(new Set());
@@ -36,7 +34,6 @@ const MeetingLog = ({ meetings, setMeetings, fetchMeetings }) => {
       });
 
       if (response.ok) {
-        // Update the meeting title in the local state
         setMeetings(prevMeetings => 
           prevMeetings.map(meeting => 
             meeting.id === selectedMeeting.id 
@@ -81,41 +78,6 @@ const MeetingLog = ({ meetings, setMeetings, fetchMeetings }) => {
       }
       return newSelected;
     });
-  };
-
-  const addStudentToMeeting = async (email) => {
-    if (!selectedMeeting) return;
-
-    try {
-      const response = await fetch(`/api/meetings/${selectedMeeting.id}/students`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, meetingId: selectedMeeting.id })
-      });
-
-      if (response.ok) {
-        const result = await response.json();
-        setStudents(result.students);
-        setMeetings(prevMeetings =>
-          prevMeetings.map(meeting =>
-            meeting.id === selectedMeeting.id
-              ? { ...meeting, students: result.students }
-              : meeting
-          )
-        );
-        // Remove the added student from available students
-        setSelectedAvailableStudents(prev => {
-          const newSet = new Set(prev);
-          newSet.delete(email);
-          return newSet;
-        });
-      } else {
-        const errorData = await response.json();
-        console.error('Failed to add student', errorData);
-      }
-    } catch (error) {
-      console.error('Failed to add student', error);
-    }
   };
 
 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { Search, X, Plus, ChevronDown } from 'lucide-react';
+import { Search, X, Plus } from 'lucide-react';
 import StaybackLog from './StaybackLog';
 import StaybackCnt from './staybackcnt';
 
@@ -84,6 +84,13 @@ const StaybackRequest = () => {
     'All Committe Teams'
   ]
 
+  const allTeams = [
+    'All Teachnical Teams',
+    'All Non-Technical Teams',
+    'All Workshop Teams',
+    'All Committee Teams'
+  ]
+
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({
@@ -97,9 +104,7 @@ const StaybackRequest = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [registerNumberSearch, setRegisterNumberSearch] = useState('');
-  const [staybacks, setStaybacks] = useState({});  // Grouped by date
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedYear, setSelectedYear] = useState('all');
+  const [staybacks, setStaybacks] = useState({});
   const [localSearch, setLocalSearch] = useState('');
   const [selectedTeamType, setSelectedTeamType] = useState('');
   const [selectedTeam, setSelectedTeam] = useState('');
@@ -277,9 +282,9 @@ const StaybackRequest = () => {
           Staybacks
         </h1>
         <button
-            onClick={handleButtonClick} className="bg-[#00f5d0] font-grotesk w-[200px] h-[40px] hover:opacity-90 text-black font-bold py-2 px-4 rounded flex items-center">
-            Total Stayback Count
-          </button>
+          onClick={handleButtonClick} className="bg-[#00f5d0] font-grotesk w-[200px] h-[40px] hover:opacity-90 text-black font-bold py-2 px-4 rounded flex items-center">
+          Total Stayback Count
+        </button>
         {showFullPageStaybackCount && (
           <FullPageStaybackCount
             onClose={() => setShowFullPageStaybackCount(false)}
@@ -288,12 +293,12 @@ const StaybackRequest = () => {
       </div>
       {/* Create Stayback Button */}
       <button
-          onClick={() => setIsModalOpen(true)}
-          className="bg-[#00f5d0] w-[180px] h-[50px] font-bold hover:opacity-90 text-black font-grotesk py-1.5 px-3 rounded flex ml-[665px] mt-[20px] items-center text-m"
-        >
-          <Plus className="mr-2" size={16} />
-          Create Stayback
-        </button>
+        onClick={() => setIsModalOpen(true)}
+        className="bg-[#00f5d0] w-[180px] h-[50px] font-bold hover:opacity-90 text-black font-grotesk py-1.5 px-3 rounded flex ml-[665px] mt-[20px] items-center text-m"
+      >
+        <Plus className="mr-2" size={16} />
+        Create Stayback
+      </button>
 
       {/* Modal Overlay */}
       {isModalOpen && (
@@ -338,6 +343,7 @@ const StaybackRequest = () => {
                       <option className='text-white bg-black' value="non-technical">Non-Technical Teams</option>
                       <option className='text-white bg-black' value="workshops">workshops</option>
                       <option className='text-white bg-black' value="committee">Committee</option>
+                      <option className='text-white bg-black' value="allTeams">All Teams</option>
                     </select>
                   </div>
                   <div>
@@ -371,6 +377,13 @@ const StaybackRequest = () => {
                       }
                       {selectedTeamType === 'committee' &&
                         committee.map((team) => (
+                          <option className='text-white bg-black' key={team} value={team}>
+                            {team}
+                          </option>
+                        ))
+                      }
+                      {selectedTeamType === 'allTeams' &&
+                        allTeams.map((team) => (
                           <option className='text-white bg-black' key={team} value={team}>
                             {team}
                           </option>
