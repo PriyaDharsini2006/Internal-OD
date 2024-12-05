@@ -588,7 +588,7 @@ const MeetingLog = ({ meetings, setMeetings, fetchMeetings }) => {
                 disabled={students.length === 0}
               >
                 <Printer className="mr-2" size={20} />
-                Print
+                Generate Report
               </button>
             </div>
 
