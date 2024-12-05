@@ -29,6 +29,8 @@ const FullPageStaybackCount = ({ onClose }) => {
 const StaybackRequest = () => {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedYear, setSelectedYear] = useState('all');
 
   const [showFullPageStaybackCount, setShowFullPageStaybackCount] = useState(false);
 
