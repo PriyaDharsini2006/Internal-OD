@@ -54,20 +54,21 @@ const TeamStudentStaybackCountLeaderboard = () => {
               border-bottom: 1px solid #ccc;
             }
             .logo-left, .logo-right {
-              position: absolute;
-              top: 10px;
-              max-width: 170px;
-              height: auto;
-              padding: 10px;
-            }
-            .logo-left {
-              left: 20px;
-              height: 100px;
-              width: 1000px;
-            }
-            .logo-right {
-              right: 20px;
-            }
+                  position: absolute;
+                  top: 10px;
+                  height: auto;
+                  padding: 10px;
+                }
+                .logo-left {
+                  top: 40px;
+                  height: 60px;
+                  width: 240px;
+                }
+                .logo-right {
+                  right: 20px;
+                  height: 120px;
+                  width: 120px;
+                }
             .certificate-content {
               text-align: center;
               position: absolute;
