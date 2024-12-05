@@ -84,6 +84,8 @@ const StaybackRequest = () => {
     'All Teachnical Teams',
     'All Non-Technical Teams',
     'All Workshop Teams',
+    'All Committee Teams',
+    'All Event Teams'
   ]
 
 

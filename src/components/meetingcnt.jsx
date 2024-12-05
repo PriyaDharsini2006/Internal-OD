@@ -212,6 +212,7 @@ const TeamStudentMeetingCountLeaderboard = () => {
         'All Non-Technical Teams',
         'All Workshop Teams',
         'All Committee Teams',
+        'All Event Teams'
     ]
 
     useEffect(() => {

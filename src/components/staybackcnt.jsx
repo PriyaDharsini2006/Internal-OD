@@ -212,7 +212,8 @@ const TeamStudentStaybackCountLeaderboard = () => {
         'All Technical Teams',
         'All Non-Technical Teams',
         'All Workshop Teams',
-        'All Committe Teams'
+        'All Committe Teams',
+        'All Event Teams'
     ]
 
     useEffect(() => {
