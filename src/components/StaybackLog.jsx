@@ -330,20 +330,21 @@ const StaybackLog = ({ staybacks, setStaybacks, fetchStaybacks }) => {
        border-bottom: 2px solid black !important;
     }
     .logo-left, .logo-right {
-      position: absolute;
-      top: 30px;
-      max-width: 150px;
-      height: auto;
-      padding: 10px;
-    }
-    .logo-left {
-       left: 20px;
-      height: 100px;
-      width:1000px;
-    }
-    .logo-right {
-      right: 20px;
-    }
+                  position: absolute;
+                  top: 10px;
+                  height: auto;
+                  padding: 10px;
+                }
+                .logo-left {
+                  top: 40px;
+                  height: 60px;
+                  width: 240px;
+                }
+                .logo-right {
+                  right: 20px;
+                  height: 120px;
+                  width: 120px;
+                }
     .certificate-content {
       text-align: center;
       margin-top: 100px;
