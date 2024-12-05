@@ -122,7 +122,7 @@ export const Approved = () => {
               className="flex items-center  bg-[#00f5d0] text-black px-6 py-4 rounded hover:bg-white/5 hover:text-white transition"
             >
               <Printer className="mr-2 w-5 h-5" />
-              Print
+              Generate Report
             </button>
           </div>
           </div>

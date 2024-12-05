@@ -649,7 +649,7 @@ const StaybackLog = ({ staybacks, setStaybacks, fetchStaybacks }) => {
                   onClick={printStudents}
                   className="bg-[#00f5d0] hover:bg-green-600 text-black px-3 py-2 rounded flex items-center"
                 >
-                  <Printer className="mr-2" size={20} /> Print
+                  <Printer className="mr-2" size={20} /> Generate Report
                 </button>
               </div>
             </div>
