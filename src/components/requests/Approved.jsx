@@ -373,9 +373,8 @@ export const Approved = () => {
     padding: 1rem sm:2rem;
     
     /* New border styles */
-    border: 1px solid #000;
-    min-height: 90vh;
-    box-sizing: border-box;
+    
+    
     margin: 5mm;
     padding: 5mm;
   }
