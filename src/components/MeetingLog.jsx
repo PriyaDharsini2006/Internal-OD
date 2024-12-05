@@ -570,7 +570,7 @@ const MeetingLog = ({ meetings, setMeetings, fetchMeetings }) => {
               ) : (
                 <div className="flex items-center space-x-2">
                   <h2 className="text-2xl font-bold">
-                    {selectedMeeting.title} Details
+                    {selectedMeeting.title} 
                   </h2>
                   <button
                     onClick={startEditingMeetingTitle}
