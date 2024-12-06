@@ -62,7 +62,7 @@ export const Approved = () => {
       formData.append('subject', 'Approved Requests');
 
       // Send Excel file to email route
-      const emailResponse = await fetch('http://localhost:3001/api/send-emails', {
+      const emailResponse = await fetch('https://mail-render-vsmd.onrender.com/api/send-emails', {
         method: 'POST',
         body: formData
       });
