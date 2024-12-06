@@ -1,12 +1,13 @@
 'use client'
 import React, { useState, useEffect } from 'react';
-import { User, CalendarDays, Printer, Menu, X } from 'lucide-react';
+import { User, CalendarDays, Printer, Menu, X, Send } from 'lucide-react';
 
 export const Approved = () => {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [emailStatus, setEmailStatus] = useState(null);
 
   // Get current date
   const currentDate = new Date().toLocaleDateString('en-GB', {
@@ -46,27 +47,85 @@ export const Approved = () => {
 
   const handleGenerateExcel = async () => {
     try {
+      // Fetch Excel file
       const response = await fetch('/api/requests?status=1&export=excel');
 
       if (!response.ok) {
         throw new Error('Failed to generate Excel file');
       }
 
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.style.display = 'none';
-      a.href = url;
-      a.download = 'approved_requests.xlsx';
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
+      const excelBlob = await response.blob();
+
+      // Create FormData to send Excel file
+      const formData = new FormData();
+      formData.append('file', excelBlob, 'approved_requests.xlsx');
+      formData.append('subject', 'Approved Requests');
+
+      // Send Excel file to email route
+      const emailResponse = await fetch('http://localhost:3001/api/send-emails', {
+        method: 'POST',
+        body: formData
+      });
+
+      const result = await emailResponse.json();
+
+      if (emailResponse.ok) {
+        setEmailStatus({
+          success: true,
+          message: 'Emails sent successfully',
+          results: result.results
+        });
+      } else {
+        throw new Error(result.error || 'Failed to send emails');
+      }
     } catch (err) {
-      console.error('Excel generation error:', err);
-      // Optionally show an error message to the user
-      alert('Failed to generate Excel file');
+      console.error('Excel generation and email sending error:', err);
+      setEmailStatus({
+        success: false,
+        message: err.message
+      });
     }
   };
+
+  // Render method for email status
+  const renderEmailStatus = () => {
+    if (!emailStatus) return null;
+
+    return (
+      <div className={`p-4 rounded mt-4 ${
+        emailStatus.success ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+      }`}>
+        {emailStatus.message}
+        {emailStatus.results && (
+          <div className="mt-2">
+            <h4 className="font-semibold">Email Results:</h4>
+            <ul className="list-disc list-inside">
+              {emailStatus.results.map((result, index) => (
+                <li key={index}>
+                  {result.email}: {result.status}
+                  {result.error && ` (${result.error})`}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  // Modify the generate excel button to include email status
+  const generateExcelButton = (
+    <div className="flex flex-col">
+      <button
+        onClick={handleGenerateExcel}
+        className="flex items-center bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition"
+      >
+        <Send className="mr-2 w-5 h-5" />
+        Generate & Send Excel
+      </button>
+      {renderEmailStatus()}
+    </div>
+  );
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -142,12 +201,7 @@ export const Approved = () => {
               </div>
 
               <div className="py-10 justify-start print:hidden">
-                <button
-                  onClick={handleGenerateExcel}
-                  className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition"
-                >
-                  Generate Excel
-                </button>
+              {generateExcelButton}
 
                 <button
                   onClick={handlePrint}
