@@ -34,14 +34,38 @@ export const Approved = () => {
 
   // Format time without date
   const formatTime = (dateTime) => {
-    return new Date(dateTime).toLocaleTimeString([], { 
-      hour: '2-digit', 
-      minute: '2-digit' 
+    return new Date(dateTime).toLocaleTimeString([], {
+      hour: '2-digit',
+      minute: '2-digit'
     });
   };
 
   const handlePrint = () => {
     window.print();
+  };
+
+  const handleGenerateExcel = async () => {
+    try {
+      const response = await fetch('/api/requests?status=1&export=excel');
+
+      if (!response.ok) {
+        throw new Error('Failed to generate Excel file');
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.style.display = 'none';
+      a.href = url;
+      a.download = 'approved_requests.xlsx';
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error('Excel generation error:', err);
+      // Optionally show an error message to the user
+      alert('Failed to generate Excel file');
+    }
   };
 
   const toggleMobileMenu = () => {
@@ -69,9 +93,11 @@ export const Approved = () => {
   return (
     <div className="print-container container mx-auto px-4 sm:px-6 lg:px-8">
       {/* Mobile Menu Toggle */}
+
+
       <div className="lg:hidden mb-4">
-        <button 
-          onClick={toggleMobileMenu} 
+        <button
+          onClick={toggleMobileMenu}
           className="flex items-center justify-center w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
         >
           {isMobileMenuOpen ? (
@@ -89,8 +115,8 @@ export const Approved = () => {
 
         {isMobileMenuOpen && (
           <div className="mobile-actions mt-2 space-y-2">
-            <button 
-              onClick={handlePrint} 
+            <button
+              onClick={handlePrint}
               className="w-full flex items-center justify-center bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition"
             >
               <Printer className="mr-2 w-5 h-5" />
@@ -105,27 +131,33 @@ export const Approved = () => {
         <div className="bg-white/5 shadow-sm rounded-lg overflow-hidden">
           {/* Desktop Print Button */}
           <div className="hidden  lg:block p-4 flex justify-end print:hidden">
-          <div className='flex flex-row space-x-96'>
-        <div className="flex-shrink-0 ">
-              <img 
-                className="w-36 h-36 rounded object-contain" 
-                src="/logo1.png" 
-                alt="Company Logo" 
-              />
-              <p className='text-[#00f5d0]'>{formattedDate}</p>
+            <div className='flex flex-row space-x-96'>
+              <div className="flex-shrink-0 ">
+                <img
+                  className="w-36 h-36 rounded object-contain"
+                  src="/logo1.png"
+                  alt="Company Logo"
+                />
+                <p className='text-[#00f5d0]'>{formattedDate}</p>
+              </div>
+
+              <div className="py-10 justify-start print:hidden">
+                <button
+                  onClick={handleGenerateExcel}
+                  className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition"
+                >
+                  Generate Excel
+                </button>
+
+                <button
+                  onClick={handlePrint}
+                  className="flex items-center  bg-[#00f5d0] text-black px-6 py-4 rounded hover:bg-white/5 hover:text-white transition"
+                >
+                  <Printer className="mr-2 w-5 h-5" />
+                  Generate Report
+                </button>
+              </div>
             </div>
-            
-          <div className="py-10 justify-start print:hidden">
-          
-            <button 
-              onClick={handlePrint} 
-              className="flex items-center  bg-[#00f5d0] text-black px-6 py-4 rounded hover:bg-white/5 hover:text-white transition"
-            >
-              <Printer className="mr-2 w-5 h-5" />
-              Generate Report
-            </button>
-          </div>
-          </div>
             {/* <button 
               onClick={handlePrint} 
               className="flex items-center bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
@@ -134,10 +166,10 @@ export const Approved = () => {
               Print
             </button> */}
           </div>
-          
+
           <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-700">
-          <thead className="bg-gray-900">
+            <table className="min-w-full divide-y divide-gray-700">
+              <thead className="bg-gray-900">
                 <tr>
                   <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300 uppercase tracking-wider">
                     Student Details
@@ -208,16 +240,16 @@ export const Approved = () => {
         {/* First Page Content */}
         <div className="first-page print-page">
           <div className="header flex justify-between items-center mb-8">
-            <img 
-              id="citLogo" 
-              src="citlogo.png" 
-              alt="Chennai Institute of Technology Logo" 
+            <img
+              id="citLogo"
+              src="citlogo.png"
+              alt="Chennai Institute of Technology Logo"
               className="w-24 sm:w-24 h-auto"
             />
-            <img 
-              id="hackerzLogo" 
-              src="logo.png" 
-              alt="Hackerz Logo" 
+            <img
+              id="hackerzLogo"
+              src="logo.png"
+              alt="Hackerz Logo"
               className="w-20 sm:w-24 h-auto"
             />
           </div>
@@ -258,18 +290,18 @@ export const Approved = () => {
           </div>
 
           <div className="signature-section mt-8 flex flex-col items-end justify-end">
-  <div className="flex flex-col items-center">
-    <img 
-      className="w-20 md:w-32 h-12 mb-2" 
-      src="sign.png" 
-      alt="Signature" 
-    />
-    <div className="text-sm md:text-base text-center">
-      <p className="text-black m-0">Head of Department</p>
-      <p className="text-black m-0">Computer Science and Engineering</p>
-    </div>
-  </div>
-</div>
+            <div className="flex flex-col items-center">
+              <img
+                className="w-20 md:w-32 h-12 mb-2"
+                src="sign.png"
+                alt="Signature"
+              />
+              <div className="text-sm md:text-base text-center">
+                <p className="text-black m-0">Head of Department</p>
+                <p className="text-black m-0">Computer Science and Engineering</p>
+              </div>
+            </div>
+          </div>
 
         </div>
 

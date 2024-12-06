@@ -5,6 +5,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 export const dynamic = 'force-dynamic'
 export const fetchCache = 'force-no-store'
+import ExcelJS from 'exceljs';
 
 const prisma = new PrismaClient();
 let isConnected = false;
@@ -147,17 +148,14 @@ export async function GET(request) {
       return NextResponse.json({ message: sessionError.error }, { status: sessionError.status });
     }
 
-    // Parse query parameters
     const { searchParams } = new URL(request.url);
     const status = searchParams.get('status');
     const userId = searchParams.get('userId');
 
-    // Build where clause based on filters
     const where = {};
     if (status) where.status = parseInt(status);
     if (userId) where.user_id = userId;
 
-    // Fetch requests with related user and teamLead data
     const requests = await prisma.oDRequest.findMany({
       where,
       include: {
@@ -168,17 +166,42 @@ export async function GET(request) {
             sec: true,
             year: true
           }
-        },
-        request_by: {
-          select: {
-            email: true
-          }
         }
       },
       orderBy: {
         date: 'desc'
       }
     });
+
+    const exportType = searchParams.get('export');
+    if (exportType === 'excel') {
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet('Approved Requests');
+
+      worksheet.columns = [
+        { header: 'Name', key: 'name', width: 30 },
+        { header: 'Email', key: 'email', width: 30 },
+        { header: 'CustomField', key: 'team', width: 30 }
+      ];
+
+      requests.forEach(request => {
+        worksheet.addRow({
+          name: request.user.name,
+          email: request.user.email,
+          team: request.reason  // Using reason as team
+        });
+      });
+
+      const buffer = await workbook.xlsx.writeBuffer();
+
+      return new NextResponse(buffer, {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+          'Content-Disposition': 'attachment; filename=approved_requests.xlsx'
+        }
+      });
+    }
 
     return NextResponse.json({ data: requests });
   } catch (error) {
