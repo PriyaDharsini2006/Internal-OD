@@ -513,7 +513,7 @@ const MeetingLog = ({ meetings, setMeetings, fetchMeetings }) => {
                     type="text"
                     value={editedMeetingTitle}
                     onChange={(e) => setEditedMeetingTitle(e.target.value)}
-                    className="flex-grow bg-black border rounded-md px-2 py-1 text-2xl font-bold"
+                    className="flex-grow bg-black text-white border rounded-md px-2 py-1 text-2xl font-bold"
                     autoFocus
                   />
                   <button
@@ -532,7 +532,7 @@ const MeetingLog = ({ meetings, setMeetings, fetchMeetings }) => {
                 </div>
               ) : (
                 <div className="flex items-center space-x-2">
-                  <h2 className="text-2xl font-bold">
+                  <h2 className="text-2xl text-white font-bold">
                     {selectedMeeting.title} 
                   </h2>
                   <button
