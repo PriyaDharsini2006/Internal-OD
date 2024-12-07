@@ -68,6 +68,7 @@ async function updateUserCounts(prisma, userId, requestType) {
 
 export async function POST(request) {
   try {
+    console.log('Email sending route hit');
     await ensureConnection();
     const session = await getServerSession(authOptions);
     
@@ -176,6 +177,7 @@ export async function GET(request) {
       const workbook = new ExcelJS.Workbook();
       const worksheet = workbook.addWorksheet('Approved Requests');
 
+      // Updated columns to include hall and note 
       worksheet.columns = [
         { header: 'Name', key: 'name', width: 30 },
         { header: 'Email', key: 'email', width: 30 },
@@ -184,7 +186,9 @@ export async function GET(request) {
         { header: 'Team/Reason', key: 'team', width: 30 },
         { header: 'From Time', key: 'from_time', width: 20 },
         { header: 'To Time', key: 'to_time', width: 20 },
-        { header: 'Date', key: 'date', width: 20 }
+        { header: 'Date', key: 'date', width: 20 },
+        { header: 'Hall', key: 'hall', width: 20 },
+        { header: 'Note', key: 'note', width: 30 }
       ];
 
       requests.forEach(request => {
@@ -195,23 +199,26 @@ export async function GET(request) {
           year: request.user.year,
           team: request.reason,
           from_time: request.from_time ? 
-  new Date(request.from_time).toLocaleTimeString('en-US', { 
-    hour: '2-digit', 
-    minute: '2-digit',
-    hour12: true 
-  }) : '',
-to_time: request.to_time ? 
-  new Date(request.to_time).toLocaleTimeString('en-US', { 
-    hour: '2-digit', 
-    minute: '2-digit',
-    hour12: true 
-  }) : '',
-        date: request.date ? 
-          new Date(request.date).toLocaleDateString('en-US', { 
-            year: 'numeric', 
-            month: '2-digit', 
-            day: '2-digit' 
-          }) : ''
+            new Date(request.from_time).toLocaleTimeString('en-US', { 
+              hour: '2-digit', 
+              minute: '2-digit',
+              hour12: true 
+            }) : '',
+          to_time: request.to_time ? 
+            new Date(request.to_time).toLocaleTimeString('en-US', { 
+              hour: '2-digit', 
+              minute: '2-digit',
+              hour12: true 
+            }) : '',
+          date: request.date ? 
+            new Date(request.date).toLocaleDateString('en-US', { 
+              year: 'numeric', 
+              month: '2-digit', 
+              day: '2-digit' 
+            }) : '',
+          // Add placeholders for hall and note (these will be populated by email service)
+          hall: '',
+          note: ''
         });
       });
 

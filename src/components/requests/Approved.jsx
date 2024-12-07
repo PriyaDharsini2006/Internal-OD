@@ -8,6 +8,8 @@ export const Approved = () => {
   const [error, setError] = useState(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [emailStatus, setEmailStatus] = useState(null);
+  const [hall, setHall] = useState('');
+  const [note, setNote] = useState('');
 
   // Get current date
   const currentDate = new Date().toLocaleDateString('en-GB', {
@@ -19,7 +21,7 @@ export const Approved = () => {
   useEffect(() => {
     fetchApprovedRequests();
   }, []);
-  
+
   const fetchApprovedRequests = async () => {
     try {
       const response = await fetch('/api/requests?status=1');
@@ -60,12 +62,10 @@ export const Approved = () => {
       const formData = new FormData();
       formData.append('file', excelBlob, 'approved_requests.xlsx');
       formData.append('subject', 'Approved Requests');
+      formData.append('hall', hall);
+      formData.append('note', note);
 
       // Send Excel file to email route
-      // const emailResponse = await fetch('https://mail-render-vsmd.onrender.com/api/send-emails', {
-      //   method: 'POST',
-      //   body: formData
-      // });
       const emailResponse = await fetch('http://localhost:3001/api/send-emails', {
         method: 'POST',
         body: formData
@@ -96,9 +96,8 @@ export const Approved = () => {
     if (!emailStatus) return null;
 
     return (
-      <div className={`p-4 rounded mt-4 ${
-        emailStatus.success ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-      }`}>
+      <div className={`p-4 rounded mt-4 ${emailStatus.success ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+        }`}>
         {emailStatus.message}
         {emailStatus.results && (
           <div className="mt-2">
@@ -205,183 +204,56 @@ export const Approved = () => {
               </div>
 
               <div className="py-10 justify-start print:hidden">
-              {generateExcelButton}
+                  <input
+                    type="text"
+                    placeholder="Enter Hall"
+                    value={hall}
+                    onChange={(e) => setHall(e.target.value)}
+                    className="w-full px-3 py-2 bg-white/5 backdrop-blur-xl rounded-lg text-gray-300 placeholder-gray-500 border border-white/10 focus:ring-2 focus:ring-[#00f5d0] focus:border-[#00f5d0] text-sm mb-2"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Enter Note"
+                    value={note}
+                    onChange={(e) => setNote(e.target.value)}
+                    className="w-full px-3 py-2 bg-white/5 backdrop-blur-xl rounded-lg text-gray-300 placeholder-gray-500 border border-white/10 focus:ring-2 focus:ring-[#00f5d0] focus:border-[#00f5d0] text-sm mb-2"
+                  />
+                  {generateExcelButton}
 
-                <button
-                  onClick={handlePrint}
-                  className="flex items-center  bg-[#00f5d0] text-black px-6 py-4 rounded hover:bg-white/5 hover:text-white transition"
-                >
-                  <Printer className="mr-2 w-5 h-5" />
-                  Generate Report
-                </button>
+                  <button
+                    onClick={handlePrint}
+                    className="flex items-center  bg-[#00f5d0] text-black px-6 py-4 rounded hover:bg-white/5 hover:text-white transition"
+                  >
+                    <Printer className="mr-2 w-5 h-5" />
+                    Generate Report
+                  </button>
+                </div>
               </div>
-            </div>
-            {/* <button 
+              {/* <button 
               onClick={handlePrint} 
               className="flex items-center bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
             >
               <Printer className="mr-2 w-5 h-5" />
               Print
             </button> */}
-          </div>
-
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-700">
-              <thead className="bg-gray-900">
-                <tr>
-                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300 uppercase tracking-wider">
-                    Student Details
-                  </th>
-                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300 uppercase tracking-wider hidden md:table-cell">
-                    Request Details
-                  </th>
-                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300 uppercase tracking-wider">
-                    Duration
-                  </th>
-                </tr>
-              </thead>
-              <tbody className=" divide-y divide-gray-200">
-                {requests.length === 0 ? (
-                  <tr>
-                    <td colSpan="3" className="px-4 sm:px-6 py-4 text-center text-gray-500">
-                      No approved requests found
-                    </td>
-                  </tr>
-                ) : (
-                  requests.map((request) => (
-                    <tr key={request.id}>
-                      <td className="px-4 sm:px-6 py-4">
-                        <div className="flex  items-center">
-                          <User className="w-5 h-5 text-gray-400 mr-3 hidden sm:block" />
-                          <div>
-                            <div className="text-sm font-medium text-white">
-                              {request.user.name}
-                            </div>
-                            <div className="text-sm text-gray-500">
-                              {request.user.sec} Year {request.user.year}
-                            </div>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-4 sm:px-6 py-4 hidden md:table-cell">
-                        <div className="text-sm text-gwhite font-medium">
-                          {request.reason}
-                        </div>
-                        <div className="text-sm text-gray-500">
-                          {request.description}
-                        </div>
-                      </td>
-                      <td className="px-4 sm:px-6  py-4">
-                        <div className="flex items-center">
-                          <CalendarDays className="w-5 h-5 text-gray-400 mr-3 hidden sm:block" />
-                          <div>
-                            <div className="text-sm text-white">
-                              From: {formatTime(request.from_time)}
-                            </div>
-                            <div className="text-sm text-white">
-                              To: {formatTime(request.to_time)}
-                            </div>
-                          </div>
-                        </div>
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
-      {/* Print View - Full Document */}
-      <div className="print-view hidden print:block">
-        {/* First Page Content */}
-        <div className="first-page print-page">
-          <div className="header flex justify-between items-center mb-8">
-            <img
-              id="citLogo"
-              src="citlogo.png"
-              alt="Chennai Institute of Technology Logo"
-              className="w-24 sm:w-24 h-auto"
-            />
-            <img
-              id="hackerzLogo"
-              src="logo.png"
-              alt="Hackerz Logo"
-              className="w-20 sm:w-24 h-auto"
-            />
-          </div>
-
-          <div className="address-from mb-4 sm:mb-6">
-            <strong>From</strong>
-            <div className="text-sm text-black sm:text-base">
-              Team Hackerz24,<br />
-              Department of Computer Science,<br />
-              Chennai Institute of Technology,<br />
-              Sarathy Nagar, Nandambakkam Post,<br />
-              Kundrathur, Chennai-600069.
             </div>
-          </div>
 
-          <div className="address-to text-black mb-4 sm:mb-6">
-            <strong>To</strong>
-            <div className="text-sm text-black sm:text-base">
-              The Head of Department,<br />
-              Chennai Institute of Technology,<br />
-              Sarathy Nagar, Nandambakkam Post,<br />
-              Kundrathur, Chennai-600069.
-            </div>
-          </div>
-
-          <div className="subject font-bold text-black mb-4 sm:mb-6 text-sm sm:text-base">
-            Subject: Requesting permission for OD regarding Hackerz24 symposium.
-          </div>
-
-          <div className="content leading-relaxed text-black mb-6 sm:mb-10 text-sm sm:text-base">
-            <p>Respected Mam,</p>
-            <p>We hereby request you to grant permission for the following list of students to pursue our work for Hackerz. We request you to kindly grant permission for the mentioned students on {currentDate}.</p>
-          </div>
-
-          <div className="closing mb-4 sm:mb-7 text-black text-sm sm:text-base">
-            Regards,<br />
-            Team Hackerz24
-          </div>
-
-          <div className="signature-section mt-8 flex flex-col items-end justify-end">
-            <div className="flex flex-col items-center">
-              <img
-                className="w-20 md:w-32 h-12 mb-2"
-                src="sign.png"
-                alt="Signature"
-              />
-              <div className="text-sm md:text-base text-center">
-                <p className="text-black m-0">Head of Department</p>
-                <p className="text-black m-0">Computer Science and Engineering</p>
-              </div>
-            </div>
-          </div>
-
-        </div>
-
-        {/* Second Page - Requests Table */}
-        <div className="second-page print-page">
-          <div className="bg-white shadow-sm rounded-lg overflow-hidden">
             <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+              <table className="min-w-full divide-y divide-gray-700">
+                <thead className="bg-gray-900">
                   <tr>
-                    <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300 uppercase tracking-wider">
                       Student Details
                     </th>
-                    <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">
+                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300 uppercase tracking-wider hidden md:table-cell">
                       Request Details
                     </th>
-                    <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300 uppercase tracking-wider">
                       Duration
                     </th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody className=" divide-y divide-gray-200">
                   {requests.length === 0 ? (
                     <tr>
                       <td colSpan="3" className="px-4 sm:px-6 py-4 text-center text-gray-500">
@@ -392,10 +264,10 @@ export const Approved = () => {
                     requests.map((request) => (
                       <tr key={request.id}>
                         <td className="px-4 sm:px-6 py-4">
-                          <div className="flex items-center">
+                          <div className="flex  items-center">
                             <User className="w-5 h-5 text-gray-400 mr-3 hidden sm:block" />
                             <div>
-                              <div className="text-sm font-medium text-gray-900">
+                              <div className="text-sm font-medium text-white">
                                 {request.user.name}
                               </div>
                               <div className="text-sm text-gray-500">
@@ -405,21 +277,21 @@ export const Approved = () => {
                           </div>
                         </td>
                         <td className="px-4 sm:px-6 py-4 hidden md:table-cell">
-                          <div className="text-sm text-gray-900 font-medium">
+                          <div className="text-sm text-gwhite font-medium">
                             {request.reason}
                           </div>
                           <div className="text-sm text-gray-500">
                             {request.description}
                           </div>
                         </td>
-                        <td className="px-4 sm:px-6 py-4">
+                        <td className="px-4 sm:px-6  py-4">
                           <div className="flex items-center">
                             <CalendarDays className="w-5 h-5 text-gray-400 mr-3 hidden sm:block" />
                             <div>
-                              <div className="text-sm text-gray-900">
+                              <div className="text-sm text-white">
                                 From: {formatTime(request.from_time)}
                               </div>
-                              <div className="text-sm text-gray-900">
+                              <div className="text-sm text-white">
                                 To: {formatTime(request.to_time)}
                               </div>
                             </div>
@@ -433,10 +305,151 @@ export const Approved = () => {
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Print-specific styles */}
-      <style jsx global>{`
+        {/* Print View - Full Document */}
+        <div className="print-view hidden print:block">
+          {/* First Page Content */}
+          <div className="first-page print-page">
+            <div className="header flex justify-between items-center mb-8">
+              <img
+                id="citLogo"
+                src="citlogo.png"
+                alt="Chennai Institute of Technology Logo"
+                className="w-24 sm:w-24 h-auto"
+              />
+              <img
+                id="hackerzLogo"
+                src="logo.png"
+                alt="Hackerz Logo"
+                className="w-20 sm:w-24 h-auto"
+              />
+            </div>
+
+            <div className="address-from mb-4 sm:mb-6">
+              <strong>From</strong>
+              <div className="text-sm text-black sm:text-base">
+                Team Hackerz24,<br />
+                Department of Computer Science,<br />
+                Chennai Institute of Technology,<br />
+                Sarathy Nagar, Nandambakkam Post,<br />
+                Kundrathur, Chennai-600069.
+              </div>
+            </div>
+
+            <div className="address-to text-black mb-4 sm:mb-6">
+              <strong>To</strong>
+              <div className="text-sm text-black sm:text-base">
+                The Head of Department,<br />
+                Chennai Institute of Technology,<br />
+                Sarathy Nagar, Nandambakkam Post,<br />
+                Kundrathur, Chennai-600069.
+              </div>
+            </div>
+
+            <div className="subject font-bold text-black mb-4 sm:mb-6 text-sm sm:text-base">
+              Subject: Requesting permission for OD regarding Hackerz24 symposium.
+            </div>
+
+            <div className="content leading-relaxed text-black mb-6 sm:mb-10 text-sm sm:text-base">
+              <p>Respected Mam,</p>
+              <p>We hereby request you to grant permission for the following list of students to pursue our work for Hackerz. We request you to kindly grant permission for the mentioned students on {currentDate}.</p>
+            </div>
+
+            <div className="closing mb-4 sm:mb-7 text-black text-sm sm:text-base">
+              Regards,<br />
+              Team Hackerz24
+            </div>
+
+            <div className="signature-section mt-8 flex flex-col items-end justify-end">
+              <div className="flex flex-col items-center">
+                <img
+                  className="w-20 md:w-32 h-12 mb-2"
+                  src="sign.png"
+                  alt="Signature"
+                />
+                <div className="text-sm md:text-base text-center">
+                  <p className="text-black m-0">Head of Department</p>
+                  <p className="text-black m-0">Computer Science and Engineering</p>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          {/* Second Page - Requests Table */}
+          <div className="second-page print-page">
+            <div className="bg-white shadow-sm rounded-lg overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Student Details
+                      </th>
+                      <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">
+                        Request Details
+                      </th>
+                      <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Duration
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {requests.length === 0 ? (
+                      <tr>
+                        <td colSpan="3" className="px-4 sm:px-6 py-4 text-center text-gray-500">
+                          No approved requests found
+                        </td>
+                      </tr>
+                    ) : (
+                      requests.map((request) => (
+                        <tr key={request.id}>
+                          <td className="px-4 sm:px-6 py-4">
+                            <div className="flex items-center">
+                              <User className="w-5 h-5 text-gray-400 mr-3 hidden sm:block" />
+                              <div>
+                                <div className="text-sm font-medium text-gray-900">
+                                  {request.user.name}
+                                </div>
+                                <div className="text-sm text-gray-500">
+                                  {request.user.sec} Year {request.user.year}
+                                </div>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="px-4 sm:px-6 py-4 hidden md:table-cell">
+                            <div className="text-sm text-gray-900 font-medium">
+                              {request.reason}
+                            </div>
+                            <div className="text-sm text-gray-500">
+                              {request.description}
+                            </div>
+                          </td>
+                          <td className="px-4 sm:px-6 py-4">
+                            <div className="flex items-center">
+                              <CalendarDays className="w-5 h-5 text-gray-400 mr-3 hidden sm:block" />
+                              <div>
+                                <div className="text-sm text-gray-900">
+                                  From: {formatTime(request.from_time)}
+                                </div>
+                                <div className="text-sm text-gray-900">
+                                  To: {formatTime(request.to_time)}
+                                </div>
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Print-specific styles */}
+        <style jsx global>{`
        @media print {
   /* Existing print styles */
   nav, .mobile-actions {
@@ -505,8 +518,8 @@ export const Approved = () => {
   }
 }
       `}</style>
-    </div>
-  );
+      </div>
+      );
 };
 
-export default Approved;
+      export default Approved;
