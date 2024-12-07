@@ -16,6 +16,7 @@ const RequestForm = () => {
   const [toTime, setToTime] = useState('');
   const [toTimeModifier, setToTimeModifier] = useState('AM');
   const [currentPage, setCurrentPage] = useState(1);
+  const [businessHoursWarning, setBusinessHoursWarning] = useState('');
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const { data: session, status } = useSession();
@@ -64,17 +65,29 @@ const RequestForm = () => {
     const startHour24 = parseInt(convertTo24Hour(startTime, startModifier).split(':')[0]);
     const endHour24 = parseInt(convertTo24Hour(endTime, endModifier).split(':')[0]);
 
-
     // Compare times considering AM/PM
     const startDateTime = new Date(2024, 0, 1, startHour24, 0);
     const endDateTime = new Date(2024, 0, 1, endHour24, 0);
 
+    // Check if end time is before start time
     if (startDateTime >= endDateTime) {
       return 'End time must be after start time';
     }
 
+    // Check if either start or end time is outside business hours
+    const isStartOutsideBusinessHours = startHour24 < workingHoursStart || startHour24 >= workingHoursEnd;
+    const isEndOutsideBusinessHours = endHour24 < workingHoursStart || endHour24 >= workingHoursEnd;
+
+    // Set warning for times outside business hours
+    if (isStartOutsideBusinessHours || isEndOutsideBusinessHours) {
+      setBusinessHoursWarning('Note: The selected time is outside standard college hours (8 AM to 5 PM)');
+    } else {
+      setBusinessHoursWarning('');
+    }
+
     return null;
   };
+
 
   const handleFromTimeChange = (e) => {
     const time = e.target.value;
@@ -135,7 +148,6 @@ const RequestForm = () => {
       setDescription('');
       setFromTime('');
       setToTime('');
-
       await fetchStudents();
     } catch (error) {
       setError('Failed to send request: ' + error.message);
@@ -672,7 +684,17 @@ const RequestForm = () => {
             )}
           </div>
         </div>
+        {businessHoursWarning && (
+        <div className="mt-2 text-sm text-yellow-400">
+          {businessHoursWarning}
+        </div>
+      )}
 
+      {timeError && (
+        <div className="mt-2 text-sm text-red-400">
+          {timeError}
+        </div>
+      )}
         {/* Footer Section */}
         <div className="px-6 py-4 bg-black/30 rounded-b-2xl">
           <button
