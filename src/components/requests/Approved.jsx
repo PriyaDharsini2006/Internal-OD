@@ -77,7 +77,7 @@ export const Approved = () => {
         setEmailStatus({
           success: true,
           message: 'Emails sent successfully',
-          results: result.results
+      
         });
       } else {
         throw new Error(result.error || 'Failed to send emails');
