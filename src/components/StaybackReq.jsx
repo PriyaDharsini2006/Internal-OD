@@ -269,35 +269,47 @@ const StaybackRequest = () => {
 
   return (
     <div className="p-4 sm:p-6 w-full max-w-4xl mx-auto bg-black rounded-xl shadow-md">
-      {/* Create Stayback Button */}
-      <div className="flex items-center justify-between">
-        {/* Company Logo */}
-        <img
-          className="w-[150px] h-[150px] rounded object-contain"
-          src="/logo1.png"
-          alt="Company Logo"
-        />
-        <h1 className="text-2xl sm:text-2xl py-12 px-36 font-bold mb-4 ml-10 sm:mb-6 text-gray-400">
-          Staybacks
-        </h1>
-        <button
-          onClick={handleButtonClick} className="bg-[#00f5d0] font-grotesk w-[200px] h-[40px] hover:opacity-90 text-black font-bold py-2 px-4 rounded flex items-center">
-          Total Stayback Count
-        </button>
-        {showFullPageStaybackCount && (
-          <FullPageStaybackCount
-            onClose={() => setShowFullPageStaybackCount(false)}
+      {/* Responsive Header */}
+      <div className="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-4">
+        <div className="flex-shrink-0 self-start">
+          <img
+            className="w-24 h-24 sm:w-36 sm:h-36 rounded object-contain"
+            src="/logo1.png"
+            alt="Company Logo"
           />
-        )}
+        </div>
+        <div className="flex-grow flex flex-col sm:flex-row items-center justify-between w-full">
+          <h1 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-0 text-gray-400 text-center sm:text-left">
+            Staybacks
+          </h1>
+          <button
+            onClick={handleButtonClick} 
+            className="bg-[#00f5d0] font-grotesk w-full sm:w-auto text-sm sm:text-base hover:opacity-90 text-black font-bold py-2 px-4 rounded flex items-center justify-center"
+          >
+            Total Stayback Count
+          </button>
+        </div>
       </div>
-      {/* Create Stayback Button */}
-      <button
-        onClick={() => setIsModalOpen(true)}
-        className="bg-[#00f5d0] w-[180px] h-[50px] font-bold hover:opacity-90 text-black font-grotesk py-1.5 px-3 rounded flex ml-[665px] mt-[20px] items-center text-m"
-      >
-        <Plus className="mr-2" size={16} />
-        Create Stayback
-      </button>
+
+      {/* Error Handling */}
+      {error && (
+        <div className="bg-red-50 text-red-500 p-3 rounded-md mb-4 mt-4">
+          {error}
+        </div>
+      )}
+
+<div className="relative mt-6">
+        {/* Responsive Create Meeting Button */}
+        <div className="flex justify-end mb-4">
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="bg-[#00f5d0] hover:opacity-90 font-grotesk text-black font-bold py-2 px-4 rounded flex items-center"
+          >
+            <Plus className="mr-2" size={20} />
+            Create Stayback
+          </button>
+        </div>
+
 
       {/* Modal Overlay */}
       {isModalOpen && (
@@ -515,6 +527,7 @@ const StaybackRequest = () => {
           setStaybacks={setStaybacks}
           fetchStaybacks={fetchStaybacks}
         />
+      </div>
       </div>
     </div>
   );

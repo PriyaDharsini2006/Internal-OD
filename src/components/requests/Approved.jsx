@@ -147,7 +147,7 @@ export const Approved = () => {
     if (!emailStatus) return null;
 
     return (
-      <div className={`p-4 rounded mt-4 ${emailStatus.success ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+      <div className={`p-4 rounded mt-4 ${emailStatus.success ? 'bg-[#00f5d0]-100 text-[#00f5d0]-800' : 'bg-red-100 text-red-800'
         }`}>
         {emailStatus.message}
         {emailStatus.results && (
@@ -172,7 +172,7 @@ export const Approved = () => {
     <div className="flex flex-col">
       <button
         onClick={handleGenerateExcel}
-        className="flex items-center bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition"
+        className="flex items-center bg-[#00f5d0] text-black px-4 py-2 rounded hover:bg-[#00f5d0] transition"
       >
         <Send className="mr-2 w-5 h-5" />
         Generate & Send Excel
@@ -206,8 +206,6 @@ export const Approved = () => {
   return (
     <div className="print-container container mx-auto px-4 sm:px-6 lg:px-8">
       {/* Mobile Menu Toggle */}
-
-
       <div className="lg:hidden mb-4">
         <button
           onClick={toggleMobileMenu}
@@ -228,12 +226,29 @@ export const Approved = () => {
 
         {isMobileMenuOpen && (
           <div className="mobile-actions mt-2 space-y-2">
+            <div className="flex flex-col space-y-2">
+              <input
+                type="text"
+                placeholder="Enter Hall"
+                value={hall}
+                onChange={(e) => setHall(e.target.value)}
+                className="w-full px-3 py-2 bg-white/5 backdrop-blur-xl rounded-lg text-gray-300 placeholder-gray-500 border border-white/10 focus:ring-2 focus:ring-[#00f5d0] focus:border-[#00f5d0] text-sm"
+              />
+              <input
+                type="text"
+                placeholder="Enter Note"
+                value={note}
+                onChange={(e) => setNote(e.target.value)}
+                className="w-full px-3 py-2 bg-white/5 backdrop-blur-xl rounded-lg text-gray-300 placeholder-gray-500 border border-white/10 focus:ring-2 focus:ring-[#00f5d0] focus:border-[#00f5d0] text-sm"
+              />
+              {generateExcelButton}
+            </div>
             <button
               onClick={handlePrint}
-              className="w-full flex items-center justify-center bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition"
+              className="w-full flex items-center justify-center bg-[#00f5d0] text-black px-4 py-2 rounded hover:bg-[#00f5d0] transition"
             >
               <Printer className="mr-2 w-5 h-5" />
-              Print
+              Generate Report
             </button>
           </div>
         )}
@@ -242,120 +257,116 @@ export const Approved = () => {
       {/* Browser-only view */}
       <div className="browser-view backdrop-blur-xl rounded-2xl border border-white/10">
         <div className="bg-white/5 shadow-sm rounded-lg overflow-hidden">
-          {/* Desktop Print Button */}
-          <div className="hidden  lg:block p-4 flex justify-end print:hidden">
-            <div className='flex flex-row space-x-96'>
-              <div className="flex-shrink-0 ">
+          {/* Desktop Print Section */}
+          <div className="hidden lg:block p-4">
+            <div className="flex flex-col lg:flex-row justify-between items-start space-y-4 lg:space-y-0 lg:space-x-4">
+              <div className="flex items-center space-x-4">
                 <img
-                  className="w-36 h-36 rounded object-contain"
+                  className="w-24 h-24 lg:w-36 lg:h-36 rounded object-contain"
                   src="/logo1.png"
                   alt="Company Logo"
                 />
-                <p className='text-[#00f5d0]'>{formattedDate}</p>
+                <p className='text-[#00f5d0] text-sm lg:text-base'>{formattedDate}</p>
               </div>
 
-              <div className="py-10 justify-start print:hidden">
-                  <input
-                    type="text"
-                    placeholder="Enter Hall"
-                    value={hall}
-                    onChange={(e) => setHall(e.target.value)}
-                    className="w-full px-3 py-2 bg-white/5 backdrop-blur-xl rounded-lg text-gray-300 placeholder-gray-500 border border-white/10 focus:ring-2 focus:ring-[#00f5d0] focus:border-[#00f5d0] text-sm mb-2"
-                  />
-                  <input
-                    type="text"
-                    placeholder="Enter Note"
-                    value={note}
-                    onChange={(e) => setNote(e.target.value)}
-                    className="w-full px-3 py-2 bg-white/5 backdrop-blur-xl rounded-lg text-gray-300 placeholder-gray-500 border border-white/10 focus:ring-2 focus:ring-[#00f5d0] focus:border-[#00f5d0] text-sm mb-2"
-                  />
+              <div className="w-full lg:w-1/2 space-y-4">
+                <input
+                  type="text"
+                  placeholder="Enter Hall"
+                  value={hall}
+                  onChange={(e) => setHall(e.target.value)}
+                  className="w-full px-3 py-2 bg-white/5 backdrop-blur-xl rounded-lg text-gray-300 placeholder-gray-500 border border-white/10 focus:ring-2 focus:ring-[#00f5d0] focus:border-[#00f5d0] text-sm"
+                />
+                <input
+                  type="text"
+                  placeholder="Enter Note"
+                  value={note}
+                  onChange={(e) => setNote(e.target.value)}
+                  className="w-full px-3 py-2 bg-white/5 backdrop-blur-xl rounded-lg text-gray-300 placeholder-gray-500 border border-white/10 focus:ring-2 focus:ring-[#00f5d0] focus:border-[#00f5d0] text-sm"
+                />
+                
+                <div className="flex space-x-4">
                   {generateExcelButton}
-
                   <button
                     onClick={handlePrint}
-                    className="flex items-center  bg-[#00f5d0] text-black px-6 py-4 rounded hover:bg-white/5 hover:text-white transition"
+                    className="flex-1 flex items-center justify-center bg-[#00f5d0] text-black px-4 py-2 rounded hover:bg-[#00f5d0] hover:text-black transition"
                   >
                     <Printer className="mr-2 w-5 h-5" />
                     Generate Report
                   </button>
                 </div>
               </div>
-              {/* <button 
-              onClick={handlePrint} 
-              className="flex items-center bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
-            >
-              <Printer className="mr-2 w-5 h-5" />
-              Print
-            </button> */}
-            </div>
-
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-700">
-                <thead className="bg-gray-900">
-                  <tr>
-                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300 uppercase tracking-wider">
-                      Student Details
-                    </th>
-                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300 uppercase tracking-wider hidden md:table-cell">
-                      Request Details
-                    </th>
-                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300 uppercase tracking-wider">
-                      Duration
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className=" divide-y divide-gray-200">
-                  {requests.length === 0 ? (
-                    <tr>
-                      <td colSpan="3" className="px-4 sm:px-6 py-4 text-center text-gray-500">
-                        No approved requests found
-                      </td>
-                    </tr>
-                  ) : (
-                    requests.map((request) => (
-                      <tr key={request.id}>
-                        <td className="px-4 sm:px-6 py-4">
-                          <div className="flex  items-center">
-                            <User className="w-5 h-5 text-gray-400 mr-3 hidden sm:block" />
-                            <div>
-                              <div className="text-sm font-medium text-white">
-                                {request.user.name}
-                              </div>
-                              <div className="text-sm text-gray-500">
-                                {request.user.sec} Year {request.user.year}
-                              </div>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="px-4 sm:px-6 py-4 hidden md:table-cell">
-                          <div className="text-sm text-gwhite font-medium">
-                            {request.reason}
-                          </div>
-                          <div className="text-sm text-gray-500">
-                            {request.description}
-                          </div>
-                        </td>
-                        <td className="px-4 sm:px-6  py-4">
-                          <div className="flex items-center">
-                            <CalendarDays className="w-5 h-5 text-gray-400 mr-3 hidden sm:block" />
-                            <div>
-                              <div className="text-sm text-white">
-                                From: {formatTime(request.from_time)}
-                              </div>
-                              <div className="text-sm text-white">
-                                To: {formatTime(request.to_time)}
-                              </div>
-                            </div>
-                          </div>
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
             </div>
           </div>
+
+          {/* Requests Table */}
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-700">
+              <thead className="bg-gray-900">
+                <tr>
+                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300 uppercase tracking-wider">
+                    Student Details
+                  </th>
+                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300 uppercase tracking-wider hidden md:table-cell">
+                    Request Details
+                  </th>
+                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300 uppercase tracking-wider">
+                    Duration
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200">
+                {requests.length === 0 ? (
+                  <tr>
+                    <td colSpan="3" className="px-4 sm:px-6 py-4 text-center text-gray-500">
+                      No approved requests found
+                    </td>
+                  </tr>
+                ) : (
+                  requests.map((request) => (
+                    <tr key={request.id} className="hover:bg-gray-800 transition">
+                      <td className="px-4 sm:px-6 py-4">
+                        <div className="flex items-center">
+                          <User className="w-5 h-5 text-gray-400 mr-3 hidden sm:block" />
+                          <div>
+                            <div className="text-sm font-medium text-white">
+                              {request.user.name}
+                            </div>
+                            <div className="text-sm text-gray-500">
+                              {request.user.sec} Year {request.user.year}
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-4 sm:px-6 py-4 hidden md:table-cell">
+                        <div className="text-sm text-white font-medium">
+                          {request.reason}
+                        </div>
+                        <div className="text-sm text-gray-500">
+                          {request.description}
+                        </div>
+                      </td>
+                      <td className="px-4 sm:px-6 py-4">
+                        <div className="flex items-center">
+                          <CalendarDays className="w-5 h-5 text-gray-400 mr-3 hidden sm:block" />
+                          <div>
+                            <div className="text-sm text-white">
+                              From: {formatTime(request.from_time)}
+                            </div>
+                            <div className="text-sm text-white">
+                              To: {formatTime(request.to_time)}
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
+      </div>
 
         {/* Print View - Full Document */}
         <div className="print-view hidden print:block">

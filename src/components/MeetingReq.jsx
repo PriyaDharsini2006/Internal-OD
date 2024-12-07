@@ -111,22 +111,10 @@ const MeetingRequest = () => {
   const [localSearch, setLocalSearch] = useState('');
   const [registerNumberSearch, setRegisterNumberSearch] = useState('');
   const [timeError, setTimeError] = useState('');
-  const [businessHoursWarning, setBusinessHoursWarning] = useState(false);
   const [proceedWithSubmit, setProceedWithSubmit] = useState(false);
   const [selectedTeamType, setSelectedTeamType] = useState('');
   const [selectedTeam, setSelectedTeam] = useState('');
 
-  const isOutsideBusinessHours = (time, modifier) => {
-    // Convert time to 24-hour format for easier comparison
-    let [hours, minutes] = time.split(':').map(Number);
-
-    // Adjust for AM/PM
-    if (modifier === 'PM' && hours < 12) hours += 12;
-    if (modifier === 'AM' && hours === 12) hours = 0;
-
-    // Check if time is before 8 AM or after 5 PM
-    return hours < 8 || hours >= 17;
-  };
 
 
   const fetchMeetings = async () => {
@@ -188,14 +176,6 @@ const MeetingRequest = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Check if first time checking outside business hours or already proceeded
-    if (!proceedWithSubmit && (
-      isOutsideBusinessHours(formData.from_time, formData.from_time_modifier) ||
-      isOutsideBusinessHours(formData.to_time, formData.to_time_modifier)
-    )) {
-      setBusinessHoursWarning(true);
-      return;
-    }
 
     // Reset business hours warning and proceed flag
     setBusinessHoursWarning(false);
@@ -379,39 +359,39 @@ const MeetingRequest = () => {
   };
 
   return (
-
-
     <div className="p-4 sm:p-6 w-full max-w-4xl mx-auto bg-black rounded-xl shadow-md">
-      <div className="flex flex-row">
-        <div className="flex-shrink-0">
+      {/* Responsive Header */}
+      <div className="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-4">
+        <div className="flex-shrink-0 self-start">
           <img
-            className="w-36 h-36 rounded object-contain"
+            className="w-24 h-24 sm:w-36 sm:h-36 rounded object-contain"
             src="/logo1.png"
             alt="Company Logo"
           />
         </div>
-        <h1 className="text-2xl sm:text-2xl py-12 px-36 font-bold mb-4 ml-10 sm:mb-6 text-gray-400">
-          Meetings
-        </h1>
-        <button
-          onClick={handleButtonClick} className="bg-[#00f5d0] font-grotesk mt-[50px] w-[189px] h-[40px] hover:opacity-90 text-black font-bold py-2 px-4 rounded flex items-center">
-          Total Meeting Count
-        </button>
-        {showFullPageMeetingCount && (
-          <FullPageMeetingCount
-            onClose={() => setShowFullPageMeetingCount(false)}
-          />
-        )}
+        <div className="flex-grow flex flex-col sm:flex-row items-center justify-between w-full">
+          <h1 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-0 text-gray-400 text-center sm:text-left">
+            Meetings
+          </h1>
+          <button
+            onClick={handleButtonClick} 
+            className="bg-[#00f5d0] font-grotesk w-full sm:w-auto text-sm sm:text-base hover:opacity-90 text-black font-bold py-2 px-4 rounded flex items-center justify-center"
+          >
+            Total Meeting Count
+          </button>
+        </div>
       </div>
 
+      {/* Error Handling */}
       {error && (
-        <div className="bg-red-50 text-red-500 p-3 rounded-md mb-4">
+        <div className="bg-red-50 text-red-500 p-3 rounded-md mb-4 mt-4">
           {error}
         </div>
       )}
 
-      <div className="relative">
-        <div className="flex justify-end mb-4 mt-[30px]">
+<div className="relative mt-6">
+        {/* Responsive Create Meeting Button */}
+        <div className="flex justify-end mb-4">
           <button
             onClick={() => setIsModalOpen(true)}
             className="bg-[#00f5d0] hover:opacity-90 font-grotesk text-black font-bold py-2 px-4 rounded flex items-center"
@@ -665,37 +645,7 @@ const MeetingRequest = () => {
                   </div>
                 )}
 
-                {businessHoursWarning && (
-                  <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 p-4 rounded-md flex items-center mb-4">
-                    <AlertTriangle className="mr-3 text-yellow-600" size={24} />
-                    <div>
-                      <p className="font-semibold">Outside College Hours</p>
-                      <p className="text-sm">
-                        This meeting is scheduled outside standard college hours (8 AM - 5 PM).
-                        Are you sure you want to proceed?
-                      </p>
-                      <div className="mt-2 flex space-x-2">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setProceedWithSubmit(true);
-                            handleSubmit(new Event('submit'));
-                          }}
-                          className="bg-yellow-600 text-white px-3 py-1 rounded hover:bg-yellow-700"
-                        >
-                          Yes, Submit Anyway
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setBusinessHoursWarning(false)}
-                          className="bg-gray-200 text-gray-800 px-3 py-1 rounded hover:bg-gray-300"
-                        >
-                          Cancel
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                )}
+               
 
 
                 <div>
