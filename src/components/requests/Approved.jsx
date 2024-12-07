@@ -47,40 +47,90 @@ export const Approved = () => {
     window.print();
   };
 
+  // const handleGenerateExcel = async () => {
+  //   try {
+  //     // Fetch Excel file
+  //     const response = await fetch('/api/requests?status=1&export=excel');
+
+  //     if (!response.ok) {
+  //       throw new Error('Failed to generate Excel file');
+  //     }
+
+  //     const excelBlob = await response.blob();
+
+  //     // Create FormData to send Excel file
+  //     const formData = new FormData();
+  //     formData.append('file', excelBlob, 'approved_requests.xlsx');
+  //     formData.append('subject', 'Approved Requests');
+  //     formData.append('hall', hall);
+  //     formData.append('note', note);
+
+  //     // Send Excel file to email route
+  //     const emailResponse = await fetch('https://mail-render-vsmd.onrender.com/api/send-emails', {
+  //       method: 'POST',
+  //       body: formData
+  //     });
+
+  //     const result = await emailResponse.json();
+
+  //     if (emailResponse.ok) {
+  //       setEmailStatus({
+  //         success: true,
+  //         message: 'Emails sent successfully',
+      
+  //       });
+  //     } else {
+  //       throw new Error(result.error || 'Failed to send emails');
+  //     }
+  //   } catch (err) {
+  //     console.error('Excel generation and email sending error:', err);
+  //     setEmailStatus({
+  //       success: false,
+  //       message: err.message
+  //     });
+  //   }
+  // };
+
+  // Render method for email status
+  
   const handleGenerateExcel = async () => {
     try {
       // Fetch Excel file
       const response = await fetch('/api/requests?status=1&export=excel');
-
+  
       if (!response.ok) {
         throw new Error('Failed to generate Excel file');
       }
-
+  
       const excelBlob = await response.blob();
-
+  
       // Create FormData to send Excel file
       const formData = new FormData();
       formData.append('file', excelBlob, 'approved_requests.xlsx');
       formData.append('subject', 'Approved Requests');
       formData.append('hall', hall);
       formData.append('note', note);
-
+  
       // Send Excel file to email route
       const emailResponse = await fetch('https://mail-render-vsmd.onrender.com/api/send-emails', {
         method: 'POST',
         body: formData
       });
-
+  
       const result = await emailResponse.json();
-
+  
       if (emailResponse.ok) {
         setEmailStatus({
           success: true,
           message: 'Emails sent successfully',
-      
+          results: result.results // Include detailed results if available
         });
       } else {
-        throw new Error(result.error || 'Failed to send emails');
+        // If the server returns a non-200 status, treat it as an error
+        setEmailStatus({
+          success: false,
+          message: result.error || 'Failed to send emails'
+        });
       }
     } catch (err) {
       console.error('Excel generation and email sending error:', err);
@@ -90,8 +140,6 @@ export const Approved = () => {
       });
     }
   };
-
-  // Render method for email status
   const renderEmailStatus = () => {
     if (!emailStatus) return null;
 
