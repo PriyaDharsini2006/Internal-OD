@@ -11,7 +11,11 @@ export const Approved = () => {
   const [hall, setHall] = useState('');
   const [note, setNote] = useState('');
   const [userEmail, setUserEmail] = useState(null);
-
+  const [hasSpecialAccess, setHasSpecialAccess] = useState(false);
+  const ALLOWED_EMAILS = [
+    'dharsinidhipu2006@gmail.com', 
+    'sanjayb.cse2021@citchennai.net'
+  ];
   // Get current date
   const currentDate = new Date().toLocaleDateString('en-GB', {
     day: 'numeric',
@@ -22,18 +26,16 @@ export const Approved = () => {
   useEffect(() => {
     const fetchUserAndRequests = async () => {
       try {
-        // Option 1: If using Next.js authentication
+        // Get session and user email
         const session = await getSession();
         if (session) {
+          const email = session.user.email;
           console.log(session.user.email);
-          setUserEmail(session.user.email);
-        }
+          setUserEmail(email);
 
-        // Option 2: If using a custom API route to get user info
-        // const response = await fetch('/api/user');
-        // const userData = await response.json();
-        // console.log(userData.email);
-        // setUserEmail(userData.email);
+          // Check if user has special access
+          setHasSpecialAccess(ALLOWED_EMAILS.includes(email));
+        }
 
         // Fetch approved requests
         await fetchApprovedRequests();
@@ -46,6 +48,7 @@ export const Approved = () => {
 
     fetchUserAndRequests();
   }, [])
+ 
  
   const fetchApprovedRequests = async () => {
     try {
@@ -193,11 +196,23 @@ export const Approved = () => {
   };
 
   // Modify the generate excel button to include email status
-  const generateExcelButton = (
+  // const generateExcelButton = (
+  //   <div className="flex flex-col">
+  //     <button
+  //       onClick={handleGenerateExcel}
+  //       className="flex items-center bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition"
+  //     >
+  //       <Send className="mr-2 w-5 h-5" />
+  //       Generate & Send Excel
+  //     </button>
+  //     {renderEmailStatus()}
+  //   </div>
+  // );
+  const generateExcelButton = hasSpecialAccess && (
     <div className="flex flex-col">
       <button
         onClick={handleGenerateExcel}
-        className="flex items-center bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition"
+        className="flex items-center bg-[#00f5d0] text-black px-6 py-4 rounded hover:bg-white/5 hover:text-white transition"
       >
         <Send className="mr-2 w-5 h-5" />
         Generate & Send Excel
@@ -280,40 +295,43 @@ export const Approved = () => {
               </div>
 
               <div className="py-10 justify-start print:hidden">
-                  <input
-                    type="text"
-                    placeholder="Enter Hall"
-                    value={hall}
-                    onChange={(e) => setHall(e.target.value)}
-                    className="w-full px-3 py-2 bg-white/5 backdrop-blur-xl rounded-lg text-gray-300 placeholder-gray-500 border border-white/10 focus:ring-2 focus:ring-[#00f5d0] focus:border-[#00f5d0] text-sm mb-2"
-                  />
-                  <input
-                    type="text"
-                    placeholder="Enter Note"
-                    value={note}
-                    onChange={(e) => setNote(e.target.value)}
-                    className="w-full px-3 py-2 bg-white/5 backdrop-blur-xl rounded-lg text-gray-300 placeholder-gray-500 border border-white/10 focus:ring-2 focus:ring-[#00f5d0] focus:border-[#00f5d0] text-sm mb-2"
-                  />
-                  {generateExcelButton}
-
-                  <button
-                    onClick={handlePrint}
-                    className="flex items-center  bg-[#00f5d0] text-black px-6 py-4 rounded hover:bg-white/5 hover:text-white transition"
-                  >
-                    <Printer className="mr-2 w-5 h-5" />
-                    Generate Report
-                  </button>
+              <button
+                  onClick={handlePrint}
+                  className="flex items-center bg-[#00f5d0] text-black px-6 py-4 rounded hover:bg-white/5 hover:text-white transition"
+                >
+                  <Printer className="mr-2 w-5 h-5" />
+                  Generate Report
+                </button>
+                
+                {/* Conditionally render hall and note inputs */}
+                {hasSpecialAccess && (
+                  <>
+                  <div className='text-black'>report</div>
+                    <input
+                      type="text"
+                      placeholder="Enter Hall"
+                      value={hall}
+                      onChange={(e) => setHall(e.target.value)}
+                      className="w-full px-3 py-2 bg-white/5 backdrop-blur-xl rounded-lg text-gray-300 placeholder-gray-500 border border-white/10 focus:ring-2 focus:ring-[#00f5d0] focus:border-[#00f5d0] text-sm mb-2"
+                    />
+                    <input
+                      type="text"
+                      placeholder="Enter Note"
+                      value={note}
+                      onChange={(e) => setNote(e.target.value)}
+                      className="w-full px-3 py-2 bg-white/5 backdrop-blur-xl rounded-lg text-gray-300 placeholder-gray-500 border border-white/10 focus:ring-2 focus:ring-[#00f5d0] focus:border-[#00f5d0] text-sm mb-2"
+                    />
+                  </>
+                )}
+                <div className='flex flex-row'>
+                {/* Conditionally render generate excel button */}
+                {generateExcelButton}
+                
+                
                 </div>
               </div>
-              {/* <button 
-              onClick={handlePrint} 
-              className="flex items-center bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
-            >
-              <Printer className="mr-2 w-5 h-5" />
-              Print
-            </button> */}
             </div>
-
+          </div>
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-700">
                 <thead className="bg-gray-900">
