@@ -126,7 +126,7 @@ export const Approved = () => {
         setEmailStatus({
           success: true,
           message: 'Emails sent successfully',
-          results: result.results // Include detailed results if available
+          // Include detailed results if available
         });
       } else {
         // If the server returns a non-200 status, treat it as an error
