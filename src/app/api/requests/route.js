@@ -136,8 +136,6 @@ export async function POST(request) {
     );
   }
 }
-
-// Get all OD requests
 export async function GET(request) {
   try {
     await ensureConnection();
@@ -181,14 +179,39 @@ export async function GET(request) {
       worksheet.columns = [
         { header: 'Name', key: 'name', width: 30 },
         { header: 'Email', key: 'email', width: 30 },
-        { header: 'CustomField', key: 'team', width: 30 }
+        { header: 'Section', key: 'section', width: 15 },
+        { header: 'Year', key: 'year', width: 10 },
+        { header: 'Team/Reason', key: 'team', width: 30 },
+        { header: 'From Time', key: 'from_time', width: 20 },
+        { header: 'To Time', key: 'to_time', width: 20 },
+        { header: 'Date', key: 'date', width: 20 }
       ];
 
       requests.forEach(request => {
         worksheet.addRow({
           name: request.user.name,
           email: request.user.email,
-          team: request.reason  // Using reason as team
+          section: request.user.sec,
+          year: request.user.year,
+          team: request.reason,
+          from_time: request.from_time ? 
+  new Date(request.from_time).toLocaleTimeString('en-US', { 
+    hour: '2-digit', 
+    minute: '2-digit',
+    hour12: true 
+  }) : '',
+to_time: request.to_time ? 
+  new Date(request.to_time).toLocaleTimeString('en-US', { 
+    hour: '2-digit', 
+    minute: '2-digit',
+    hour12: true 
+  }) : '',
+        date: request.date ? 
+          new Date(request.date).toLocaleDateString('en-US', { 
+            year: 'numeric', 
+            month: '2-digit', 
+            day: '2-digit' 
+          }) : ''
         });
       });
 
@@ -212,6 +235,81 @@ export async function GET(request) {
     );
   }
 }
+// Get all OD requests
+// export async function GET(request) {
+//   try {
+//     await ensureConnection();
+//     const session = await getServerSession(authOptions);
+    
+//     const sessionError = await validateSession(session);
+//     if (sessionError) {
+//       return NextResponse.json({ message: sessionError.error }, { status: sessionError.status });
+//     }
+
+//     const { searchParams } = new URL(request.url);
+//     const status = searchParams.get('status');
+//     const userId = searchParams.get('userId');
+
+//     const where = {};
+//     if (status) where.status = parseInt(status);
+//     if (userId) where.user_id = userId;
+
+//     const requests = await prisma.oDRequest.findMany({
+//       where,
+//       include: {
+//         user: {
+//           select: {
+//             name: true,
+//             email: true,
+//             sec: true,
+//             year: true
+//           }
+//         }
+//       },
+//       orderBy: {
+//         date: 'desc'
+//       }
+//     });
+
+//     const exportType = searchParams.get('export');
+//     if (exportType === 'excel') {
+//       const workbook = new ExcelJS.Workbook();
+//       const worksheet = workbook.addWorksheet('Approved Requests');
+
+//       worksheet.columns = [
+//         { header: 'Name', key: 'name', width: 30 },
+//         { header: 'Email', key: 'email', width: 30 },
+//         { header: 'CustomField', key: 'team', width: 30 }
+//       ];
+
+//       requests.forEach(request => {
+//         worksheet.addRow({
+//           name: request.user.name,
+//           email: request.user.email,
+//           team: request.reason  // Using reason as team
+//         });
+//       });
+
+//       const buffer = await workbook.xlsx.writeBuffer();
+
+//       return new NextResponse(buffer, {
+//         status: 200,
+//         headers: {
+//           'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+//           'Content-Disposition': 'attachment; filename=approved_requests.xlsx'
+//         }
+//       });
+//     }
+
+//     return NextResponse.json({ data: requests });
+//   } catch (error) {
+//     console.error('Request fetch error:', error);
+//     return NextResponse.json(
+//       { message: 'Failed to fetch requests', error: error.message },
+//       { status: 500 }
+//     );
+//   }
+// }
 
 // Update request status or attendance
 export async function PATCH(request) {
