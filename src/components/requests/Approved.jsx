@@ -1,7 +1,7 @@
 'use client'
 import React, { useState, useEffect } from 'react';
 import { User, CalendarDays, Printer, Menu, X, Send } from 'lucide-react';
-
+import { getSession } from 'next-auth/react'
 export const Approved = () => {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -10,6 +10,7 @@ export const Approved = () => {
   const [emailStatus, setEmailStatus] = useState(null);
   const [hall, setHall] = useState('');
   const [note, setNote] = useState('');
+  const [userEmail, setUserEmail] = useState(null);
 
   // Get current date
   const currentDate = new Date().toLocaleDateString('en-GB', {
@@ -19,9 +20,33 @@ export const Approved = () => {
   });
 
   useEffect(() => {
-    fetchApprovedRequests();
-  }, []);
+    const fetchUserAndRequests = async () => {
+      try {
+        // Option 1: If using Next.js authentication
+        const session = await getSession();
+        if (session) {
+          console.log(session.user.email);
+          setUserEmail(session.user.email);
+        }
 
+        // Option 2: If using a custom API route to get user info
+        // const response = await fetch('/api/user');
+        // const userData = await response.json();
+        // console.log(userData.email);
+        // setUserEmail(userData.email);
+
+        // Fetch approved requests
+        await fetchApprovedRequests();
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserAndRequests();
+  }, [])
+ 
   const fetchApprovedRequests = async () => {
     try {
       const response = await fetch('/api/requests?status=1');
