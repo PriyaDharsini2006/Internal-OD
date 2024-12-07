@@ -1,7 +1,7 @@
 'use client'
 import React, { useState, useEffect } from 'react';
 import { User, CalendarDays, Printer, Menu, X, Send } from 'lucide-react';
-
+import { getSession } from 'next-auth/react'
 export const Approved = () => {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -10,7 +10,12 @@ export const Approved = () => {
   const [emailStatus, setEmailStatus] = useState(null);
   const [hall, setHall] = useState('');
   const [note, setNote] = useState('');
-
+  const [userEmail, setUserEmail] = useState(null);
+  const [hasSpecialAccess, setHasSpecialAccess] = useState(false);
+  const ALLOWED_EMAILS = [
+    'dharsinidhipu2006@gmail.com', 
+    'sanjayb.cse2021@citchennai.net'
+  ];
   // Get current date
   const currentDate = new Date().toLocaleDateString('en-GB', {
     day: 'numeric',
@@ -19,9 +24,32 @@ export const Approved = () => {
   });
 
   useEffect(() => {
-    fetchApprovedRequests();
-  }, []);
+    const fetchUserAndRequests = async () => {
+      try {
+        // Get session and user email
+        const session = await getSession();
+        if (session) {
+          const email = session.user.email;
+          console.log(session.user.email);
+          setUserEmail(email);
 
+          // Check if user has special access
+          setHasSpecialAccess(ALLOWED_EMAILS.includes(email));
+        }
+
+        // Fetch approved requests
+        await fetchApprovedRequests();
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserAndRequests();
+  }, [])
+ 
+ 
   const fetchApprovedRequests = async () => {
     try {
       const response = await fetch('/api/requests?status=1');
@@ -168,7 +196,19 @@ export const Approved = () => {
   };
 
   // Modify the generate excel button to include email status
-  const generateExcelButton = (
+  // const generateExcelButton = (
+  //   <div className="flex flex-col">
+  //     <button
+  //       onClick={handleGenerateExcel}
+  //       className="flex items-center bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition"
+  //     >
+  //       <Send className="mr-2 w-5 h-5" />
+  //       Generate & Send Excel
+  //     </button>
+  //     {renderEmailStatus()}
+  //   </div>
+  // );
+  const generateExcelButton = hasSpecialAccess && (
     <div className="flex flex-col">
       <button
         onClick={handleGenerateExcel}
