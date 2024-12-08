@@ -13,6 +13,7 @@ export const Approved = () => {
   const [userEmail, setUserEmail] = useState(null);
   const [hasSpecialAccess, setHasSpecialAccess] = useState(false);
   const ALLOWED_EMAILS = [
+    'mukeshg.cse2023@citchennai.net',
     'dharsinidhipu2006@gmail.com', 
     'sanjayb.cse2021@citchennai.net'
   ];
@@ -266,23 +267,25 @@ export const Approved = () => {
 
         {isMobileMenuOpen && (
           <div className="mobile-actions mt-2 space-y-2">
-            <div className="flex flex-col space-y-2">
-              <input
-                type="text"
-                placeholder="Enter Hall"
-                value={hall}
-                onChange={(e) => setHall(e.target.value)}
-                className="w-full px-3 py-2 bg-white/5 backdrop-blur-xl rounded-lg text-gray-300 placeholder-gray-500 border border-white/10 focus:ring-2 focus:ring-[#00f5d0] focus:border-[#00f5d0] text-sm"
-              />
-              <input
-                type="text"
-                placeholder="Enter Note"
-                value={note}
-                onChange={(e) => setNote(e.target.value)}
-                className="w-full px-3 py-2 bg-white/5 backdrop-blur-xl rounded-lg text-gray-300 placeholder-gray-500 border border-white/10 focus:ring-2 focus:ring-[#00f5d0] focus:border-[#00f5d0] text-sm"
-              />
-              {generateExcelButton}
-            </div>
+            {hasSpecialAccess && (
+              <div className="flex flex-col space-y-2">
+                <input
+                  type="text"
+                  placeholder="Enter Hall"
+                  value={hall}
+                  onChange={(e) => setHall(e.target.value)}
+                  className="w-full px-3 py-2 bg-white/5 backdrop-blur-xl rounded-lg text-gray-300 placeholder-gray-500 border border-white/10 focus:ring-2 focus:ring-[#00f5d0] focus:border-[#00f5d0] text-sm"
+                />
+                <input
+                  type="text"
+                  placeholder="Enter Note"
+                  value={note}
+                  onChange={(e) => setNote(e.target.value)}
+                  className="w-full px-3 py-2 bg-white/5 backdrop-blur-xl rounded-lg text-gray-300 placeholder-gray-500 border border-white/10 focus:ring-2 focus:ring-[#00f5d0] focus:border-[#00f5d0] text-sm"
+                />
+                {generateExcelButton}
+              </div>
+            )}
             <button
               onClick={handlePrint}
               className="w-full flex items-center justify-center bg-[#00f5d0] text-black px-4 py-2 rounded hover:bg-[#00f5d0] transition"
@@ -308,25 +311,30 @@ export const Approved = () => {
                 />
                 <p className='text-[#00f5d0] text-sm lg:text-base'>{formattedDate}</p>
               </div>
-
-              <div className="w-full lg:w-1/2 space-y-4">
-                <input
-                  type="text"
-                  placeholder="Enter Hall"
-                  value={hall}
-                  onChange={(e) => setHall(e.target.value)}
-                  className="w-full px-3 py-2 bg-white/5 backdrop-blur-xl rounded-lg text-gray-300 placeholder-gray-500 border border-white/10 focus:ring-2 focus:ring-[#00f5d0] focus:border-[#00f5d0] text-sm"
-                />
-                <input
-                  type="text"
-                  placeholder="Enter Note"
-                  value={note}
-                  onChange={(e) => setNote(e.target.value)}
-                  className="w-full px-3 py-2 bg-white/5 backdrop-blur-xl rounded-lg text-gray-300 placeholder-gray-500 border border-white/10 focus:ring-2 focus:ring-[#00f5d0] focus:border-[#00f5d0] text-sm"
-                />
-                
+              <div className="flex flex-col lg:flex-row items-center space-y-4 lg:space-y-0 lg:space-x-4">
+              {hasSpecialAccess && (
+                <div className="w-full lg:w-1/2 space-y-4">
+                  <input
+                    type="text"
+                    placeholder="Enter Hall"
+                    value={hall}
+                    onChange={(e) => setHall(e.target.value)}
+                    className="w-full px-3 py-2 bg-white/5 backdrop-blur-xl rounded-lg text-gray-300 placeholder-gray-500 border border-white/10 focus:ring-2 focus:ring-[#00f5d0] focus:border-[#00f5d0] text-sm"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Enter Note"
+                    value={note}
+                    onChange={(e) => setNote(e.target.value)}
+                    className="w-full px-3 py-2 bg-white/5 backdrop-blur-xl rounded-lg text-gray-300 placeholder-gray-500 border border-white/10 focus:ring-2 focus:ring-[#00f5d0] focus:border-[#00f5d0] text-sm"
+                  />
+                  
+                  <div className="flex space-x-4">
+                    {generateExcelButton}
+                  </div>
+                </div>
+              )}
                 <div className="flex space-x-4">
-                  {generateExcelButton}
                   <button
                     onClick={handlePrint}
                     className="flex-1 flex items-center justify-center bg-[#00f5d0] text-black px-4 py-2 rounded hover:bg-[#00f5d0] hover:text-black transition"
