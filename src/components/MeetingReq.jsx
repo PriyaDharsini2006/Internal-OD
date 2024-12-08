@@ -175,10 +175,6 @@ const MeetingRequest = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-
-    // Reset business hours warning and proceed flag
-    setBusinessHoursWarning(false);
     setProceedWithSubmit(false);
 
     setLoading(true);
