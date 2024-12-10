@@ -7,6 +7,7 @@ export async function GET(request) {
     const prisma = new PrismaClient();
     
     // Truncate the ODRequest table
+    await prisma.AttendanceDetail.deleteMany({});
     await prisma.oDRequest.deleteMany({});
     
     // Disconnect from Prisma client
