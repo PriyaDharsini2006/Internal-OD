@@ -46,7 +46,7 @@
             const teamLeadEmails = await prisma.team.findMany({
                 select: { email: true }
             });
-
+    
             const coreTeamSet = new Set(coreTeamEmails.map(item => item.email));
             const teamLeadSet = new Set(teamLeadEmails.map(item => item.email));
             
@@ -60,29 +60,44 @@
                     sec: true,
                     year: true,
                     register: true,
-                    counts: {
-                        select: {
-                            stayback_cnt: true,
-                            meeting_cnt: true,
-                            email: true
-                        }
-                    }
                 },
                 orderBy: {
                     name: 'asc'
                 }
             });
             
-            // Add role indicators to students
-            const studentsWithRoles = students.map(student => ({
-                ...student,
-                roles: {
-                    isCoreLead: coreTeamSet.has(student.email),
-                    isTeamLead: teamLeadSet.has(student.email)
-                }
+            // Count meetings and staybacks for each student
+            const studentsWithCounts = await Promise.all(students.map(async (student) => {
+                const meetingCount = await prisma.meeting.count({
+                    where: {
+                        students: {
+                            has: student.email
+                        }
+                    }
+                });
+    
+                const staybackCount = await prisma.stayback.count({
+                    where: {
+                        students: {
+                            has: student.email
+                        }
+                    }
+                });
+                
+                return {
+                    ...student,
+                    counts: {
+                        meeting_cnt: meetingCount,
+                        stayback_cnt: staybackCount
+                    },
+                    roles: {
+                        isCoreLead: coreTeamSet.has(student.email),
+                        isTeamLead: teamLeadSet.has(student.email)
+                    }
+                };
             }));
             
-            return NextResponse.json(studentsWithRoles);
+            return NextResponse.json(studentsWithCounts);
             
         } catch (error) {
             console.error('Detailed error in /api/students:', {
