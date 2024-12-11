@@ -6,9 +6,6 @@ const Meeting = () => {
     return (
         <div className='bg-black'> 
                 <MeetingUpdateComponent />
-                {/* <StaybackRequest /> */}
-
-        
         </div>
     )
 }

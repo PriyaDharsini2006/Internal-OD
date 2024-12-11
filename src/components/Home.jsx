@@ -1,6 +1,7 @@
 'use client'
 import React, { useState, useEffect } from 'react';
 import { User, CalendarDays, Search, ChevronLeft, ChevronRight } from 'lucide-react';
+import Loading from './Loading';
 
 export const Approved = () => {
   const [requests, setRequests] = useState([]);
@@ -80,9 +81,7 @@ export const Approved = () => {
   const uniqueSections = [...new Set(requests.map(req => req.user.sec))];
 
   if (loading) return (
-    <div className="flex justify-center items-center min-h-screen bg-black">
-      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#00f5d0]"></div>
-    </div>
+    <Loading/>
   );
 
   if (error) return (
