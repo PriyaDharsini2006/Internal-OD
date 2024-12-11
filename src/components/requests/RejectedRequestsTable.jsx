@@ -1,14 +1,14 @@
 'use client'
 import React, { useState, useEffect } from 'react';
-import { User, CalendarDays, Printer, Menu, X, XCircle, RefreshCw } from 'lucide-react';
+import { User, CalendarDays, Menu, X, RefreshCw } from 'lucide-react';
+import Loading from '.././Loading';
 
 export const Rejected = () => {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
-  // Get current date
+  
   const currentDate = new Date().toLocaleDateString('en-GB', {
     day: 'numeric',
     month: 'long',
@@ -66,9 +66,7 @@ export const Rejected = () => {
   };
 
   if (loading) return (
-    <div className="flex justify-center items-center min-h-[400px]">
-      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
-    </div>
+    <Loading/>
   );
 
   if (error) return (

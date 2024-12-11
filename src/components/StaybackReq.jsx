@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { Search, X, Plus } from 'lucide-react';
 import StaybackLog from './StaybackLog';
 import StaybackCnt from './staybackcnt';
+import Loading from './Loading';
 
 const FullPageStaybackCount = ({ onClose }) => {
   return (
@@ -109,6 +110,7 @@ const StaybackRequest = () => {
   const [selectedTeam, setSelectedTeam] = useState('');
 
   const fetchStaybacks = async () => {
+    setLoading(true);
     try {
       const response = await fetch('/api/staybacks');
       const data = await response.json();
@@ -116,6 +118,7 @@ const StaybackRequest = () => {
       // If data is already grouped by date (from API)
       if (typeof data === 'object' && !Array.isArray(data)) {
         setStaybacks(data);
+        setLoading(false);
         return;
       }
 
@@ -137,8 +140,8 @@ const StaybackRequest = () => {
           });
           return acc;
         }, {});
-
         setStaybacks(groupedStaybacks);
+        setLoading(false);
       } else {
         console.error('Unexpected data format received:', typeof data);
         setStaybacks({});
@@ -265,6 +268,10 @@ const StaybackRequest = () => {
     setError(null);
     setLocalSearch('');
   };
+
+  if(loading){
+    return <Loading/>;
+  }
 
 
   return (

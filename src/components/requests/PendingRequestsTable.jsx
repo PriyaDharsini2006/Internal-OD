@@ -1,7 +1,7 @@
 'use client'
 import React, { useState, useEffect } from 'react';
-import { User, CalendarDays, Printer } from 'lucide-react';
-import { Copyright } from 'lucide-react';
+import { User, CalendarDays } from 'lucide-react';
+import Loading from  '.././Loading';
 
 export const HackerzPrintView = () => {
   const [requests, setRequests] = useState([]);
@@ -42,17 +42,15 @@ export const HackerzPrintView = () => {
     window.print();
   };
 
-  if (loading) return (
-    <div className="flex justify-center items-center min-h-[400px] w-full">
-      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
-    </div>
-  );
-
   if (error) return (
     <div className="text-red-600 text-center p-4 w-full">
       Error: {error}
     </div>
   );
+
+  if(loading) {
+    return <Loading/>;
+  }
 
   return (
     <div className="bg-black text-white shadow-sm rounded-lg overflow-hidden">

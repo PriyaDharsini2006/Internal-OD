@@ -1,5 +1,6 @@
 'use client'
 import React, { useState, useEffect } from 'react';
+import Loading from '.././Loading';
 import { User, CalendarDays, Printer, Menu, X, Send } from 'lucide-react';
 import { getSession } from 'next-auth/react'
 export const Approved = () => {
@@ -76,52 +77,6 @@ export const Approved = () => {
     window.print();
   };
 
-  // const handleGenerateExcel = async () => {
-  //   try {
-  //     // Fetch Excel file
-  //     const response = await fetch('/api/requests?status=1&export=excel');
-
-  //     if (!response.ok) {
-  //       throw new Error('Failed to generate Excel file');
-  //     }
-
-  //     const excelBlob = await response.blob();
-
-  //     // Create FormData to send Excel file
-  //     const formData = new FormData();
-  //     formData.append('file', excelBlob, 'approved_requests.xlsx');
-  //     formData.append('subject', 'Approved Requests');
-  //     formData.append('hall', hall);
-  //     formData.append('note', note);
-
-  //     // Send Excel file to email route
-  //     const emailResponse = await fetch('https://mail-render-vsmd.onrender.com/api/send-emails', {
-  //       method: 'POST',
-  //       body: formData
-  //     });
-
-  //     const result = await emailResponse.json();
-
-  //     if (emailResponse.ok) {
-  //       setEmailStatus({
-  //         success: true,
-  //         message: 'Emails sent successfully',
-      
-  //       });
-  //     } else {
-  //       throw new Error(result.error || 'Failed to send emails');
-  //     }
-  //   } catch (err) {
-  //     console.error('Excel generation and email sending error:', err);
-  //     setEmailStatus({
-  //       success: false,
-  //       message: err.message
-  //     });
-  //   }
-  // };
-
-  // Render method for email status
-  
   const handleGenerateExcel = async () => {
     try {
       // Fetch Excel file
@@ -155,10 +110,8 @@ export const Approved = () => {
         setEmailStatus({
           success: true,
           message: 'Emails sent successfully',
-          // Include detailed results if available
         });
       } else {
-        // If the server returns a non-200 status, treat it as an error
         setEmailStatus({
           success: false,
           message: result.error || 'Failed to send emails'
@@ -195,20 +148,6 @@ export const Approved = () => {
       </div>
     );
   };
-
-  // Modify the generate excel button to include email status
-  // const generateExcelButton = (
-  //   <div className="flex flex-col">
-  //     <button
-  //       onClick={handleGenerateExcel}
-  //       className="flex items-center bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition"
-  //     >
-  //       <Send className="mr-2 w-5 h-5" />
-  //       Generate & Send Excel
-  //     </button>
-  //     {renderEmailStatus()}
-  //   </div>
-  // );
   const generateExcelButton = hasSpecialAccess && (
     <div className="flex flex-col">
       <button
@@ -226,11 +165,10 @@ export const Approved = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
 
-  if (loading) return (
-    <div className="flex justify-center items-center min-h-[400px]">
-      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
-    </div>
-  );
+  if (loading) {
+    return <Loading />;
+  }
+  
   const today = new Date();
   const formattedDate = today.toLocaleDateString('en-US', {
     year: 'numeric',

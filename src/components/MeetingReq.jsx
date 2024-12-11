@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { Search, X, Plus, ChevronDown, AlertTriangle } from 'lucide-react';
+import { Search, X, Plus } from 'lucide-react';
 import MeetingLog from './MeetingLog';
+import Loading from './Loading';
 import MeetingCnt from './meetingcnt';
 
 
@@ -119,6 +120,7 @@ const MeetingRequest = () => {
 
   const fetchMeetings = async () => {
     try {
+      setLoading(true);
       const response = await fetch('/api/meetings');
       const data = await response.json();
       setMeetings(data.map(meeting => ({
@@ -127,6 +129,7 @@ const MeetingRequest = () => {
         to_time: new Date(meeting.to_time),
         date: new Date(meeting.date)
       })));
+      setLoading(false);
     } catch (error) {
       console.error('Failed to fetch meetings', error);
     }
@@ -196,6 +199,7 @@ const MeetingRequest = () => {
     try {
       const fromTime24 = convertTo24Hour(formData.from_time, formData.from_time_modifier);
       const toTime24 = convertTo24Hour(formData.to_time, formData.to_time_modifier);
+      setLoading(true);
 
       const response = await fetch('/api/meetings', {
         method: 'POST',
@@ -210,6 +214,7 @@ const MeetingRequest = () => {
           to_time: new Date(`${formData.date}T${toTime24}`)
         })
       });
+      setLoading(false);
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -351,8 +356,12 @@ const MeetingRequest = () => {
     });
     setError(null);
     setLocalSearch('');
-    setTimeError(''); // Ensure this is cleared
+    setTimeError('');
   };
+
+  if(loading) {
+    return <Loading/>;
+  }
 
   return (
     <div className="p-4 sm:p-6 w-full max-w-4xl mx-auto bg-black rounded-xl shadow-md">

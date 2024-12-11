@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import Loading from './Loading';
 
 const RequestForm = () => {
   const [students, setStudents] = useState([]);
@@ -312,7 +313,9 @@ const RequestForm = () => {
     );
   };
 
-
+  if(loading){
+    return <Loading/>;
+  }
 
 
   return (
