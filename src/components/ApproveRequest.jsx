@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import Loading from './Loading';
 
 const ODRequestApproval = () => {
   const { data: session, status } = useSession();
@@ -179,6 +180,9 @@ const ODRequestApproval = () => {
     return Math.ceil(getFilteredRequests.length / recordsPerPage);
   }, [getFilteredRequests, recordsPerPage]);
 
+  if (loading || isLoading){
+    return <Loading/>
+  }
 
   return (
     <div className="min-h-screen bg-black py-8 px-4 sm:px-6 lg:px-8">
