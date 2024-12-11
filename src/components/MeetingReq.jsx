@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { Search, X, Plus } from 'lucide-react';
+import { Search, X, Plus, ChevronDown, AlertTriangle } from 'lucide-react';
 import MeetingLog from './MeetingLog';
-import Loading from './Loading';
 import MeetingCnt from './meetingcnt';
-
+import Loading from './Loading';
 
 const FullPageMeetingCount = ({ onClose }) => {
   return (
@@ -36,6 +35,10 @@ const MeetingRequest = () => {
 
   const handleButtonClick = () => {
     setShowFullPageMeetingCount(true);
+  };
+
+  const handleCloseFullPageMeetingCount = () => {
+    setShowFullPageMeetingCount(false);
   };
 
   const Workshops = [
@@ -199,7 +202,6 @@ const MeetingRequest = () => {
     try {
       const fromTime24 = convertTo24Hour(formData.from_time, formData.from_time_modifier);
       const toTime24 = convertTo24Hour(formData.to_time, formData.to_time_modifier);
-      setLoading(true);
 
       const response = await fetch('/api/meetings', {
         method: 'POST',
@@ -214,7 +216,6 @@ const MeetingRequest = () => {
           to_time: new Date(`${formData.date}T${toTime24}`)
         })
       });
-      setLoading(false);
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -356,15 +357,18 @@ const MeetingRequest = () => {
     });
     setError(null);
     setLocalSearch('');
-    setTimeError('');
+    setTimeError(''); // Ensure this is cleared
   };
 
-  if(loading) {
+  if(loading){
     return <Loading/>;
   }
 
   return (
     <div className="p-4 sm:p-6 w-full max-w-4xl mx-auto bg-black rounded-xl shadow-md">
+      {showFullPageMeetingCount && (
+        <FullPageMeetingCount onClose={handleCloseFullPageMeetingCount} />
+      )}
       {/* Responsive Header */}
       <div className="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-4">
         <div className="flex-shrink-0 self-start">
@@ -379,7 +383,8 @@ const MeetingRequest = () => {
             Meetings
           </h1>
           <button
-            onClick={handleButtonClick} 
+            onClick={handleButtonClick
+            } 
             className="bg-[#00f5d0] font-grotesk w-full sm:w-auto text-sm sm:text-base hover:opacity-90 text-black font-bold py-2 px-4 rounded flex items-center justify-center"
           >
             Total Meeting Count

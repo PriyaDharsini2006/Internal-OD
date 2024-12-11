@@ -39,6 +39,10 @@ const StaybackRequest = () => {
     setShowFullPageStaybackCount(true);
   };
 
+  const handleCloseFullPageStaybackCount = () => {
+    setShowFullPageStaybackCount(false);
+  };
+
 
   const Workshops = [
     'Linux and Networking',
@@ -110,8 +114,8 @@ const StaybackRequest = () => {
   const [selectedTeam, setSelectedTeam] = useState('');
 
   const fetchStaybacks = async () => {
-    setLoading(true);
     try {
+      setLoading(true);
       const response = await fetch('/api/staybacks');
       const data = await response.json();
 
@@ -140,16 +144,20 @@ const StaybackRequest = () => {
           });
           return acc;
         }, {});
+        
         setStaybacks(groupedStaybacks);
         setLoading(false);
+        
       } else {
         console.error('Unexpected data format received:', typeof data);
         setStaybacks({});
+        setLoading(false);
       }
     } catch (error) {
       console.error('Failed to fetch staybacks:', error);
       setError('Failed to fetch staybacks. Please try again later.');
       setStaybacks({});
+      setLoading(false);
     }
   };
 
@@ -254,6 +262,26 @@ const StaybackRequest = () => {
     return matchesLocalSearch && matchesRegisterNumber;
   });
 
+  const FullPageStaybackCount = ({ onClose }) => {
+    return (
+      <div className="fixed inset-0 bg-black z-50 flex flex-col overflow-hidden">
+        <div className="flex justify-between items-center p-6 border-b border-[#00f5d0]">
+          <h1 className="text-3xl font-bold text-[#00f5d0]">Total Stayback Count Leaderboard</h1>
+          <button
+            onClick={onClose}
+            className="text-[#00f5d0] hover:opacity-90"
+          >
+            <X size={32} />
+          </button>
+        </div>
+  
+        <div className="flex-grow overflow-auto">
+          <StaybackCnt />
+        </div>
+      </div>
+    );
+  };
+
 
 
   const handleCloseModal = () => {
@@ -276,6 +304,9 @@ const StaybackRequest = () => {
 
   return (
     <div className="p-4 sm:p-6 w-full max-w-4xl mx-auto bg-black rounded-xl shadow-md">
+      {showFullPageStaybackCount && (
+        <FullPageStaybackCount onClose={handleCloseFullPageStaybackCount} />
+      )}
       {/* Responsive Header */}
       <div className="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-4">
         <div className="flex-shrink-0 self-start">
