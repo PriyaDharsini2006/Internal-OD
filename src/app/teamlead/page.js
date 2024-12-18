@@ -33,7 +33,6 @@ const TeamLeadNavbar = ({ onNavItemClick, activeComponent }) => {
     { name: 'Stayback', icon: Home, component: 'Stayback' },
   ];
   const handleBack = () => {
-    // Directly navigate to the external dashboard URL
     window.location.href = 'https://dashboard-vs8l.vercel.app/Navbar';
   };
 

@@ -24,6 +24,7 @@ const RequestForm = () => {
   const [timeError, setTimeError] = useState('');
   const [selectedTeamType, setSelectedTeamType] = useState('');
   const [selectedTeam, setSelectedTeam] = useState('');
+  const [mainload, setMainload] = useState(false);
 
   const inputClassName = "w-full px-4 py-2.5 bg-white/5 backdrop-blur-xl rounded-lg text-gray-300 placeholder-gray-500 border border-white/10 focus:ring-2 focus:ring-[#00f5d0] focus:border-[#00f5d0]";
   const optionClassName = 'text-white bg-black';
@@ -166,6 +167,7 @@ const RequestForm = () => {
     if (timeValidation) return timeValidation;
     return null;
   };
+  
 
 
   const Workshops = [
@@ -313,9 +315,6 @@ const RequestForm = () => {
     );
   };
 
-  if(loading){
-    return <Loading/>;
-  }
 
 
   return (
