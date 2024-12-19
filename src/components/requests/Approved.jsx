@@ -1,7 +1,7 @@
 'use client'
 import React, { useState, useEffect } from 'react';
 import Loading from '.././Loading';
-import { User, CalendarDays, Printer, Menu, X, Send } from 'lucide-react';
+import { User, CalendarDays, Printer, Menu, X, Send, Loader2 } from 'lucide-react';
 import { getSession } from 'next-auth/react'
 export const Approved = () => {
   const [requests, setRequests] = useState([]);
@@ -13,6 +13,7 @@ export const Approved = () => {
   const [note, setNote] = useState('');
   const [userEmail, setUserEmail] = useState(null);
   const [hasSpecialAccess, setHasSpecialAccess] = useState(false);
+  const [sendingEmails, setSendingEmails] = useState(false);
   const ALLOWED_EMAILS = [
     'mukeshg.cse2023@citchennai.net',
     'dharsinidhipu2006@gmail.com', 
@@ -79,6 +80,9 @@ export const Approved = () => {
 
   const handleGenerateExcel = async () => {
     try {
+      setSendingEmails(true);
+      setEmailStatus(null);
+      
       // Fetch Excel file
       const response = await fetch('/api/requests?status=1&export=excel');
   
@@ -96,70 +100,136 @@ export const Approved = () => {
       formData.append('note', note);
   
       // Send Excel file to email route
-      // const emailResponse = await fetch('https://mail-render-vsmd.onrender.com/api/send-emails', {
-      //   method: 'POST',
-      //   body: formData
-      // });
       const emailResponse = await fetch('https://mail-render-vsmd.onrender.com/api/send-emails', {
         method: 'POST',
         body: formData
       });
+      
       const result = await emailResponse.json();
   
       if (emailResponse.ok) {
         setEmailStatus({
           success: true,
           message: 'Emails sent successfully',
+          totalEmails: result.totalEmails,
+          successfulEmails: result.successfulEmails,
+          failedEmails: result.failedEmails,
+          results: result.results
         });
       } else {
         setEmailStatus({
           success: false,
-          message: result.error || 'Failed to send emails'
+          message: result.error || 'Failed to send emails',
+          totalEmails: 0,
+          successfulEmails: 0,
+          failedEmails: 0
         });
       }
     } catch (err) {
       console.error('Excel generation and email sending error:', err);
       setEmailStatus({
         success: false,
-        message: err.message
+        message: err.message,
+        totalEmails: 0,
+        successfulEmails: 0,
+        failedEmails: 0
       });
+    } finally {
+      setSendingEmails(false);
     }
   };
+
   const renderEmailStatus = () => {
     if (!emailStatus) return null;
-
+  
+    console.log('Current emailStatus:', emailStatus);
+  
     return (
-      <div className={`p-4 rounded mt-4 ${emailStatus.success ? 'bg-[#00f5d0]-100 text-[#00f5d0]-800' : 'bg-red-100 text-red-800'
-        }`}>
-        {emailStatus.message}
-        {emailStatus.results && (
-          <div className="mt-2">
-            <h4 className="font-semibold">Email Results:</h4>
-            <ul className="list-disc list-inside">
-              {emailStatus.results.map((result, index) => (
-                <li key={index}>
-                  {result.email}: {result.status}
-                  {result.error && ` (${result.error})`}
-                </li>
-              ))}
-            </ul>
+      <div className={`p-4 rounded mt-4 ${
+        emailStatus.success ? 'bg-white/5 border border-[#00f5d0]/20' : 'bg-red-100 text-red-800'
+      }`}>
+        <div className="mb-4 text-[#00f5d0]">
+          {emailStatus.message}
+        </div>
+        
+        <div className="grid grid-cols-1 gap-1 mb-1">
+          <div className="bg-white/5 p-4 rounded-lg border border-white/10">
+            <div className="text-sm text-gray-400">Total Emails</div>
+            <div className="text-2xl font-bold text-[#00f5d0]">
+              {emailStatus.totalEmails || 0}
+            </div>
+          </div>
+          <div className="bg-white/5 p-4 rounded-lg border border-white/10">
+            <div className="text-sm text-gray-400">Successfully Sent</div>
+            <div className="text-2xl font-bold text-[#00f5d0]">
+              {emailStatus.successfulEmails || 0}
+            </div>
+          </div>
+          <div className="bg-white/5 p-4 rounded-lg border border-white/10">
+            <div className="text-sm text-gray-400">Failed</div>
+            <div className="text-2xl font-bold text-red-500">
+              {emailStatus.failedEmails || 0}
+            </div>
+          </div>
+        </div>
+  
+        {emailStatus.results && emailStatus.results.length > 0 && (
+          <div className="mt-4">
+            <h4 className="text-lg font-semibold text-[#00f5d0] mb-2">Detailed Results:</h4>
+            <div className="max-h-60 overflow-y-auto">
+              <table className="min-w-full divide-y divide-gray-700">
+                <thead>
+                  <tr>
+                    <th className="px-4 py-2 text-left text-sm font-semibold text-gray-300">Email</th>
+                    <th className="px-4 py-2 text-left text-sm font-semibold text-gray-300">Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-700">
+                  {emailStatus.results.map((result, index) => (
+                    <tr key={index} className="hover:bg-white/5">
+                      <td className="px-4 py-2 text-sm text-gray-300">{result.email}</td>
+                      <td className={`px-4 py-2 text-sm ${
+                        result.status === 'Success' ? 'text-[#00f5d0]' : 'text-red-400'
+                      }`}>
+                        {result.status}
+                        {result.error && <span className="text-red-400"> ({result.error})</span>}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
       </div>
     );
   };
+ 
   const generateExcelButton = hasSpecialAccess && (
     <div className="flex flex-col">
       <button
         onClick={handleGenerateExcel}
-        className="flex items-center bg-[#00f5d0] text-black px-4 py-2 rounded hover:bg-[#00f5d0] transition"
+        disabled={sendingEmails}
+        className={`flex items-center justify-center bg-[#00f5d0] text-black px-4 py-2 rounded transition ${
+          sendingEmails ? 'opacity-70 cursor-not-allowed' : 'hover:bg-[#00f5d0]'
+        }`}
       >
-        <Send className="mr-2 w-5 h-5" />
-        Generate & Send Excel
+        {sendingEmails ? (
+          <>
+            <Loader2 className="mr-2 w-5 h-5 animate-spin" />
+            Sending Emails...
+          </>
+        ) : (
+          <>
+            <Send className="mr-2 w-5 h-5" />
+            Send Emails
+          </>
+        )}
       </button>
       {renderEmailStatus()}
     </div>
   );
+
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -270,9 +340,7 @@ export const Approved = () => {
                   <div className="flex space-x-4">
                     {generateExcelButton}
                   </div>
-                </div>
-              )}
-                <div className="flex space-x-4">
+                  <div className="flex space-x-4">
                   <button
                     onClick={handlePrint}
                     className="flex-1 flex items-center justify-center bg-[#00f5d0] text-black px-4 py-2 rounded hover:bg-[#00f5d0] hover:text-black transition"
@@ -281,6 +349,8 @@ export const Approved = () => {
                     Generate Report
                   </button>
                 </div>
+                </div>
+              )}
               </div>
             </div>
           </div>
