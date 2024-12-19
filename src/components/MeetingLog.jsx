@@ -137,9 +137,6 @@ const MeetingLog = ({ meetings, setMeetings, fetchMeetings }) => {
 
     const logoBase64 = process.env.logoBase64;
     const cit = process.env.cit;
-
-
-    // Base64 encoded logo (replace this with your actual logo's base64 string)
     const printContent = `
       
 <!DOCTYPE html>
