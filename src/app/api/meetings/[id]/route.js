@@ -1,3 +1,4 @@
+//api/meetings/[id]/route.js
 import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 import { getServerSession } from 'next-auth';
@@ -67,20 +68,34 @@ export async function PATCH(req, { params }) {
     }
 
     const meetingId = params.id;
-    
-    // Parse the request body
     const body = await req.json();
-    const { title } = body;
+    const { title, date, from_time, to_time, team } = body;
 
     // Validate input
-    if (!title || title.trim() === '') {
+    if (title && title.trim() === '') {
       return NextResponse.json({ error: 'Title cannot be empty' }, { status: 400 });
     }
 
-    // Update the meeting title
+    // Create update data object with only provided fields
+    const updateData = {};
+    if (title) updateData.title = title.trim();
+    if (team) updateData.team = team.trim();
+
+    // Convert date strings to proper ISO datetime format
+    if (date) {
+      updateData.date = new Date(date).toISOString();
+    }
+    if (from_time) {
+      updateData.from_time = new Date(from_time).toISOString();
+    }
+    if (to_time) {
+      updateData.to_time = new Date(to_time).toISOString();
+    }
+
+    // Update the meeting
     const updatedMeeting = await prisma.meeting.update({
       where: { id: meetingId },
-      data: { title: title.trim() }
+      data: updateData
     });
 
     return NextResponse.json(updatedMeeting, { status: 200 });
