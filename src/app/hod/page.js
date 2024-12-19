@@ -65,7 +65,6 @@ const Navbar = ({ onNavItemClick, activeComponent }) => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
   const handleBack = () => {
-    // Directly navigate to the external dashboard URL
     window.location.href = 'https://dashboard-vs8l.vercel.app/Navbar';
   };
 
