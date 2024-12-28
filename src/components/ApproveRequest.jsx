@@ -1,7 +1,21 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import Loading from './Loading';
+
+const Spinner = () => (
+  <div className="flex justify-center items-center h-screen">
+    <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-[#00f5d0]"></div>
+  </div>
+);
+
+const LoadingOverlay = () => (
+  <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+    <div className="bg-white/10 p-6 rounded-lg shadow-xl">
+      <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-[#00f5d0] mx-auto"></div>
+      <p className="text-[#00f5d0] mt-4 text-center">Processing...</p>
+    </div>
+  </div>
+);
 
 const ODRequestApproval = () => {
   const { data: session, status } = useSession();
@@ -14,86 +28,66 @@ const ODRequestApproval = () => {
   const [selectedRequests, setSelectedRequests] = useState([]);
   const [showBatchTimingForm, setShowBatchTimingForm] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [batchTimings, setBatchTimings] = useState({
-    from_time: '',
-    to_time: ''
-  });
-  const [loading, setLoading] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [batchTimings, setBatchTimings] = useState({ from_time: '', to_time: '' });
   const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const recordsPerPage = 15;
 
-  // Utility function to format time
-  const formatTime = (time) => {
+  const formatTime = useCallback((time) => {
     return new Date(time).toLocaleTimeString([], {
       hour: '2-digit',
       minute: '2-digit'
     });
-  };
+  }, []);
 
-  // Function to handle reason selection
-  const handleReasonSelect = (reason) => {
+  const handleReasonSelect = useCallback((reason) => {
     setSelectedReason(reason);
     setCurrentPage(1);
-  };
+  }, []);
 
-  // Function to handle year selection
-  const handleYearSelect = (year) => {
+  const handleYearSelect = useCallback((year) => {
     setSelectedYear(year);
     setCurrentPage(1);
-  };
+  }, []);
 
-
-
-  // Function to toggle request selection
-  const toggleSelection = (odId) => {
+  const toggleSelection = useCallback((odId) => {
     setSelectedRequests(prev =>
-      prev.includes(odId)
-        ? prev.filter(id => id !== odId)
-        : [...prev, odId]
+      prev.includes(odId) ? prev.filter(id => id !== odId) : [...prev, odId]
     );
-  };
+  }, []);
 
-
-  // Bulk action handler (approve, reject, modify)
-  const handleBulkAction = async (action) => {
-    setLoading(true);
+  const handleBulkAction = useCallback(async (action) => {
+    setIsProcessing(true);
+    setError(null);
+    
     try {
       const response = await fetch('/api/od-request/bulk-action', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           requestIds: selectedRequests,
-          action: action,
-          ...(action === 'modify' && {
-            from_time: batchTimings.from_time,
-            to_time: batchTimings.to_time
-          })
+          action,
+          ...(action === 'modify' && batchTimings)
         })
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to process requests');
+        throw new Error('Failed to process requests');
       }
 
-      // Refresh the requests or update the UI as needed
-      const updatedRequests = await fetch('/api/od-request?status=0');
-      const data = await updatedRequests.json();
+      const updatedResponse = await fetch('/api/od-request?status=0');
+      const data = await updatedResponse.json();
       setRequests(data);
-
-      // Reset selections
       setSelectedRequests([]);
       setShowBatchTimingForm(false);
     } catch (err) {
       setError(err.message);
     } finally {
-      setLoading(false);
+      setIsProcessing(false);
     }
-  };
+  }, [selectedRequests, batchTimings]);
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -102,64 +96,35 @@ const ODRequestApproval = () => {
       if (session?.user?.role !== 'HOD') {
         router.push('/unauthorized');
       } else {
-        setIsLoading(false);
+        const fetchData = async () => {
+          try {
+            const response = await fetch('/api/od-request?status=0');
+            const data = await response.json();
+            setRequests(data);
+            setUniqueReasons(['All', ...new Set(data.map(request => request.reason).filter(Boolean))]);
+            setUniqueYears(['All', ...new Set(data.map(request => request.year).filter(Boolean))]);
+          } catch (error) {
+            setError('Failed to load requests');
+          } finally {
+            setIsLoading(false);
+          }
+        };
+        fetchData();
       }
     }
   }, [status, session, router]);
 
-  // Fetch requests on component mount
-  useEffect(() => {
-    const fetchRequests = async () => {
-      try {
-        const response = await fetch('/api/od-request?status=0');  // Fetch pending requests
-        const data = await response.json();
-        setRequests(data);
 
-        const reasons = ['All', ...new Set(data.map(request => request.reason).filter(Boolean))];
-        const years = ['All', ...new Set(data.map(request => request.year).filter(Boolean))];
-
-        setUniqueReasons(reasons);
-        setUniqueYears(years);
-      } catch (error) {
-        console.error('Failed to fetch requests', error);
-        setError('Failed to load requests');
-      }
-    };
-
-    if (!isLoading && status === 'authenticated' && session?.user?.role === 'HOD') {
-      fetchRequests();
-    }
-  }, [isLoading, status, session]);
-
-  // Filtering and Searching logic
-  const getFilteredRequests = useMemo(() => {
-    let filteredRequests = requests;
-
-    // Filter by reason
-    if (selectedReason !== 'All') {
-      filteredRequests = filteredRequests.filter(r => r.reason === selectedReason);
-    }
-
-    // Filter by year
-    if (selectedYear !== 'All') {
-      filteredRequests = filteredRequests.filter(r =>
-        String(r.year).trim() === String(selectedYear).trim()
-      );
-    }
-
-
-    // Search by name
-    if (searchQuery) {
-      const lowercaseQuery = searchQuery.toLowerCase();
-      filteredRequests = filteredRequests.filter(r =>
-        r.name.toLowerCase().includes(lowercaseQuery)
-      );
-    }
-
-    return filteredRequests;
+   const getFilteredRequests = useMemo(() => {
+    return requests.filter(request => {
+      const matchesReason = selectedReason === 'All' || request.reason === selectedReason;
+      const matchesYear = selectedYear === 'All' || String(request.year).trim() === String(selectedYear).trim();
+      const matchesSearch = !searchQuery || request.name.toLowerCase().includes(searchQuery.toLowerCase());
+      return matchesReason && matchesYear && matchesSearch;
+    });
   }, [requests, selectedReason, selectedYear, searchQuery]);
 
-  // Select all/deselect all functionality
+
   const toggleSelectAll = () => {
     const filteredRequests = getFilteredRequests;
     setSelectedRequests(
@@ -169,23 +134,21 @@ const ODRequestApproval = () => {
     );
   };
 
-  // Pagination logic
+  
   const paginatedRequests = useMemo(() => {
     const startIndex = (currentPage - 1) * recordsPerPage;
     return getFilteredRequests.slice(startIndex, startIndex + recordsPerPage);
-  }, [getFilteredRequests, currentPage, recordsPerPage]);
+  }, [getFilteredRequests, currentPage]);
 
-  // Total pages calculation
-  const totalPages = useMemo(() => {
-    return Math.ceil(getFilteredRequests.length / recordsPerPage);
-  }, [getFilteredRequests, recordsPerPage]);
+  const totalPages = useMemo(() => 
+    Math.ceil(getFilteredRequests.length / recordsPerPage)
+  , [getFilteredRequests.length]);
 
-  if (loading || isLoading){
-    return <Loading/>
-  }
+  if (isLoading) return <Spinner />;
 
   return (
     <div className="min-h-screen bg-black py-8 px-4 sm:px-6 lg:px-8">
+       {isProcessing && <LoadingOverlay />}
       <div className="max-w-5xl mx-auto bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10">
 
         <div className="flex flex-row">
@@ -374,17 +337,15 @@ const ODRequestApproval = () => {
             </button>
             <button
               onClick={() => handleBulkAction('approve')}
-              disabled={loading}
-              className={`bg-green-500 text-white px-4 py-2 rounded hover:bg-green-700 transition duration-200 ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+              className={`bg-green-500 text-white px-4 py-2 rounded hover:bg-green-700 transition duration-200 `}
             >
-              {loading ? "Approving..." : "Approve"}
+              Approve
             </button>
             <button
               onClick={() => handleBulkAction('reject')}
-              disabled={loading}
-              className={`bg-red-500 text-white px-4 py-2 rounded hover:bg-red-700 transition duration-200 ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+              className={`bg-red-500 text-white px-4 py-2 rounded hover:bg-red-700 transition duration-200 `}
             >
-              {loading ? "Rejecting..." : "Reject"}
+              Reject
             </button>
           </div>
         )}
@@ -401,7 +362,7 @@ const ODRequestApproval = () => {
             >
               <div className="flex space-x-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">From Time</label>
+                  <label className="block text-sm font-medium text-white mb-1">From Time</label>
                   <input
                     type="time"
                     value={batchTimings.from_time}
@@ -411,7 +372,7 @@ const ODRequestApproval = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">To Time</label>
+                  <label className="block text-sm font-medium text-white mb-1">To Time</label>
                   <input
                     type="time"
                     value={batchTimings.to_time}
