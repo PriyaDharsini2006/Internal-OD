@@ -833,6 +833,7 @@ logoBase64 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAB9AAAAfQCAYAAACaOMR5
           </div>
         </div>
       )}
+      
     </div>
   );
 };
