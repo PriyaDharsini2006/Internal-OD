@@ -30,7 +30,6 @@ export async function GET(request) {
       }
     });
 
-    // Transform the data to match the component's expected structure
     const formattedUsers = meetingUsers.map(user => ({
       name: user.name,
       email: user.email,

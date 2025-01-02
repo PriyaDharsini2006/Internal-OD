@@ -103,14 +103,14 @@ const MeetingRequest = () => {
     to_time: '',
     to_time_modifier: 'AM',
     date: '',
-    students: []
+    students: [],
+    years: []
   });
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [meetings, setMeetings] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
-
   const [selectedYear, setSelectedYear] = useState('all');
   const [localSearch, setLocalSearch] = useState('');
   const [registerNumberSearch, setRegisterNumberSearch] = useState('');
@@ -118,7 +118,12 @@ const MeetingRequest = () => {
   const [proceedWithSubmit, setProceedWithSubmit] = useState(false);
   const [selectedTeamType, setSelectedTeamType] = useState('');
   const [selectedTeam, setSelectedTeam] = useState('');
-
+  const yearOptions = [
+    { id: 1, label: '1st Year' },
+    { id: 2, label: '2nd Year' },
+    { id: 3, label: '3rd Year' },
+    { id: 4, label: '4th Year' }
+  ];
 
 
   const fetchMeetings = async () => {
@@ -177,7 +182,14 @@ const MeetingRequest = () => {
     }));
   };
 
-
+  const handleYearSelect = (yearId) => {
+    setFormData(prev => ({
+      ...prev,
+      years: prev.years.includes(yearId)
+        ? prev.years.filter(id => id !== yearId)
+        : [...prev.years, yearId]
+    }));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -213,7 +225,8 @@ const MeetingRequest = () => {
           team: selectedTeam,
           date: new Date(formData.date),
           from_time: new Date(`${formData.date}T${fromTime24}`),
-          to_time: new Date(`${formData.date}T${toTime24}`)
+          to_time: new Date(`${formData.date}T${toTime24}`),
+          years: formData.years
         })
       });
 
@@ -250,6 +263,26 @@ const MeetingRequest = () => {
       router.push('/api/auth/signin');
     }
   }, [status, router]);
+
+  const renderYearSelection = () => (
+    <div className="mb-4">
+      <label className="block mb-2 text-sm font-medium text-[#00f5d0]">Select Years</label>
+      <div className="space-y-2">
+        {yearOptions.map((year) => (
+          <div key={year.id} className="flex items-center">
+            <input
+              type="checkbox"
+              checked={formData.years?.includes(year.id) || false}
+              onChange={() => handleYearSelect(year.id)}
+              className="h-4 w-4 text-[#00f5d0] focus:ring-[#00f5d0] border-[#00f5d0] rounded mr-2"
+            />
+            <label className="text-white text-sm">{year.label}</label>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
 
   const filteredStudents = students.filter(student => {
     const searchLower = localSearch.toLowerCase();
@@ -360,8 +393,8 @@ const MeetingRequest = () => {
     setTimeError(''); // Ensure this is cleared
   };
 
-  if(loading){
-    return <Loading/>;
+  if (loading) {
+    return <Loading />;
   }
 
   return (
@@ -384,7 +417,7 @@ const MeetingRequest = () => {
           </h1>
           <button
             onClick={handleButtonClick
-            } 
+            }
             className="bg-[#00f5d0] font-grotesk w-full sm:w-auto text-sm sm:text-base hover:opacity-90 text-black font-bold py-2 px-4 rounded flex items-center justify-center"
           >
             Total Meeting Count
@@ -399,7 +432,7 @@ const MeetingRequest = () => {
         </div>
       )}
 
-<div className="relative mt-6">
+      <div className="relative mt-6">
         {/* Responsive Create Meeting Button */}
         <div className="flex justify-end mb-4">
           <button
@@ -509,6 +542,8 @@ const MeetingRequest = () => {
                     className="w-full px-3 py-2 border border-white rounded-md bg-black text-white focus:ring-2 focus:ring-[#00f5d0]"
                   />
                 </div>
+
+                {renderYearSelection()}
 
                 <div>
                   <label className="block mb-2 text-sm font-medium text-[#00f5d0]">Date</label>
@@ -655,7 +690,7 @@ const MeetingRequest = () => {
                   </div>
                 )}
 
-               
+
 
 
                 <div>
@@ -683,7 +718,6 @@ const MeetingRequest = () => {
       </div>
     </div>
   );
-
 };
 
 export default MeetingRequest;

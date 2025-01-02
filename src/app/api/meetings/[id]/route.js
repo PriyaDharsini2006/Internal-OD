@@ -1,11 +1,9 @@
-//api/meetings/[id]/route.js
 import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../../auth/[...nextauth]/route';
 
 const prisma = new PrismaClient();
-
 
 export async function DELETE(req, { params }) {
   try {
@@ -15,41 +13,46 @@ export async function DELETE(req, { params }) {
     }
 
     const meetingId = params.id;
+    const result = await prisma.$transaction(async (tx) => {
+      const meeting = await tx.meeting.findUnique({
+        where: { id: meetingId },
+        select: { students: true, years: true }
+      });
 
-    // Find the meeting to get the list of students before deleting
-    const meeting = await prisma.meeting.findUnique({
-      where: { id: meetingId },
-      select: { students: true }
+      if (!meeting) {
+        throw new Error('Meeting not found');
+      }
+
+      if (meeting.students?.length > 0) {
+        await Promise.all(meeting.students.map(email => 
+          tx.count.updateMany({
+            where: { email, meeting_cnt: { gt: 0 } },
+            data: { meeting_cnt: { decrement: 1 } }
+          })
+        ));
+      }
+
+      if (meeting.years?.length > 0) {
+        for (const year of meeting.years) {
+          await tx.meetingCnt.update({
+            where: { year },
+            data: { meetingCount: { decrement: 1 } }
+          });
+        }
+      }
+
+      return await tx.meeting.delete({
+        where: { id: meetingId }
+      });
     });
 
-    if (!meeting) {
-      return NextResponse.json({ error: 'Meeting not found' }, { status: 404 });
-    }
+    return NextResponse.json(result, { status: 200 });
 
-    // Decrement meeting count for associated students
-    if (meeting.students && meeting.students.length > 0) {
-      await Promise.all(meeting.students.map(async (email) => {
-        await prisma.count.updateMany({
-          where: { 
-            email,
-            meeting_cnt: { gt: 0 } // Ensure we don't go below 0
-          },
-          data: { 
-            meeting_cnt: { decrement: 1 } 
-          }
-        });
-      }));
-    }
-    
-
-    // Delete the meeting
-    const deletedMeeting = await prisma.meeting.delete({
-      where: { id: meetingId }
-    });
-
-    return NextResponse.json(deletedMeeting, { status: 200 });
   } catch (error) {
     console.error('Meeting deletion error:', error);
+    if (error.code === 'P2025') {
+      return NextResponse.json({ error: 'Meeting not found' }, { status: 404 });
+    }
     return NextResponse.json(
       { error: 'Failed to delete meeting', details: error.message },
       { status: 500 }
@@ -58,7 +61,6 @@ export async function DELETE(req, { params }) {
     await prisma.$disconnect();
   }
 }
-
 
 export async function PATCH(req, { params }) {
   try {
@@ -69,30 +71,57 @@ export async function PATCH(req, { params }) {
 
     const meetingId = params.id;
     const body = await req.json();
-    const { title, date, from_time, to_time, team } = body;
+    const { title, date, from_time, to_time, team, years } = body;
 
-    // Validate input
     if (title && title.trim() === '') {
       return NextResponse.json({ error: 'Title cannot be empty' }, { status: 400 });
     }
 
-    // Create update data object with only provided fields
+    // Get current meeting data before update
+    const currentMeeting = await prisma.meeting.findUnique({
+      where: { id: meetingId },
+      select: { years: true }
+    });
+
+    if (!currentMeeting) {
+      return NextResponse.json({ error: 'Meeting not found' }, { status: 404 });
+    }
+
     const updateData = {};
     if (title) updateData.title = title.trim();
     if (team) updateData.team = team.trim();
+    if (years) updateData.years = years;
+    if (date) updateData.date = new Date(date).toISOString();
+    if (from_time) updateData.from_time = new Date(from_time).toISOString();
+    if (to_time) updateData.to_time = new Date(to_time).toISOString();
 
-    // Convert date strings to proper ISO datetime format
-    if (date) {
-      updateData.date = new Date(date).toISOString();
-    }
-    if (from_time) {
-      updateData.from_time = new Date(from_time).toISOString();
-    }
-    if (to_time) {
-      updateData.to_time = new Date(to_time).toISOString();
+    // Handle year count updates only if years are being modified
+    if (years) {
+      const yearsToRemove = currentMeeting.years.filter(y => !years.includes(y));
+      const yearsToAdd = years.filter(y => !currentMeeting.years.includes(y));
+
+      // Decrement count for removed years
+      if (yearsToRemove.length > 0) {
+        await Promise.all(yearsToRemove.map(year => 
+          prisma.meetingCnt.update({
+            where: { year },
+            data: { meetingCount: { decrement: 1 } }
+          })
+        ));
+      }
+
+      // Increment count for added years
+      if (yearsToAdd.length > 0) {
+        await Promise.all(yearsToAdd.map(year => 
+          prisma.meetingCnt.upsert({
+            where: { year },
+            create: { year, meetingCount: 1 },
+            update: { meetingCount: { increment: 1 } }
+          })
+        ));
+      }
     }
 
-    // Update the meeting
     const updatedMeeting = await prisma.meeting.update({
       where: { id: meetingId },
       data: updateData

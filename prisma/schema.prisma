@@ -73,7 +73,15 @@ model Meeting {
   to_time   DateTime
   date      DateTime
   students  String[]
+  years     Int[]    @default([])
 }
+
+model MeetingCnt {
+  id            Int @id @default(autoincrement())
+  year          Int    @unique
+  meetingCount  Int    @default(0)
+}
+
 
 model StaybackDate {
   id        String     @id @default(uuid())

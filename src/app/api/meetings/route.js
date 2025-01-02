@@ -1,11 +1,9 @@
-//app/api/meetings/route.js
 import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../auth/[...nextauth]/route';
 
 const prisma = new PrismaClient();
-
 
 export async function POST(req) {
   try {
@@ -14,9 +12,8 @@ export async function POST(req) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { team, title, from_time, to_time, date, students } = await req.json();
+    const { team, title, from_time, to_time, date, students, years } = await req.json();
 
-    // Create meeting
     const meeting = await prisma.meeting.create({
       data: {
         team,
@@ -24,13 +21,14 @@ export async function POST(req) {
         from_time,
         to_time,
         date,
-        students
+        students,
+        years
       }
     });
 
-    // Update meeting count for selected students
-    await Promise.all(students.map(async (email) => {
-      await prisma.count.upsert({
+    // Update student meeting counts
+    await Promise.all(students.map(email => 
+      prisma.count.upsert({
         where: { email },
         update: { meeting_cnt: { increment: 1 } },
         create: { 
@@ -38,8 +36,16 @@ export async function POST(req) {
           meeting_cnt: 1,
           stayback_cnt: 0 
         }
-      });
-    }));
+      })
+    ));
+
+    await Promise.all(years.map(year =>
+      prisma.meetingCnt.upsert({
+        where: { year },
+        update: { meetingCount: { increment: 1 } },
+        create: { year, meetingCount: 1 }
+      })
+    ));
 
     return NextResponse.json(meeting, { status: 201 });
   } catch (error) {
