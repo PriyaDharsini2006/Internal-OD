@@ -7,7 +7,7 @@ const Meeting = () => {
         <div className='bg-black'> 
                 <MeetingUpdateComponent />
         </div>
-    )
+    ) 
 }
 
 export default Meeting;
