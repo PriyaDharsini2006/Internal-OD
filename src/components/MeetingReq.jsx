@@ -95,7 +95,7 @@ const MeetingRequest = () => {
 
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [formData, setFormData] = useState({
+  const initialFormState = {
     team: '',
     title: '',
     from_time: '',
@@ -105,7 +105,8 @@ const MeetingRequest = () => {
     date: '',
     students: [],
     years: []
-  });
+  };
+  const [formData, setFormData] = useState(initialFormState);
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -235,27 +236,34 @@ const MeetingRequest = () => {
         throw new Error(errorData.error || 'Failed to submit meeting request');
       }
 
-      setFormData({
-        team: '',
-        title: '',
-        from_time: '',
-        from_time_modifier: 'AM',
-        to_time: '',
-        to_time_modifier: 'AM',
-        date: '',
-        students: []
-      });
+      // Reset all form-related state
+      setFormData(initialFormState);
+      setSelectedTeam('');
+      setSelectedTeamType('');
+      setLocalSearch('');
+      setTimeError('');
 
       await fetchMeetings();
       alert('Meeting request submitted successfully');
       setIsModalOpen(false);
-      setTimeError('');
     } catch (err) {
       setError(err.message);
     } finally {
       setLoading(false);
     }
   };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setFormData(initialFormState);
+    setSelectedTeam('');
+    setSelectedTeamType('');
+    setError(null);
+    setLocalSearch('');
+    setTimeError('');
+    setRegisterNumberSearch('');
+  };
+
 
 
   useEffect(() => {
@@ -374,23 +382,6 @@ const MeetingRequest = () => {
     );
 
     setTimeError(timeValidation || '');
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setFormData({
-      team: '',
-      title: '',
-      from_time: '',
-      from_time_modifier: 'AM',
-      to_time: '',
-      to_time_modifier: 'AM',
-      date: '',
-      students: []
-    });
-    setError(null);
-    setLocalSearch('');
-    setTimeError(''); // Ensure this is cleared
   };
 
   if (loading) {
