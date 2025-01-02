@@ -59,13 +59,21 @@ const ODRequestApproval = () => {
   }, []);
 
   const handleBulkAction = useCallback(async (action) => {
+    if (selectedRequests.length === 0) {
+      setError('Please select at least one request');
+      return;
+    }
+
     setIsProcessing(true);
     setError(null);
-    
+
     try {
       const response = await fetch('/api/od-request/bulk-action', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Cache-Control': 'no-cache'
+        },
         body: JSON.stringify({
           requestIds: selectedRequests,
           action,
@@ -74,20 +82,34 @@ const ODRequestApproval = () => {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to process requests');
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to process requests');
       }
 
-      const updatedResponse = await fetch('/api/od-request?status=0');
+      const updatedResponse = await fetch('/api/od-request?status=0', {
+        headers: {
+          'Cache-Control': 'no-cache'
+        }
+      });
+
+      if (!updatedResponse.ok) {
+        throw new Error('Failed to fetch updated requests');
+      }
+
       const data = await updatedResponse.json();
       setRequests(data);
       setSelectedRequests([]);
       setShowBatchTimingForm(false);
+
+      const actionText = action === 'approve' ? 'approved' : action === 'reject' ? 'rejected' : 'modified';
+      alert(`Successfully ${actionText} ${selectedRequests.length} request(s)`);
     } catch (err) {
-      setError(err.message);
+      setError(err.message || 'An error occurred while processing the requests');
     } finally {
       setIsProcessing(false);
     }
   }, [selectedRequests, batchTimings]);
+
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -115,7 +137,7 @@ const ODRequestApproval = () => {
   }, [status, session, router]);
 
 
-   const getFilteredRequests = useMemo(() => {
+  const getFilteredRequests = useMemo(() => {
     return requests.filter(request => {
       const matchesReason = selectedReason === 'All' || request.reason === selectedReason;
       const matchesYear = selectedYear === 'All' || String(request.year).trim() === String(selectedYear).trim();
@@ -134,21 +156,58 @@ const ODRequestApproval = () => {
     );
   };
 
-  
+  const renderBulkActionButtons = () => {
+    if (selectedRequests.length === 0) {
+      return null;
+    }
+
+    return (
+      <div className="flex justify-between items-center p-4 bg-white/5 rounded-lg mt-4">
+        <div className="text-gray-300">
+          {selectedRequests.length} request(s) selected
+        </div>
+        <div className="flex gap-4">
+          <button
+            onClick={() => setShowBatchTimingForm(true)}
+            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700 transition duration-200 disabled:opacity-50"
+            disabled={isProcessing}
+          >
+            Modify Timings
+          </button>
+          <button
+            onClick={() => handleBulkAction('approve')}
+            className="bg-[#00f5d0] font-grotesk w-full sm:w-auto text-sm sm:text-base hover:opacity-90 text-black font-bold py-2 px-4 rounded flex items-center justify-center"
+            disabled={isProcessing}
+          >
+            {isProcessing ? 'Processing...' : 'Approve'}
+          </button>
+          <button
+            onClick={() => handleBulkAction('reject')}
+            className="bg-red-500 font-grotesk w-full sm:w-auto text-sm sm:text-base hover:opacity-90 text-black font-bold py-2 px-4 rounded flex items-center justify-center"
+            disabled={isProcessing}
+          >
+            {isProcessing ? 'Processing...' : 'Reject'}
+          </button>
+        </div>
+      </div>
+    );
+  };
+
+
   const paginatedRequests = useMemo(() => {
     const startIndex = (currentPage - 1) * recordsPerPage;
     return getFilteredRequests.slice(startIndex, startIndex + recordsPerPage);
   }, [getFilteredRequests, currentPage]);
 
-  const totalPages = useMemo(() => 
+  const totalPages = useMemo(() =>
     Math.ceil(getFilteredRequests.length / recordsPerPage)
-  , [getFilteredRequests.length]);
+    , [getFilteredRequests.length]);
 
   if (isLoading) return <Spinner />;
 
   return (
     <div className="min-h-screen bg-black py-8 px-4 sm:px-6 lg:px-8">
-       {isProcessing && <LoadingOverlay />}
+      {isProcessing && <LoadingOverlay />}
       <div className="max-w-5xl mx-auto bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10">
 
         <div className="flex flex-row">
@@ -174,7 +233,6 @@ const ODRequestApproval = () => {
           </div>
         )}
 
-        {/* Search and Filter Section*/}
         <div className="mb-6 flex flex-col md:flex-row gap-4">
           <div className="flex-grow">
             <input
@@ -190,7 +248,6 @@ const ODRequestApproval = () => {
           </div>
         </div>
 
-        {/* Reason Filters */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-6">
           {uniqueReasons.map((reason) => (
             <button
@@ -211,7 +268,6 @@ const ODRequestApproval = () => {
           ))}
         </div>
 
-        {/* Year Filter */}
         <div className="flex gap-4 mb-6">
           <div className="flex-1">
             <select
@@ -302,7 +358,6 @@ const ODRequestApproval = () => {
               </tbody>
             </table>
 
-            {/* Pagination Controls */}
             <div className="flex justify-between items-center mt-4">
               <div>
                 Showing {(currentPage - 1) * recordsPerPage + 1} - {Math.min(currentPage * recordsPerPage, getFilteredRequests.length)} of {getFilteredRequests.length} results
@@ -327,28 +382,7 @@ const ODRequestApproval = () => {
           </div>
         )}
 
-        {selectedRequests.length > 0 && (
-          <div className="flex justify-between items-center">
-            <button
-              onClick={() => setShowBatchTimingForm(true)}
-              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700 transition duration-200"
-            >
-              Modify Timings
-            </button>
-            <button
-              onClick={() => handleBulkAction('approve')}
-              className={`bg-green-500 text-white px-4 py-2 rounded hover:bg-green-700 transition duration-200 `}
-            >
-              Approve
-            </button>
-            <button
-              onClick={() => handleBulkAction('reject')}
-              className={`bg-red-500 text-white px-4 py-2 rounded hover:bg-red-700 transition duration-200 `}
-            >
-              Reject
-            </button>
-          </div>
-        )}
+        {renderBulkActionButtons()}
 
         {showBatchTimingForm && (
           <div className="mt-4 p-4 border rounded-md  bg-white/5">

@@ -438,7 +438,6 @@ const logoBase64 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAB9AAAAfQCAYAAA
 
   return (
     <div className="p-6 max-w-7xl mx-auto">
-      {/* Meetings Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
         {meetings.map((meeting) => (
           <div
@@ -448,7 +447,6 @@ const logoBase64 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAB9AAAAfQCAYAAA
               : "bg-red-500 text-black hover:bg-red-200"
               }`}
           >
-            {/* Delete Button */}
             <button
               onClick={(e) => confirmDeleteMeeting(meeting, e)}
               className="absolute top-2 right-2 bg-red-600 hover:bg-red-700 text-white p-1 rounded-full z-10"
@@ -457,7 +455,6 @@ const logoBase64 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAB9AAAAfQCAYAAA
               <Trash2 size={16} />
             </button>
 
-            {/* Edit Button */}
             <button
               onClick={(e) => startEditing(meeting, e)}
               className="absolute top-2 right-10 bg-blue-600 hover:bg-blue-700 text-white p-1 rounded-full z-10"
@@ -466,7 +463,6 @@ const logoBase64 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAB9AAAAfQCAYAAA
               <Edit2 size={16} />
             </button>
 
-            {/* Meeting Card Content */}
             <div
               className="cursor-pointer"
               onClick={() => openMeetingDetails(meeting)}
@@ -538,14 +534,12 @@ const logoBase64 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAB9AAAAfQCAYAAA
           </div>
         ))}
       </div>
-      {/* Delete Confirmation Modal */}
       {isDeleteConfirmOpen && (
         <div
           className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999]"
           style={{ zIndex: 9999 }}
         >
           <div className="bg-black p-8 rounded-lg w-96 text-center relative shadow-2xl border border-red-500">
-            {/* Close Icon */}
             <button
               onClick={() => {
                 setIsDeleteConfirmOpen(false);
@@ -608,19 +602,11 @@ const logoBase64 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAB9AAAAfQCAYAAA
             </div>
 
 
-            {/* Modal Content */}
             <div className="flex-grow overflow-auto space-y-6 bg-black">
-              {/* Available Students Section */}
               <div className="border rounded-lg p-6">
                 <div className="flex justify-between items-center mb-4">
                   <h3 className="text-xl font-semibold text-white">Available Students</h3>
                   <div className="flex space-x-2">
-                    {/* <button
-                      onClick={selectAllAvailableStudents}
-                      className="bg-[#00f5d0] hover:bg-green-600 text-black px-3 py-1 rounded text-sm"
-                    >
-                      Select All
-                    </button> */}
                     <button
                       onClick={addMultipleStudentsToMeeting}
                       className="bg-[#00f5d0] hover:bg-green-600 text-black px-3 py-1 rounded text-sm"
@@ -655,7 +641,6 @@ const logoBase64 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAB9AAAAfQCAYAAA
                 </div>
 
 
-                {/* Students Table */}
                 <div className="max-h-96 overflow-y-auto border rounded-md">
                   <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-black sticky top-0">
@@ -710,7 +695,6 @@ const logoBase64 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAB9AAAAfQCAYAAA
                     </tbody>
                   </table>
                 </div>
-                {/* Pagination */}
                 <div className="flex items-center justify-between mt-4">
                   <div className="text-sm text-gray-500">
                     Showing {startIndex + 1} to{" "}
@@ -739,7 +723,6 @@ const logoBase64 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAB9AAAAfQCAYAAA
                 </div>
               </div>
 
-              {/* Selected Students Section */}
               <div className="border rounded-lg p-6">
                 <div className="flex justify-between items-center mb-4">
                   <h3 className="text-xl font-semibold text-white">
@@ -822,7 +805,6 @@ const logoBase64 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAB9AAAAfQCAYAAA
               </div>
             </div>
 
-            {/* Close Button */}
             <button
               onClick={() => setSelectedMeeting(null)}
               className="mt-6 w-full bg-[#00f5d0] text-black py-2 rounded-md transition duration-200"

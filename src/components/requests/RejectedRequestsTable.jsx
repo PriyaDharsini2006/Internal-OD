@@ -34,6 +34,7 @@ export const Rejected = () => {
 
   const handleUnreject = async (requestId) => {
     try {
+      setLoading(true);
       const response = await fetch(`/api/requests/${requestId}/unreject`, {
         method: 'PATCH',
         headers: {
@@ -46,10 +47,11 @@ export const Rejected = () => {
       setRequests(requests.filter(request => request.id !== requestId));
     } catch (err) {
       setError(err.message);
+    } finally{
+      setLoading(false);
     }
   };
 
-  // Format time without date
   const formatTime = (dateTime) => {
     return new Date(dateTime).toLocaleTimeString([], { 
       hour: '2-digit', 
@@ -77,7 +79,7 @@ export const Rejected = () => {
 
   return (
     <div className="print-container container mx-auto px-4 sm:px-6 lg:px-8">
-    {/* Mobile Menu Toggle */}
+
     <div className="lg:hidden mb-4">
         <button 
           onClick={toggleMobileMenu} 
@@ -98,11 +100,8 @@ export const Rejected = () => {
 
         
       </div>
-
-      {/* Browser-only view */}
       <div className="browser-view backdrop-blur-xl rounded-2xl border border-white/10">
         <div className="bg-white/5 shadow-sm rounded-lg overflow-hidden">
-          {/* Desktop Print Button */}
           <div className="hidden lg:block p-4 flex justify-end print:hidden">
             <div className='flex flex-row space-x-96'>
               <div className="flex-shrink-0 ">
