@@ -221,6 +221,9 @@ const RequestForm = () => {
     'All Event Teams'
   ]
 
+  const dept_trophies = [
+    'Pongal',
+  ]
   useEffect(() => {
     if (status === 'unauthenticated') {
       router.push('/api/auth/signin');
@@ -559,6 +562,7 @@ const RequestForm = () => {
                   <option className='text-white bg-black' value="workshops">workshops</option>
                   <option className='text-white bg-black' value="committee">Committee</option>
                   <option className='text-white bg-black' value="allTeams">All Teams</option>
+                  <option className='text-white bg-black' value="dept_trophies">Department Trophies</option>
                 </select>
               </div>
               <div>
@@ -599,6 +603,13 @@ const RequestForm = () => {
                   }
                   {selectedTeamType === 'allTeams' &&
                     allTeams.map((team) => (
+                      <option className='text-white bg-black' key={team} value={team}>
+                        {team}
+                      </option>
+                    ))
+                  }
+                  {selectedTeamType === 'dept_trophies' &&
+                    dept_trophies.map((team) => (
                       <option className='text-white bg-black' key={team} value={team}>
                         {team}
                       </option>
