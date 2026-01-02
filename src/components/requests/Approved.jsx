@@ -100,7 +100,7 @@ export const Approved = () => {
       formData.append('note', note);
   
       // Send Excel file to email route
-      const emailResponse = await fetch(process.env.EMAIL_URL, {
+      const emailResponse = await fetch(process.env.NEXT_PUBLIC_EMAIL_URL, {
         method: 'POST',
         body: formData
       });
